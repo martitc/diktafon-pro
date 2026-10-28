@@ -40,7 +40,10 @@ void main() {
     final before = _rms(rumble);
     highPassInPlace(rumble);
     // 2nd-order Butterworth at 80 Hz: (30/80)² ≈ 0.14 (−17 dB) at 30 Hz.
-    expect(_rms(rumble), lessThan(before * 0.15),
-        reason: '30 Hz should drop by ≳17 dB');
+    expect(
+      _rms(rumble),
+      lessThan(before * 0.15),
+      reason: '30 Hz should drop by ≳17 dB',
+    );
   });
 }

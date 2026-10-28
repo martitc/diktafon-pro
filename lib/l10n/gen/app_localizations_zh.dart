@@ -253,6 +253,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '推荐：准确度高得多，嘈杂环境中尤其明显（转写时约占用 2.5 GB 内存）。';
 
   @override
+  String get whisperFullLargeDesc => '最高精度 — 下载 2.9 GiB；建议配备 8 GB RAM。';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '下载 2.9 GiB — 此设备需要约 8 GB RAM 才能运行。';
+
+  @override
   String get llmDefaultDesc => '推荐：精简的多语言摘要。';
 
   @override
@@ -319,10 +326,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon 的聆听、转写和摘要全都在你的手机上完成。\n\n录音、转写文本和摘要绝不离开设备。没有账户，没有云端，也没有任何分析追踪。数据离开的唯一途径，是你自己发起的备份或导出。';
+      'Diktafon Pro 的聆听、转写和摘要全都在你的手机上完成。\n\n录音、转写文本和摘要绝不离开设备。没有账户，没有云端，也没有任何分析追踪。数据离开的唯一途径，是你自己发起的备份或导出。';
 
   @override
-  String get aboutOpenSource => 'Diktafon 是自由开源软件：';
+  String get aboutOpenSource => 'Diktafon Pro 是自由开源软件：';
 
   @override
   String get aboutPrivacyPolicy => '隐私政策';
@@ -382,7 +389,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => '欢迎使用 Diktafon';
+  String get firstRunWelcome => '欢迎使用 Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -441,7 +448,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      '设备自身的备份会自动包含卡带列表、转写文本和摘要。录音文件较大，需要你主动带走：导出会把一盘卡带的音频、转写文本和摘要打包成一个 .zip 压缩包，导入压缩包即可恢复。Diktafon 不会上传任何内容。';
+      '设备自身的备份会自动包含卡带列表、转写文本和摘要。录音文件较大，需要你主动带走：导出会把一盘卡带的音频、转写文本和摘要打包成一个 .zip 压缩包，导入压缩包即可恢复。Diktafon Pro 不会上传任何内容。';
 
   @override
   String get groupExport => '导出';
@@ -488,6 +495,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importing => '正在导入…';
 
   @override
+  String get importAudio => '导入音频';
+
+  @override
+  String get importingAudio => '正在导入音频…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已添加$count条语音备忘。转写将自动开始。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '无法导入$count个音频文件。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已导入$count条语音备忘，但无法将转写任务加入队列。',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get importDialogTitle => '导入卡带？';
 
   @override
@@ -532,7 +575,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return '由 Diktafon 导出于 $date。';
+    return '由 Diktafon Pro 导出于 $date。';
   }
 
   @override
@@ -603,10 +646,57 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => '转录已完成';
+
+  @override
+  String get notifTranscriptionCompletedBody => '音频转录已在 Diktafon Pro 中准备就绪。';
+
+  @override
+  String get notifSummaryCompleted => '摘要已完成';
+
+  @override
+  String get notifSummaryCompletedBody => '音频摘要已在 Diktafon Pro 中准备就绪。';
+
+  @override
   String get notifRecording => '正在录音';
 
   @override
   String get notifRecordingChannel => '录音';
+
+  @override
+  String get insufficientModelStorage => '可用存储空间不足，无法下载此模型。请清理空间后重试。';
+
+  @override
+  String get downloadNotificationsPermissionRequired => '允许通知，以便在后台继续下载模型。';
+
+  @override
+  String get importAudioTooltip => '将音频导入此磁带';
+
+  @override
+  String get localSummaryInstructionsGroup => '本地摘要指令';
+
+  @override
+  String get localSummaryInstructionsHint => '例如：重点整理决定、任务和截止日期。';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      '这些指令仅保留在此设备上，不会发送给 Gemini 或 ChatGPT。';
+
+  @override
+  String get localSummarySaveFailed => '无法保存本地摘要指令。';
+
+  @override
+  String get localSummaryInstructionsTitle => '你的摘要指令';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · 预计最低内存：$ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return '下载 $size · 预计最低内存：$ram GB';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -858,6 +948,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '推薦：準確度高出許多，吵雜環境中尤其明顯（轉錄時約需 2.5 GB 記憶體）。';
 
   @override
+  String get whisperFullLargeDesc => '最高準確度 — 下載 2.9 GiB；建議配備 8 GB RAM。';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '下載 2.9 GiB — 此裝置需要約 8 GB RAM 才能執行。';
+
+  @override
   String get llmDefaultDesc => '推薦：精簡的多語言摘要。';
 
   @override
@@ -924,10 +1021,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get aboutBody =>
-      'Diktafon 的聆聽、轉錄和摘要全都在你的手機上完成。\n\n錄音、逐字稿和摘要絕不會離開裝置。沒有帳號，沒有雲端，也沒有任何分析追蹤。資料離開的唯一途徑，是你自己啟動的備份或匯出。';
+      'Diktafon Pro 的聆聽、轉錄和摘要全都在你的手機上完成。\n\n錄音、逐字稿和摘要絕不會離開裝置。沒有帳號，沒有雲端，也沒有任何分析追蹤。資料離開的唯一途徑，是你自己啟動的備份或匯出。';
 
   @override
-  String get aboutOpenSource => 'Diktafon 是自由開源軟體：';
+  String get aboutOpenSource => 'Diktafon Pro 是自由開源軟體：';
 
   @override
   String get aboutPrivacyPolicy => '隱私權政策';
@@ -987,7 +1084,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get firstRunWelcome => '歡迎使用 Diktafon';
+  String get firstRunWelcome => '歡迎使用 Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -1046,7 +1143,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get backupIntro =>
-      '裝置本身的備份會自動涵蓋卡帶清單、逐字稿和摘要。錄音檔較大，需要你自己帶走：匯出會把一捲卡帶的音訊、逐字稿和摘要打包成一個 .zip 壓縮檔，匯入壓縮檔即可還原。Diktafon 不會上傳任何內容。';
+      '裝置本身的備份會自動涵蓋卡帶清單、逐字稿和摘要。錄音檔較大，需要你自己帶走：匯出會把一捲卡帶的音訊、逐字稿和摘要打包成一個 .zip 壓縮檔，匯入壓縮檔即可還原。Diktafon Pro 不會上傳任何內容。';
 
   @override
   String get groupExport => '匯出';
@@ -1093,6 +1190,42 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get importing => '匯入中…';
 
   @override
+  String get importAudio => '匯入音訊';
+
+  @override
+  String get importingAudio => '正在匯入音訊…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已新增$count則語音備忘。轉寫將自動開始。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '無法匯入$count個音訊檔案。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已匯入$count則語音備忘，但無法將轉寫工作加入佇列。',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get importDialogTitle => '匯入卡帶？';
 
   @override
@@ -1137,7 +1270,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String exportNote(String date) {
-    return '由 Diktafon 匯出於 $date。';
+    return '由 Diktafon Pro 匯出於 $date。';
   }
 
   @override
@@ -1208,8 +1341,55 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String get notifTranscriptionCompleted => '轉錄已完成';
+
+  @override
+  String get notifTranscriptionCompletedBody => '音訊轉錄已在 Diktafon Pro 中準備就緒。';
+
+  @override
+  String get notifSummaryCompleted => '摘要已完成';
+
+  @override
+  String get notifSummaryCompletedBody => '音訊摘要已在 Diktafon Pro 中準備就緒。';
+
+  @override
   String get notifRecording => '正在錄音';
 
   @override
   String get notifRecordingChannel => '錄音';
+
+  @override
+  String get insufficientModelStorage => '可用儲存空間不足，無法下載此模型。請清理空間後重試。';
+
+  @override
+  String get downloadNotificationsPermissionRequired => '允許通知，以便在背景繼續下載模型。';
+
+  @override
+  String get importAudioTooltip => '將音訊匯入此卡帶';
+
+  @override
+  String get localSummaryInstructionsGroup => '本機摘要指示';
+
+  @override
+  String get localSummaryInstructionsHint => '例如：著重整理決策、工作事項和期限。';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      '這些指示只保留在此裝置上，不會傳送給 Gemini 或 ChatGPT。';
+
+  @override
+  String get localSummarySaveFailed => '無法儲存本機摘要指示。';
+
+  @override
+  String get localSummaryInstructionsTitle => '你的摘要指示';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · 預估最低記憶體：$ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return '下載 $size · 預估最低記憶體：$ram GB';
+  }
 }

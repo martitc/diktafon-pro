@@ -61,9 +61,9 @@ class RecorderService {
   Duration get elapsed => _stopwatch?.elapsed ?? Duration.zero;
 
   /// dBFS amplitude for the live level meter (§5.3).
-  Stream<Amplitude> amplitudeStream(
-          {Duration interval = const Duration(milliseconds: 120)}) =>
-      _recorder.onAmplitudeChanged(interval);
+  Stream<Amplitude> amplitudeStream({
+    Duration interval = const Duration(milliseconds: 120),
+  }) => _recorder.onAmplitudeChanged(interval);
 
   /// Fires when the platform recorder stops — including stops the app never
   /// asked for (phone call, Siri, another app claiming the mic). The
@@ -99,7 +99,8 @@ class RecorderService {
           // OEM noise-suppression/AGC off) — closest to whisper's training
           // distribution (§6.4; noise-robust-transcription.md §3.5).
           androidConfig: AndroidRecordConfig(
-              audioSource: AndroidAudioSource.voiceRecognition),
+            audioSource: AndroidAudioSource.voiceRecognition,
+          ),
         ),
         path: path,
       );
@@ -144,7 +145,7 @@ class RecorderService {
     // to wall-clock elapsed if probing fails.
     final durationMs =
         await probeAudioDurationMs(recordedPath) ??
-            stopwatch.elapsedMilliseconds;
+        stopwatch.elapsedMilliseconds;
     return RecordingResult(
       memoId: memoId,
       filePath: recordedPath,
@@ -167,13 +168,13 @@ class RecorderService {
   }
 
   Memo toMemo(RecordingResult result, String cassetteId) => Memo(
-        id: result.memoId,
-        cassetteId: cassetteId,
-        filePath: result.filePath,
-        durationMs: result.durationMs,
-        createdAt: DateTime.now(),
-        status: MemoStatus.stored,
-      );
+    id: result.memoId,
+    cassetteId: cassetteId,
+    filePath: result.filePath,
+    durationMs: result.durationMs,
+    createdAt: DateTime.now(),
+    status: MemoStatus.stored,
+  );
 
   Future<void> dispose() => _recorder.dispose();
 }

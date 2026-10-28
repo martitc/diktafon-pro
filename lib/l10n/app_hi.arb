@@ -1,6 +1,5 @@
 {
   "@@locale": "hi",
-
   "untitledCassette": "बिना नाम की कैसेट",
   "rename": "नाम बदलें",
   "delete": "हटाएं",
@@ -9,7 +8,6 @@
   "deleteAction": "हटाएं",
   "ok": "ठीक है",
   "back": "वापस",
-
   "settingsTooltip": "सेटिंग्स",
   "homeEmpty": "अभी कोई कैसेट नहीं है।\nनया टेप शुरू करने के लिए + दबाएं।",
   "newCassette": "नई कैसेट",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "कैसेट का नाम",
   "deleteCassetteTitle": "कैसेट हटाएं?",
   "deleteCassetteBody": "\"{label}\" और {count, plural, one{उसका {count} मेमो} other{उसके {count} मेमो}} हटा दिए जाएंगे। इसे पूर्ववत नहीं किया जा सकता।",
-
   "memoCount": "{count, plural, one{{count} मेमो} other{{count} मेमो}}",
   "cardEmptyMeta": "खाली · खोलने के लिए दबाएं",
   "cardMetaNaming": "{memos} · खुद नाम रख रही है…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "आज {time}",
   "yesterday": "कल",
-
   "deleteCassette": "कैसेट हटाएं",
   "blankTape": "टेप खाली है।\nरिकॉर्ड करने के लिए लाल बटन दबाएं।",
   "emptyTape": "खाली टेप",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "मेमो {n} हटा दिया जाएगा और टेप की खाली जगह अपने-आप भर जाएगी। इसे पूर्ववत नहीं किया जा सकता।",
   "timelineLabel": "टेप की टाइमलाइन",
   "timelinePosition": "{total} में से {position}",
-
   "noSpeech": "(कुछ बोला नहीं गया)",
   "transcriptionFailedRetry": "ट्रांसक्रिप्शन विफल — दोबारा कोशिश के लिए टैप करें (ऑडियो अब भी चलता है)",
   "queuedForTranscription": "ट्रांसक्रिप्शन की कतार में…",
@@ -55,7 +50,6 @@
   "summarizing": "सारांश बन रहा है…",
   "summaryFailedRetry": "सारांश विफल — दोबारा कोशिश के लिए टैप करें",
   "transcribing": "ट्रांसक्राइब हो रहा है…",
-
   "settingsTitle": "सेटिंग्स",
   "groupLanguage": "भाषा",
   "transcriptionLanguage": "ट्रांसक्रिप्शन की भाषा",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "हल्का और तेज़ — कम सटीक, खासकर शोर वाली रिकॉर्डिंग में।",
   "whisperLargeDesc": "ज़्यादा सटीक; सक्षम डिवाइस चाहिए (ट्रांसक्राइब करते समय ~2.5 GB RAM)।",
   "whisperLargeDescCapable": "सुझाया गया — काफ़ी ज़्यादा सटीक, खासकर शोर में (ट्रांसक्राइब करते समय ~2.5 GB RAM)।",
+  "whisperFullLargeDesc": "अधिकतम सटीकता — 2.9 GiB डाउनलोड; 8 GB RAM की सलाह दी जाती है।",
+  "whisperFullLargeDescBlocked": "2.9 GiB डाउनलोड — इसे चलाने के लिए इस डिवाइस में लगभग 8 GB RAM चाहिए।",
   "llmDefaultDesc": "सुझाया गया — छोटे, बहुभाषी सारांश।",
   "llm4bDesc": "बेहतर सारांश और नाम; सक्षम डिवाइस चाहिए (सारांश बनाते समय ~3 GB RAM)।",
   "summariesOffValue": "सारांश नहीं · सेटअप के लिए टैप करें",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "ऐप की जानकारी और निजता",
   "aboutPrivacyDesc": "ऑडियो कभी इस डिवाइस से बाहर नहीं जाता",
   "aboutTitle": "ऐप की जानकारी और निजता",
-  "aboutBody": "Diktafon आपके फ़ोन पर ही सुनता, लिखता और सारांश बनाता है।\n\nरिकॉर्डिंग, ट्रांसक्रिप्ट और सारांश कभी डिवाइस से बाहर नहीं जाते। न कोई खाता है, न क्लाउड, न कोई एनालिटिक्स। डेटा सिर्फ़ तभी बाहर जाता है जब आप खुद बैकअप या निर्यात करते हैं।",
-  "aboutOpenSource": "Diktafon मुफ़्त और ओपन सोर्स है:",
+  "aboutBody": "Diktafon Pro आपके फ़ोन पर ही सुनता, लिखता और सारांश बनाता है।\n\nरिकॉर्डिंग, ट्रांसक्रिप्ट और सारांश कभी डिवाइस से बाहर नहीं जाते। न कोई खाता है, न क्लाउड, न कोई एनालिटिक्स। डेटा सिर्फ़ तभी बाहर जाता है जब आप खुद बैकअप या निर्यात करते हैं।",
+  "aboutOpenSource": "Diktafon Pro मुफ़्त और ओपन सोर्स है:",
   "aboutPrivacyPolicy": "निजता नीति",
-
   "modelPickerTranscriptionTitle": "ट्रांसक्रिप्शन मॉडल",
   "modelPickerSummaryTitle": "सारांश मॉडल",
   "pickerInstalled": "इंस्टॉल है · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} तैयार है — रुके हुए मेमो ट्रांसक्राइब हो रहे हैं।",
   "modelReadySummarize": "{label} तैयार है — रुके हुए मेमो के सारांश बन रहे हैं।",
   "downloadFailed": "{label} का डाउनलोड विफल हुआ — कनेक्शन जांचें और दोबारा कोशिश करें।",
-
-  "firstRunWelcome": "Diktafon में आपका स्वागत है",
+  "firstRunWelcome": "Diktafon Pro में आपका स्वागत है",
   "firstRunIntro": "यह आपके फ़ोन पर ही सुनता, लिखता और सारांश बनाता है। रिकॉर्डिंग, ट्रांसक्रिप्ट और सारांश **कभी इस डिवाइस से बाहर नहीं जाते**। न कोई खाता, न कोई क्लाउड।",
   "firstRunSetupHeader": "पहली बार का सेटअप",
   "allowMicRow": "माइक्रोफ़ोन की अनुमति दें",
@@ -126,9 +120,8 @@
   "provisionChoose": "मॉडल चुनकर डाउनलोड करने के लिए टैप करें",
   "downloadsFinishInBackground": "डाउनलोड बैकग्राउंड में पूरे हो जाते हैं।",
   "startRecordingKey": "रिकॉर्डिंग शुरू करें",
-
   "backupTitle": "निर्यात और आयात",
-  "backupIntro": "आपके डिवाइस का अपना बैकअप कैसेट सूची, ट्रांसक्रिप्ट और सारांश अपने-आप सहेज लेता है। ऑडियो रिकॉर्डिंग बड़ी होती हैं — उन्हें खुद साथ ले जाएं: निर्यात एक कैसेट का ऑडियो, ट्रांसक्रिप्ट और सारांश एक .zip आर्काइव में समेट देता है, और आर्काइव का आयात उन्हें वापस ले आता है। Diktafon कुछ भी अपलोड नहीं करता।",
+  "backupIntro": "आपके डिवाइस का अपना बैकअप कैसेट सूची, ट्रांसक्रिप्ट और सारांश अपने-आप सहेज लेता है। ऑडियो रिकॉर्डिंग बड़ी होती हैं — उन्हें खुद साथ ले जाएं: निर्यात एक कैसेट का ऑडियो, ट्रांसक्रिप्ट और सारांश एक .zip आर्काइव में समेट देता है, और आर्काइव का आयात उन्हें वापस ले आता है। Diktafon Pro कुछ भी अपलोड नहीं करता।",
   "groupExport": "निर्यात",
   "exportAll": "सभी कैसेट निर्यात करें",
   "exportAllDesc": "सब कुछ, एक ही आर्काइव फ़ाइल में",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{{count} कैसेट आयात नहीं हो सकी।} other{{count} कैसेट आयात नहीं हो सकीं।}}",
   "importNothingFound": "उस आर्काइव में कोई कैसेट नहीं मिली।",
   "importFailed": "आयात विफल: {error}",
-
-  "exportNote": "Diktafon से {date} को निर्यात किया गया।",
+  "exportNote": "Diktafon Pro से {date} को निर्यात किया गया।",
   "exportSummaryHeading": "सारांश",
   "exportNotTranscribed": "(ट्रांसक्राइब नहीं हुआ)",
-
   "openSystemSettings": "सेटिंग्स",
   "changeColor": "रंग बदलें",
   "retranscribe": "दोबारा ट्रांसक्राइब करें",
@@ -168,6 +159,69 @@
   "memoActions": "मेमो के विकल्प",
   "notifDownloading": "{label} डाउनलोड हो रहा है",
   "notifModelInstalled": "{label} इंस्टॉल हो गया",
+  "notifTranscriptionCompleted": "ट्रांसक्रिप्शन पूरा हुआ",
+  "notifTranscriptionCompletedBody": "ऑडियो ट्रांसक्रिप्शन Diktafon Pro में तैयार है।",
+  "notifSummaryCompleted": "सारांश पूरा हुआ",
+  "notifSummaryCompletedBody": "ऑडियो सारांश Diktafon Pro में तैयार है।",
   "notifRecording": "रिकॉर्डिंग जारी है",
-  "notifRecordingChannel": "रिकॉर्डिंग"
+  "notifRecordingChannel": "रिकॉर्डिंग",
+  "importAudio": "ऑडियो आयात करें",
+  "importingAudio": "ऑडियो आयात हो रहा है…",
+  "importedAudioFiles": "{count, plural, =1{1 ऑडियो मेमो जोड़ा गया। लिप्यंतरण अपने आप शुरू हो जाएगा।} other{{count} ऑडियो मेमो जोड़े गए। लिप्यंतरण अपने आप शुरू हो जाएगा।}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{1 ऑडियो फ़ाइल आयात नहीं हो सकी।} other{{count} ऑडियो फ़ाइलें आयात नहीं हो सकीं।}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{1 ऑडियो मेमो आयात हुआ, लेकिन उसका लिप्यंतरण कतार में नहीं जोड़ा जा सका।} other{{count} ऑडियो मेमो आयात हुए, लेकिन उनके लिप्यंतरण कतार में नहीं जोड़े जा सके।}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "इस मॉडल को डाउनलोड करने के लिए पर्याप्त जगह नहीं है। जगह खाली करके फिर कोशिश करें।",
+  "downloadNotificationsPermissionRequired": "मॉडल डाउनलोड को बैकग्राउंड में जारी रखने के लिए सूचनाओं की अनुमति दें।",
+  "importAudioTooltip": "इस कैसेट में ऑडियो आयात करें",
+  "localSummaryInstructionsGroup": "स्थानीय सारांश के निर्देश",
+  "localSummaryInstructionsHint": "उदाहरण: फैसलों, कामों और समय-सीमाओं पर ध्यान दें।",
+  "localSummaryInstructionsPrivacy": "ये निर्देश इसी डिवाइस पर रहते हैं और Gemini या ChatGPT को नहीं भेजे जाते।",
+  "localSummarySaveFailed": "स्थानीय सारांश के निर्देश सहेजे नहीं जा सके।",
+  "localSummaryInstructionsTitle": "आपके सारांश निर्देश",
+  "llmModelDetails": "{quantization} · {license} · अनुमानित न्यूनतम RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "डाउनलोड {size} · अनुमानित न्यूनतम RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

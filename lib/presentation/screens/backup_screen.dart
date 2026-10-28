@@ -50,40 +50,47 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         title: Text(l10n.backupTitle),
       ),
       body: ContentWidth(
-          child: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
-            child: Text(
-              l10n.backupIntro,
-              style: TextStyle(fontSize: 11, height: 1.55, color: tape.ink2),
-            ),
-          ),
-          SettingsGroup(title: l10n.groupExport, rows: [
-            SettingsRow(
-              title: l10n.exportAll,
-              value: _exporting ? l10n.exporting : l10n.exportAllDesc,
-              onTap: _busy || overviews.isEmpty
-                  ? null
-                  : () => _export(overviews),
-            ),
-            for (final overview in overviews)
-              SettingsRow(
-                title: overview.cassette.label ?? l10n.untitledCassette,
-                value: l10n.memoCount(overview.memoCount),
-                onTap: _busy ? null : () => _export([overview]),
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 32),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+              child: Text(
+                l10n.backupIntro,
+                style: TextStyle(fontSize: 11, height: 1.55, color: tape.ink2),
               ),
-          ]),
-          SettingsGroup(title: l10n.groupImport, rows: [
-            SettingsRow(
-              title: l10n.importArchive,
-              value: _importing ? l10n.importing : l10n.importArchiveDesc,
-              onTap: _busy ? null : _import,
             ),
-          ]),
-        ],
-      )),
+            SettingsGroup(
+              title: l10n.groupExport,
+              rows: [
+                SettingsRow(
+                  title: l10n.exportAll,
+                  value: _exporting ? l10n.exporting : l10n.exportAllDesc,
+                  onTap: _busy || overviews.isEmpty
+                      ? null
+                      : () => _export(overviews),
+                ),
+                for (final overview in overviews)
+                  SettingsRow(
+                    title: overview.cassette.label ?? l10n.untitledCassette,
+                    value: l10n.memoCount(overview.memoCount),
+                    onTap: _busy ? null : () => _export([overview]),
+                  ),
+              ],
+            ),
+            SettingsGroup(
+              title: l10n.groupImport,
+              rows: [
+                SettingsRow(
+                  title: l10n.importArchive,
+                  value: _importing ? l10n.importing : l10n.importArchiveDesc,
+                  onTap: _busy ? null : _import,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -105,7 +112,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final location = await getSaveLocation(
         suggestedName: suggested,
         acceptedTypeGroups: const [
-          XTypeGroup(label: 'zip', extensions: ['zip'])
+          XTypeGroup(label: 'zip', extensions: ['zip']),
         ],
       );
       if (location == null || !mounted) return; // user cancelled the picker
@@ -127,23 +134,30 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             memos: await memoRepo.memosOf(overview.cassette.id),
           ),
       ];
-      await CassetteExporter(labels: labels)
-          .exportArchive(items: items, outputPath: outputPath);
+      await CassetteExporter(
+        labels: labels,
+      ).exportArchive(items: items, outputPath: outputPath);
 
       var shownPath = outputPath;
       if (useMobileSaveFlow) {
         final saved = await saveDocumentMobile(
-            sourcePath: outputPath, suggestedName: suggested);
+          sourcePath: outputPath,
+          suggestedName: suggested,
+        );
         if (!saved) return; // backed out of the OS dialog — not an error
         shownPath = suggested; // content URIs are opaque; name the file
       }
-      messenger.showSnackBar(SnackBar(
-          content: Text(selection.length == 1
-              ? l10n.exportedTo(shownPath)
-              : l10n.exportedAllTo(selection.length, shownPath))));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            selection.length == 1
+                ? l10n.exportedTo(shownPath)
+                : l10n.exportedAllTo(selection.length, shownPath),
+          ),
+        ),
+      );
     } catch (e) {
-      messenger
-          .showSnackBar(SnackBar(content: Text(l10n.exportFailed('$e'))));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.exportFailed('$e'))));
     } finally {
       if (staging != null) {
         try {
@@ -161,7 +175,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     // Before anything happens, say what an import does (D14): cassettes are
     // added next to the existing ones, nothing is deleted, and re-importing
     // what is already here duplicates it.
-    final proceed = await showDialog<bool>(
+    final proceed =
+        await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: Text(l10n.importDialogTitle),
@@ -186,13 +201,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     // catch or a failure is an invisible no-op.
     final XFile? file;
     try {
-      file = await openFile(acceptedTypeGroups: const [
-        XTypeGroup(
+      file = await openFile(
+        acceptedTypeGroups: const [
+          XTypeGroup(
             label: 'zip',
             extensions: ['zip'],
             mimeTypes: ['application/zip'],
-            uniformTypeIdentifiers: ['public.zip-archive']),
-      ]);
+            uniformTypeIdentifiers: ['public.zip-archive'],
+          ),
+        ],
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.importFailed('$e'))));
       return;
@@ -205,8 +223,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           .read(cassetteImporterProvider)
           .importArchive(File(file.path));
       if (result.isEmpty) {
-        messenger
-            .showSnackBar(SnackBar(content: Text(l10n.importNothingFound)));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.importNothingFound)),
+        );
       } else {
         var text = l10n.importedResult(result.cassettes, result.memos);
         if (result.failures.isNotEmpty) {
@@ -215,8 +234,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         messenger.showSnackBar(SnackBar(content: Text(text)));
       }
     } catch (e) {
-      messenger
-          .showSnackBar(SnackBar(content: Text(l10n.importFailed('$e'))));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.importFailed('$e'))));
     } finally {
       if (mounted) setState(() => _importing = false);
     }
@@ -224,8 +242,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   String _suggestedName(List<CassetteOverview> selection, String untitled) =>
       selection.length == 1
-          ? '${CassetteExporter.fileSafe(selection.single.cassette.label ?? untitled)}.zip'
-          : 'diktafon-${DateFormat('yyyy-MM-dd').format(DateTime.now())}.zip';
+      ? '${CassetteExporter.fileSafe(selection.single.cassette.label ?? untitled)}.zip'
+      : 'diktafon-${DateFormat('yyyy-MM-dd').format(DateTime.now())}.zip';
 
   /// The exported files read in the app's language too (§13).
   ExportLabels _exportLabels(BuildContext context) {

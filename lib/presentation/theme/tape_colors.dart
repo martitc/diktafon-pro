@@ -79,7 +79,8 @@ class TapeColors extends ThemeExtension<TapeColors> {
   TapeColors copyWith() => this;
 
   @override
-  TapeColors lerp(TapeColors? other, double t) => t < 0.5 ? this : other ?? this;
+  TapeColors lerp(TapeColors? other, double t) =>
+      t < 0.5 ? this : other ?? this;
 }
 
 extension TapeColorsX on BuildContext {

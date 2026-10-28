@@ -275,6 +275,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'موصى به — أدق بكثير، خصوصًا مع الضوضاء (نحو 2.5 غيغابايت من الذاكرة أثناء التفريغ).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'أعلى دقة — تنزيل 2.9 GiB؛ يُوصى بذاكرة RAM بسعة 8 GB.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'تنزيل 2.9 GiB — يحتاج هذا الجهاز إلى نحو 8 GB من RAM لتشغيله.';
+
+  @override
   String get llmDefaultDesc => 'موصى به — ملخصات موجزة متعددة اللغات.';
 
   @override
@@ -343,10 +351,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon يستمع ويكتب ويلخّص هنا على هاتفك مباشرة.\n\nالتسجيلات والنصوص والملخصات لا تغادر الجهاز أبدًا. لا حساب ولا سحابة ولا تحليلات استخدام. الطريقة الوحيدة لخروج البيانات هي نسخة احتياطية أو تصدير تبدأه بنفسك.';
+      'Diktafon Pro يستمع ويكتب ويلخّص هنا على هاتفك مباشرة.\n\nالتسجيلات والنصوص والملخصات لا تغادر الجهاز أبدًا. لا حساب ولا سحابة ولا تحليلات استخدام. الطريقة الوحيدة لخروج البيانات هي نسخة احتياطية أو تصدير تبدأه بنفسك.';
 
   @override
-  String get aboutOpenSource => 'Diktafon مجاني ومفتوح المصدر:';
+  String get aboutOpenSource => 'Diktafon Pro مجاني ومفتوح المصدر:';
 
   @override
   String get aboutPrivacyPolicy => 'سياسة الخصوصية';
@@ -406,7 +414,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'مرحبًا بك في Diktafon';
+  String get firstRunWelcome => 'مرحبًا بك في Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -466,7 +474,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'يشمل النسخ الاحتياطي الخاص بجهازك قائمة الكاسيتات والنصوص والملخصات تلقائيًا. أما التسجيلات الصوتية فحجمها كبير — خذها معك بنفسك: يجمع التصدير صوت الكاسيت ونصوصه وملخصاته في أرشيف zip واحد، ويعيدها استيراد الأرشيف. لا يرفع Diktafon أي شيء.';
+      'يشمل النسخ الاحتياطي الخاص بجهازك قائمة الكاسيتات والنصوص والملخصات تلقائيًا. أما التسجيلات الصوتية فحجمها كبير — خذها معك بنفسك: يجمع التصدير صوت الكاسيت ونصوصه وملخصاته في أرشيف zip واحد، ويعيدها استيراد الأرشيف. لا يرفع Diktafon Pro أي شيء.';
 
   @override
   String get groupExport => 'التصدير';
@@ -516,6 +524,48 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get importing => 'جارٍ الاستيراد…';
+
+  @override
+  String get importAudio => 'استيراد صوت';
+
+  @override
+  String get importingAudio => 'جارٍ استيراد الصوت…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'عدد المذكرات الصوتية المضافة: $count. يبدأ التفريغ النصي تلقائيًا.',
+      one: 'تمت إضافة مذكرة صوتية واحدة. يبدأ التفريغ النصي تلقائيًا.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'عدد الملفات الصوتية التي تعذر استيرادها: $count.',
+      one: 'تعذر استيراد ملف صوتي واحد.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'عدد المذكرات الصوتية المستوردة التي تعذرت إضافة تفريغها النصي إلى قائمة الانتظار: $count.',
+      one:
+          'تم استيراد مذكرة صوتية واحدة، لكن تعذرت إضافة تفريغها النصي إلى قائمة الانتظار.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'استيراد الكاسيتات؟';
@@ -594,7 +644,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'صُدِّر من Diktafon في $date.';
+    return 'صُدِّر من Diktafon Pro في $date.';
   }
 
   @override
@@ -670,8 +720,60 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'اكتمل التفريغ الصوتي';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'أصبح تفريغ الصوت جاهزًا في Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'اكتمل الملخص';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'أصبح ملخص الصوت جاهزًا في Diktafon Pro.';
+
+  @override
   String get notifRecording => 'جارٍ التسجيل';
 
   @override
   String get notifRecordingChannel => 'التسجيل';
+
+  @override
+  String get insufficientModelStorage =>
+      'لا توجد مساحة كافية لتنزيل هذا النموذج. أفرغ بعض المساحة ثم أعد المحاولة.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'اسمح بالإشعارات لتستمر تنزيلات النماذج في الخلفية.';
+
+  @override
+  String get importAudioTooltip => 'استيراد صوت إلى هذا الشريط';
+
+  @override
+  String get localSummaryInstructionsGroup => 'تعليمات الملخص المحلي';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'مثال: ركّز على القرارات والمهام والمواعيد النهائية.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'تبقى هذه التعليمات على هذا الجهاز ولا تُرسل إلى Gemini أو ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed => 'تعذّر حفظ تعليمات الملخص المحلي.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'تعليماتك للملخصات';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · الحد الأدنى المقدّر للذاكرة: $ram غيغابايت';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'التنزيل $size · الحد الأدنى المقدّر للذاكرة: $ram غيغابايت';
+  }
 }

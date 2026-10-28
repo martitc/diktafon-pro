@@ -39,14 +39,14 @@ void main() {
   late Completer<void> stallGate;
 
   WhisperModel spec(HttpServer server) => WhisperModel(
-        tier: 'tiny',
-        label: 'Test model',
-        description: '',
-        fileName: 'model.bin',
-        sizeBytes: payload.length,
-        sha256Hex: sha256.convert(payload).toString(),
-        urlOverride: Uri.parse('http://127.0.0.1:${server.port}/model.bin'),
-      );
+    tier: 'tiny',
+    label: 'Test model',
+    description: '',
+    fileName: 'model.bin',
+    sizeBytes: payload.length,
+    sha256Hex: sha256.convert(payload).toString(),
+    urlOverride: Uri.parse('http://127.0.0.1:${server.port}/model.bin'),
+  );
 
   const texts = DownloadNotificationTexts(
     downloading: _downloadingText,
@@ -103,12 +103,14 @@ void main() {
         .where((c) => c.startsWith('progress#'))
         .map((c) => int.parse(c.split(' ').last))
         .toList();
-    expect(percents, equals(percents.toSet().toList()),
-        reason: 'chunk-level events are gated to one update per percent');
+    expect(
+      percents,
+      equals(percents.toSet().toList()),
+      reason: 'chunk-level events are gated to one update per percent',
+    );
   });
 
-  test('cancel mid-flight removes the notification, no done notice',
-      () async {
+  test('cancel mid-flight removes the notification, no done notice', () async {
     final model = spec(server);
     final manager = WhisperModelManager(dir, catalog: [model]);
     final sink = RecordingSink();
@@ -174,8 +176,9 @@ void main() {
     final model = spec(server);
     final manager = WhisperModelManager(dir, catalog: [model]);
     final other = WhisperModelManager(
-        Directory('${dir.path}/other')..createSync(),
-        catalog: [model]);
+      Directory('${dir.path}/other')..createSync(),
+      catalog: [model],
+    );
     final sink = RecordingSink();
     final notifier = ModelDownloadNotifier(sink, texts)
       ..attach(manager, idBase: 100)

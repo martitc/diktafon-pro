@@ -7,13 +7,19 @@ import 'package:diktafon/domain/script.dart';
 import 'package:diktafon/services/processing/chinese_script.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Transcript zhTranscript(List<String> words, {String lang = 'zh'}) =>
-    Transcript(languageCode: lang, segments: [
-      Segment(startMs: 0, endMs: words.length * 100, words: [
+Transcript zhTranscript(List<String> words, {String lang = 'zh'}) => Transcript(
+  languageCode: lang,
+  segments: [
+    Segment(
+      startMs: 0,
+      endMs: words.length * 100,
+      words: [
         for (final (i, w) in words.indexed)
           Word(text: w, startMs: i * 100, endMs: i * 100 + 90),
-      ]),
-    ]);
+      ],
+    ),
+  ],
+);
 
 void main() {
   group('char-level conversion', () {
@@ -33,8 +39,7 @@ void main() {
       expect(toSimplified('hello world'), 'hello world');
     });
 
-    test('conversion is codepoint-aligned — length in runes is preserved',
-        () {
+    test('conversion is codepoint-aligned — length in runes is preserved', () {
       const sample = '这是一个很长的测试句子，包括标点符号。';
       expect(toTraditional(sample).runes.length, sample.runes.length);
     });
@@ -64,8 +69,7 @@ void main() {
       expect(resolved.plainText, '語音備忘');
     });
 
-    test('forced zh-Hans normalizes whisper\'s mixed output to Simplified',
-        () {
+    test('forced zh-Hans normalizes whisper\'s mixed output to Simplified', () {
       final resolved = resolveChineseScript(
         zhTranscript(['語音', '备忘']),
         appLanguage: 'zh-Hans',
@@ -99,20 +103,35 @@ void main() {
 
     test('non-Chinese and yue transcripts pass through untouched', () {
       final cs = zhTranscript(['dobrý', 'den'], lang: 'cs');
-      expect(resolveChineseScript(cs,
-              appLanguage: null, systemZhScript: () => 'Hant'),
-          same(cs));
+      expect(
+        resolveChineseScript(
+          cs,
+          appLanguage: null,
+          systemZhScript: () => 'Hant',
+        ),
+        same(cs),
+      );
       final yue = zhTranscript(['廣東話'], lang: 'yue');
-      expect(resolveChineseScript(yue,
-              appLanguage: null, systemZhScript: () => 'Hans'),
-          same(yue));
+      expect(
+        resolveChineseScript(
+          yue,
+          appLanguage: null,
+          systemZhScript: () => 'Hans',
+        ),
+        same(yue),
+      );
     });
 
     test('a non-zh language override never converts', () {
       final t = zhTranscript(['语音']);
-      expect(resolveChineseScript(t,
-              appLanguage: 'ko', systemZhScript: () => 'Hant'),
-          same(t));
+      expect(
+        resolveChineseScript(
+          t,
+          appLanguage: 'ko',
+          systemZhScript: () => 'Hant',
+        ),
+        same(t),
+      );
     });
   });
 

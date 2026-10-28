@@ -270,6 +270,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Recomendado — mucho más preciso, sobre todo con ruido (~2,5 GB de RAM al transcribir).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Máxima precisión: descarga de 2,9 GiB; se recomiendan 8 GB de RAM.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'Descarga de 2,9 GiB: este dispositivo necesita unos 8 GB de RAM para ejecutarlo.';
+
+  @override
   String get llmDefaultDesc =>
       'Recomendado — resúmenes multilingües compactos.';
 
@@ -339,10 +347,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon escucha, escribe y resume aquí mismo, en tu teléfono.\n\nLas grabaciones, transcripciones y resúmenes nunca salen del dispositivo. No hay cuenta, ni nube, ni analíticas. Los datos solo salen mediante una copia o exportación que inicias tú.';
+      'Diktafon Pro escucha, escribe y resume aquí mismo, en tu teléfono.\n\nLas grabaciones, transcripciones y resúmenes nunca salen del dispositivo. No hay cuenta, ni nube, ni analíticas. Los datos solo salen mediante una copia o exportación que inicias tú.';
 
   @override
-  String get aboutOpenSource => 'Diktafon es gratuito y de código abierto:';
+  String get aboutOpenSource => 'Diktafon Pro es gratuito y de código abierto:';
 
   @override
   String get aboutPrivacyPolicy => 'Política de privacidad';
@@ -402,7 +410,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Bienvenido a Diktafon';
+  String get firstRunWelcome => 'Bienvenido a Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -463,7 +471,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'La copia de seguridad de tu dispositivo cubre automáticamente la lista de casetes, las transcripciones y los resúmenes. El audio ocupa mucho — llévatelo de forma explícita: la exportación empaqueta el audio, las transcripciones y los resúmenes de un casete en un único archivo .zip, y la importación los trae de vuelta. Diktafon no sube nada.';
+      'La copia de seguridad de tu dispositivo cubre automáticamente la lista de casetes, las transcripciones y los resúmenes. El audio ocupa mucho — llévatelo de forma explícita: la exportación empaqueta el audio, las transcripciones y los resúmenes de un casete en un único archivo .zip, y la importación los trae de vuelta. Diktafon Pro no sube nada.';
 
   @override
   String get groupExport => 'Exportar';
@@ -509,6 +517,49 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get importing => 'Importando…';
+
+  @override
+  String get importAudio => 'Importar audio';
+
+  @override
+  String get importingAudio => 'Importando audio…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count audios añadidos al casete. La transcripción comenzará automáticamente.',
+      one:
+          'Audio añadido al casete. La transcripción comenzará automáticamente.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'No se pudieron importar $count archivos de audio.',
+      one: 'No se pudo importar 1 archivo de audio.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Se importaron $count audios, pero no se pudieron poner sus transcripciones en cola.',
+      one:
+          'Se importó 1 audio, pero no se pudo poner su transcripción en cola.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => '¿IMPORTAR CASETES?';
@@ -564,7 +615,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Exportado desde Diktafon el $date.';
+    return 'Exportado desde Diktafon Pro el $date.';
   }
 
   @override
@@ -636,8 +687,63 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Transcripción terminada';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'La transcripción del audio está lista en Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'Resumen terminado';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'El resumen del audio está listo en Diktafon Pro.';
+
+  @override
   String get notifRecording => 'Grabando nota';
 
   @override
   String get notifRecordingChannel => 'Grabación';
+
+  @override
+  String get insufficientModelStorage =>
+      'No hay espacio suficiente para descargar este modelo. Libera espacio y vuelve a intentarlo.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Permite las notificaciones para que las descargas de modelos continúen en segundo plano.';
+
+  @override
+  String get importAudioTooltip => 'Importar audio a este casete';
+
+  @override
+  String get localSummaryInstructionsGroup =>
+      'Instrucciones para resúmenes locales';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Por ejemplo: céntrate en decisiones, tareas y fechas límite.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Estas instrucciones permanecen en este dispositivo y no se envían a Gemini ni a ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'No se pudieron guardar las instrucciones del resumen local.';
+
+  @override
+  String get localSummaryInstructionsTitle =>
+      'Tus instrucciones para los resúmenes';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · memoria mínima estimada: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'descarga $size · RAM mínima estimada: $ram GB';
+  }
 }

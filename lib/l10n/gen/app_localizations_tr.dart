@@ -267,6 +267,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Önerilen — özellikle gürültüde çok daha doğru (yazıya dökme sırasında ~2,5 GB RAM).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'En yüksek doğruluk — 2,9 GiB indirme; 8 GB RAM önerilir.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '2,9 GiB indirme — bu cihazda çalışması için yaklaşık 8 GB RAM gerekir.';
+
+  @override
   String get llmDefaultDesc => 'Önerilen — derli toplu çok dilli özetler.';
 
   @override
@@ -335,10 +343,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon doğrudan telefonunuzda dinler, yazar ve özetler.\n\nKayıtlar, transkriptler ve özetler cihazdan asla çıkmaz. Hesap yok, bulut yok, analitik yok. Veriler yalnızca sizin başlattığınız bir yedekleme veya dışa aktarmayla cihazdan ayrılır.';
+      'Diktafon Pro doğrudan telefonunuzda dinler, yazar ve özetler.\n\nKayıtlar, transkriptler ve özetler cihazdan asla çıkmaz. Hesap yok, bulut yok, analitik yok. Veriler yalnızca sizin başlattığınız bir yedekleme veya dışa aktarmayla cihazdan ayrılır.';
 
   @override
-  String get aboutOpenSource => 'Diktafon ücretsiz ve açık kaynaklıdır:';
+  String get aboutOpenSource => 'Diktafon Pro ücretsiz ve açık kaynaklıdır:';
 
   @override
   String get aboutPrivacyPolicy => 'Gizlilik politikası';
@@ -398,7 +406,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Diktafon\'a hoş geldiniz';
+  String get firstRunWelcome => 'Diktafon Pro\'a hoş geldiniz';
 
   @override
   String get firstRunIntro =>
@@ -459,7 +467,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Cihazınızın kendi yedeği kaset listesini, transkriptleri ve özetleri otomatik olarak kapsar. Ses kayıtları büyüktür — onları açıkça yanınıza alın: dışa aktarma, bir kasetin sesini, transkriptlerini ve özetlerini tek bir .zip arşivine paketler; arşivi içe aktarmak onları geri getirir. Diktafon hiçbir şeyi hiçbir yere yüklemez.';
+      'Cihazınızın kendi yedeği kaset listesini, transkriptleri ve özetleri otomatik olarak kapsar. Ses kayıtları büyüktür — onları açıkça yanınıza alın: dışa aktarma, bir kasetin sesini, transkriptlerini ve özetlerini tek bir .zip arşivine paketler; arşivi içe aktarmak onları geri getirir. Diktafon Pro hiçbir şeyi hiçbir yere yüklemez.';
 
   @override
   String get groupExport => 'Dışa aktarma';
@@ -505,6 +513,44 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get importing => 'İçe aktarılıyor…';
+
+  @override
+  String get importAudio => 'Ses içe aktar';
+
+  @override
+  String get importingAudio => 'Ses içe aktarılıyor…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count sesli not eklendi. Metne dönüştürme otomatik olarak başlar.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ses dosyası içe aktarılamadı.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count sesli not içe aktarıldı ancak metne dönüştürme işlemleri kuyruğa eklenemedi.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'KASETLER İÇE AKTARILSIN MI?';
@@ -560,7 +606,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return '$date tarihinde Diktafon\'dan dışa aktarıldı.';
+    return '$date tarihinde Diktafon Pro\'dan dışa aktarıldı.';
   }
 
   @override
@@ -632,8 +678,60 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Döküm tamamlandı';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'Ses dökümü Diktafon Pro içinde hazır.';
+
+  @override
+  String get notifSummaryCompleted => 'Özet tamamlandı';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Ses özeti Diktafon Pro içinde hazır.';
+
+  @override
   String get notifRecording => 'Kayıt yapılıyor';
 
   @override
   String get notifRecordingChannel => 'Kayıt';
+
+  @override
+  String get insufficientModelStorage =>
+      'Bu modeli indirmek için yeterli boş alan yok. Yer açıp yeniden deneyin.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Model indirmelerinin arka planda sürmesi için bildirimlere izin verin.';
+
+  @override
+  String get importAudioTooltip => 'Bu kasete ses aktar';
+
+  @override
+  String get localSummaryInstructionsGroup => 'Yerel özet talimatları';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Örneğin: kararlara, görevlere ve son tarihlere odaklan.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Bu talimatlar bu cihazda kalır ve Gemini veya ChatGPT’ye gönderilmez.';
+
+  @override
+  String get localSummarySaveFailed => 'Yerel özet talimatları kaydedilemedi.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'Özet talimatların';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · tahmini en az RAM: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'indirme $size · tahmini minimum RAM: $ram GB';
+  }
 }

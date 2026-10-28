@@ -123,7 +123,8 @@ class CassetteImporter {
     final own = File('${root.path}/cassette.json');
     if (own.existsSync()) return [own];
     final found = <File>[];
-    for (final entry in root.listSync()..sort((a, b) => a.path.compareTo(b.path))) {
+    for (final entry
+        in root.listSync()..sort((a, b) => a.path.compareTo(b.path))) {
       if (entry is! Directory) continue;
       final manifest = File('${entry.path}/cassette.json');
       if (manifest.existsSync()) found.add(manifest);
@@ -132,14 +133,14 @@ class CassetteImporter {
   }
 
   Future<({int memos, int reEnqueued, int skippedMemos})> _importOne(
-      File manifestFile) async {
+    File manifestFile,
+  ) async {
     final dir = manifestFile.parent;
     final json =
         jsonDecode(await manifestFile.readAsString()) as Map<String, dynamic>;
     final version = (json['formatVersion'] as num?)?.toInt() ?? 0;
     if (version > CassetteExporter.manifestVersion) {
-      throw FormatException(
-          'archive written by a newer app (format $version)');
+      throw FormatException('archive written by a newer app (format $version)');
     }
 
     final label = json['label'] as String?;
@@ -175,10 +176,13 @@ class CassetteImporter {
         // Keep the archive's container (`.wav` for a not-yet-transcoded
         // capture): iOS players trust the extension over the bytes.
         final dot = audio?.path.lastIndexOf('.') ?? -1;
-        final path = await _files.pathFor(cassette.id, memoId,
-            extension: dot > (audio?.path.lastIndexOf('/') ?? -1)
-                ? audio!.path.substring(dot + 1)
-                : 'm4a');
+        final path = await _files.pathFor(
+          cassette.id,
+          memoId,
+          extension: dot > (audio?.path.lastIndexOf('/') ?? -1)
+              ? audio!.path.substring(dot + 1)
+              : 'm4a',
+        );
         // Audio-less memos keep their (dead) canonical path — the same
         // state the app already tolerates after a metadata-only OS restore.
         if (audio != null) await audio.copy(path);
@@ -189,21 +193,24 @@ class CassetteImporter {
         }
 
         final gist = m['summary'] as String?;
-        await _memos.insert(Memo(
-          id: memoId,
-          cassetteId: cassette.id,
-          filePath: path,
-          durationMs: durationMs,
-          createdAt: _date(m['createdAt']) ?? DateTime.now(),
-          status: transcript == null
-              ? MemoStatus.stored
-              : gist == null
-                  ? MemoStatus.transcribed
-                  : MemoStatus.ready,
-          detectedLang: m['language'] as String?,
-          transcript: transcript,
-          memoSummary: gist,
-        ));
+        await _memos.insert(
+          Memo(
+            id: memoId,
+            cassetteId: cassette.id,
+            filePath: path,
+            durationMs: durationMs,
+            createdAt: _date(m['createdAt']) ?? DateTime.now(),
+            status: transcript == null
+                ? MemoStatus.stored
+                : gist == null
+                ? MemoStatus.transcribed
+                : MemoStatus.ready,
+            title: m['title'] as String?,
+            detectedLang: m['language'] as String?,
+            transcript: transcript,
+            memoSummary: gist,
+          ),
+        );
         imported++;
 
         if (transcript == null) {

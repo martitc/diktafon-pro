@@ -44,11 +44,10 @@ class LlamaWorker {
         final response = message as Map<dynamic, dynamic>;
         _inFlight.remove(response['id'])?.complete(response);
       });
-      _isolate = await Isolate.spawn(
-        _workerMain,
-        [replies.sendPort, _libraryPath],
-        debugName: 'llama-worker',
-      );
+      _isolate = await Isolate.spawn(_workerMain, [
+        replies.sendPort,
+        _libraryPath,
+      ], debugName: 'llama-worker');
       _commands = await ready.future;
     }();
   }
@@ -131,8 +130,12 @@ void _workerMain(List<Object> args) {
           loadedModelPath != modelPath ||
           loadedCtxTokens != nCtx) {
         if (context != nullptr) bindings!.free(context);
-        context = _initContext(bindings!, modelPath, nCtx,
-            threads: request['threads'] as int);
+        context = _initContext(
+          bindings!,
+          modelPath,
+          nCtx,
+          threads: request['threads'] as int,
+        );
         loadedModelPath = modelPath;
         loadedCtxTokens = nCtx;
       }

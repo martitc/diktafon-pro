@@ -62,7 +62,10 @@ class FakeRecorder extends RecorderService {
   @override
   Future<RecordingResult> stop() async {
     final result = RecordingResult(
-        memoId: _memoId!, filePath: _path!, durationMs: 2000);
+      memoId: _memoId!,
+      filePath: _path!,
+      durationMs: 2000,
+    );
     _memoId = null;
     return result;
   }
@@ -97,8 +100,10 @@ class FakeGlue extends RecordingForegroundGlue {
   Completer<void>? gate;
 
   @override
-  Future<bool> start(
-      {required String title, required String channelName}) async {
+  Future<bool> start({
+    required String title,
+    required String channelName,
+  }) async {
     starts++;
     lastTitle = title;
     lastChannelName = channelName;
@@ -147,16 +152,17 @@ void main() {
       () => FakeSummarizationProvider(status: ModelStatus.notInstalled),
       retryDelayUnit: Duration.zero,
     );
-    container = ProviderContainer(overrides: [
-      appDatabaseProvider.overrideWithValue(db),
-      audioFileStoreProvider.overrideWithValue(store),
-      recorderServiceProvider.overrideWithValue(recorder),
-      tapePlayerProvider.overrideWithValue(FakePlayer()),
-      recordingForegroundGlueProvider.overrideWithValue(glue),
-      jobQueueProvider.overrideWithValue(inertQueue),
-    ]);
-    cassetteId =
-        (await container.read(cassetteRepositoryProvider).create()).id;
+    container = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        audioFileStoreProvider.overrideWithValue(store),
+        recorderServiceProvider.overrideWithValue(recorder),
+        tapePlayerProvider.overrideWithValue(FakePlayer()),
+        recordingForegroundGlueProvider.overrideWithValue(glue),
+        jobQueueProvider.overrideWithValue(inertQueue),
+      ],
+    );
+    cassetteId = (await container.read(cassetteRepositoryProvider).create()).id;
   });
 
   tearDown(() async {
@@ -180,28 +186,36 @@ void main() {
       expect(glue.starts, 1);
       expect(glue.lastTitle, isNotEmpty);
       expect(glue.lastChannelName, isNotEmpty);
-      expect(container.read(recordingControllerProvider).backgroundCapable,
-          isTrue);
+      expect(
+        container.read(recordingControllerProvider).backgroundCapable,
+        isTrue,
+      );
     });
 
-    test('rejected service start records anyway, flagged not-capable',
-        () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      glue.answer = false;
-      final outcome = await controller().start(cassetteId);
+    test(
+      'rejected service start records anyway, flagged not-capable',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        glue.answer = false;
+        final outcome = await controller().start(cassetteId);
 
-      expect(outcome, RecordStartOutcome.started);
-      expect(container.read(recordingControllerProvider).backgroundCapable,
-          isFalse);
-    });
+        expect(outcome, RecordStartOutcome.started);
+        expect(
+          container.read(recordingControllerProvider).backgroundCapable,
+          isFalse,
+        );
+      },
+    );
 
     test('non-Android never touches the service and is capable', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       await controller().start(cassetteId);
 
       expect(glue.starts, 0);
-      expect(container.read(recordingControllerProvider).backgroundCapable,
-          isTrue);
+      expect(
+        container.read(recordingControllerProvider).backgroundCapable,
+        isTrue,
+      );
     });
 
     test('stop tears the service down', () async {
@@ -231,22 +245,23 @@ void main() {
 
   group('stop finalization (§14)', () {
     test(
-        'inserts the memo, enqueues transcribe + transcode, clears the marker',
-        () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      await controller().start(cassetteId);
-      await controller().stop();
+      'inserts the memo, enqueues transcribe + transcode, clears the marker',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        await controller().start(cassetteId);
+        await controller().stop();
 
-      final memos = container.read(memoRepositoryProvider);
-      final memo = (await memos.memosOf(cassetteId)).single;
-      expect(memo.id, 'fake-memo');
-      expect(memo.filePath, endsWith('.wav'));
-      expect(memo.status, MemoStatus.stored);
-      expect(File(captureMarkerPath(memo.filePath)).existsSync(), isFalse);
-      expect(
-        (await jobRows()).map((j) => j.type).toSet(),
-        {'transcribe', 'transcodeAudio'},
-      );
-    });
+        final memos = container.read(memoRepositoryProvider);
+        final memo = (await memos.memosOf(cassetteId)).single;
+        expect(memo.id, 'fake-memo');
+        expect(memo.filePath, endsWith('.wav'));
+        expect(memo.status, MemoStatus.stored);
+        expect(File(captureMarkerPath(memo.filePath)).existsSync(), isFalse);
+        expect((await jobRows()).map((j) => j.type).toSet(), {
+          'transcribe',
+          'transcodeAudio',
+        });
+      },
+    );
   });
 }

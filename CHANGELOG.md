@@ -3,6 +3,20 @@
 All notable changes to Diktafon are documented in this file. Versions
 correspond to git tags (`v*`); dates are tag dates.
 
+## [1.0.10] — 2026-10-28
+
+### Added
+- Optional Gemini summaries with an independently selected Gemini model,
+  secure API-key storage, and editable instructions. Gemini receives the
+  transcript text and those instructions; it does not receive the audio for
+  summary requests.
+- Summary provider choice now includes local models, Gemini API, and ChatGPT
+  OAuth. Local Gemma and Qwen models remain selectable in the local model
+  picker.
+- Settings identifies where the cassette overview appears and cloud summary
+  setup explains that Free Tier content may be used by Google to improve its
+  products.
+
 ## [1.0.9] — 2026-07-30
 
 ### Added

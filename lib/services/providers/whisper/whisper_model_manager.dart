@@ -45,13 +45,22 @@ class WhisperModel implements ModelSpec {
   final Uri? urlOverride;
 
   @override
-  Uri get url =>
-      urlOverride ??
-      Uri.parse(
-          'https://huggingface.co/ggerganov/whisper.cpp/resolve/main/$fileName');
+  Uri get url {
+    if (urlOverride != null) return urlOverride!;
+    if (tier == 'large-v3') {
+      return Uri.parse(
+        'https://huggingface.co/ggerganov/whisper.cpp/resolve/c521a4b02f422512d734391fdf08bb08c0862f68/$fileName',
+      );
+    }
+    return Uri.parse(
+      'https://huggingface.co/ggerganov/whisper.cpp/resolve/main/$fileName',
+    );
+  }
 
   @override
-  String get sizeLabel => '${(sizeBytes / (1024 * 1024)).round()} MB';
+  String get sizeLabel => sizeBytes >= 1024 * 1024 * 1024
+      ? '${(sizeBytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GiB'
+      : '${(sizeBytes / (1024 * 1024)).round()} MB';
 
   static const tiny = WhisperModel(
     tier: 'tiny',
@@ -77,7 +86,8 @@ class WhisperModel implements ModelSpec {
   static const largeV3Turbo = WhisperModel(
     tier: 'large-v3-turbo',
     label: 'Whisper large-v3-turbo',
-    description: 'Higher accuracy; needs a capable device (~2.5 GB RAM '
+    description:
+        'Higher accuracy; needs a capable device (~2.5 GB RAM '
         'while transcribing).',
     fileName: 'ggml-large-v3-turbo-q5_0.bin',
     sizeBytes: 574041195,
@@ -85,7 +95,19 @@ class WhisperModel implements ModelSpec {
         '394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2',
   );
 
-  static const all = [tiny, small, largeV3Turbo];
+  static const largeV3 = WhisperModel(
+    tier: 'large-v3',
+    label: 'Whisper large-v3',
+    description: 'Highest accuracy; 2.9 GiB download and high memory use.',
+    fileName: 'ggml-large-v3.bin',
+    sizeBytes: 3095033483,
+    sha256Hex:
+        '64d182b440b98d5203c4f9bd541544d84c605196c4f7b845dfa11fb23594d1e2',
+    // Immutable upstream revision with byte size and SHA-256 from the
+    // official Hugging Face Xet metadata for this exact file.
+  );
+
+  static const all = [tiny, small, largeV3Turbo, largeV3];
 
   static WhisperModel byTier(String tier) =>
       all.firstWhere((m) => m.tier == tier, orElse: () => small);

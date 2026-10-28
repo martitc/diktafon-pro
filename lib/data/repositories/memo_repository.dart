@@ -12,62 +12,107 @@ class MemoRepository {
 
   final AppDatabase _db;
 
+  static const _titlePrefix = 'memo-title:';
+
+  Stream<Map<String, String>> watchTitles() =>
+      (_db.select(
+        _db.settingsEntries,
+      )..where((s) => s.key.like('$_titlePrefix%'))).watch().map(
+        (rows) => {
+          for (final row in rows)
+            row.key.substring(_titlePrefix.length): row.value,
+        },
+      );
+
+  Future<void> setTitle(String memoId, String? title) async {
+    final key = '$_titlePrefix$memoId';
+    final clean = title?.trim();
+    if (clean == null || clean.isEmpty) {
+      await (_db.delete(
+        _db.settingsEntries,
+      )..where((s) => s.key.equals(key))).go();
+      return;
+    }
+    await _db
+        .into(_db.settingsEntries)
+        .insertOnConflictUpdate(SettingRow(key: key, value: clean));
+  }
+
   /// Tape order: chronological, append-only (§4.1, D6).
-  Stream<List<Memo>> watchMemosOf(String cassetteId) =>
-      _memosOfQuery(cassetteId)
-          .watch()
-          .map((rows) => rows.map(memoFromRow).toList());
+  Stream<List<Memo>> watchMemosOf(String cassetteId) => _memosOfQuery(
+    cassetteId,
+  ).watch().map((rows) => rows.map(memoFromRow).toList());
 
   /// One-shot tape-order read (export, §8).
-  Future<List<Memo>> memosOf(String cassetteId) async =>
-      (await _memosOfQuery(cassetteId).get()).map(memoFromRow).toList();
+  Future<List<Memo>> memosOf(String cassetteId) async {
+    final memos = (await _memosOfQuery(cassetteId).get()).map(memoFromRow);
+    final titles = await _readTitles();
+    return [for (final memo in memos) memo.withTitle(titles[memo.id])];
+  }
+
+  Future<Map<String, String>> _readTitles() async {
+    final rows = await (_db.select(
+      _db.settingsEntries,
+    )..where((s) => s.key.like('$_titlePrefix%'))).get();
+    return {
+      for (final row in rows) row.key.substring(_titlePrefix.length): row.value,
+    };
+  }
 
   SimpleSelectStatement<$MemosTable, MemoRow> _memosOfQuery(
-          String cassetteId) =>
-      _db.select(_db.memos)
-        ..where((m) => m.cassetteId.equals(cassetteId))
-        // id as tie-break keeps tape order deterministic within the same ms.
-        ..orderBy([
-          (m) => OrderingTerm.asc(m.createdAt),
-          (m) => OrderingTerm.asc(m.id),
-        ]);
+    String cassetteId,
+  ) => _db.select(_db.memos)
+    ..where((m) => m.cassetteId.equals(cassetteId))
+    // id as tie-break keeps tape order deterministic within the same ms.
+    ..orderBy([
+      (m) => OrderingTerm.asc(m.createdAt),
+      (m) => OrderingTerm.asc(m.id),
+    ]);
 
-  Future<void> insert(Memo memo) => _db.into(_db.memos).insert(MemoRow(
-        id: memo.id,
-        cassetteId: memo.cassetteId,
-        filePath: memo.filePath,
-        durationMs: memo.durationMs,
-        createdAt: memo.createdAt.millisecondsSinceEpoch,
-        detectedLang: memo.detectedLang,
-        transcript: memo.transcript == null
-            ? null
-            : jsonEncode(memo.transcript!.toJson()),
-        memoSummary: memo.memoSummary,
-        status: memo.status.name,
-      ));
+  Future<void> insert(Memo memo) async {
+    await _db
+        .into(_db.memos)
+        .insert(
+          MemoRow(
+            id: memo.id,
+            cassetteId: memo.cassetteId,
+            filePath: memo.filePath,
+            durationMs: memo.durationMs,
+            createdAt: memo.createdAt.millisecondsSinceEpoch,
+            detectedLang: memo.detectedLang,
+            transcript: memo.transcript == null
+                ? null
+                : jsonEncode(memo.transcript!.toJson()),
+            memoSummary: memo.memoSummary,
+            status: memo.status.name,
+          ),
+        );
+    if (memo.title != null) await setTitle(memo.id, memo.title);
+  }
 
   /// Points the memo at its transcoded file (§6.4: capture is WAV, the
   /// archival form is AAC — the transcode job swaps once the encode landed).
   Future<void> updateFilePath(String id, String filePath) =>
-      (_db.update(_db.memos)..where((m) => m.id.equals(id)))
-          .write(MemosCompanion(filePath: Value(filePath)));
+      (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
+        MemosCompanion(filePath: Value(filePath)),
+      );
 
   Future<void> updateStatus(String id, MemoStatus status) =>
-      (_db.update(_db.memos)..where((m) => m.id.equals(id)))
-          .write(MemosCompanion(status: Value(status.name)));
+      (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
+        MemosCompanion(status: Value(status.name)),
+      );
 
   Future<void> setTranscript(
     String id,
     Transcript transcript,
     MemoStatus status,
-  ) =>
-      (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
-        MemosCompanion(
-          transcript: Value(jsonEncode(transcript.toJson())),
-          detectedLang: Value(transcript.languageCode),
-          status: Value(status.name),
-        ),
-      );
+  ) => (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
+    MemosCompanion(
+      transcript: Value(jsonEncode(transcript.toJson())),
+      detectedLang: Value(transcript.languageCode),
+      status: Value(status.name),
+    ),
+  );
 
   /// Manual correction (§6.9): the edited transcript replaces the engine's
   /// take, and the gist that described the old text goes with it — in one
@@ -77,22 +122,18 @@ class MemoRepository {
     String id,
     Transcript transcript,
     MemoStatus status,
-  ) =>
-      (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
-        MemosCompanion(
-          transcript: Value(jsonEncode(transcript.toJson())),
-          memoSummary: const Value(null),
-          status: Value(status.name),
-        ),
-      );
+  ) => (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
+    MemosCompanion(
+      transcript: Value(jsonEncode(transcript.toJson())),
+      memoSummary: const Value(null),
+      status: Value(status.name),
+    ),
+  );
 
   /// [summary] null → the memo yielded no usable gist (§6.7 skip).
   Future<void> setMemoSummary(String id, String? summary, MemoStatus status) =>
       (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
-        MemosCompanion(
-          memoSummary: Value(summary),
-          status: Value(status.name),
-        ),
+        MemosCompanion(memoSummary: Value(summary), status: Value(status.name)),
       );
 
   /// Wipes every enrichment artifact so the memo re-enters the pipeline
@@ -109,8 +150,12 @@ class MemoRepository {
         ),
       );
 
-  Future<void> delete(String id) =>
-      (_db.delete(_db.memos)..where((m) => m.id.equals(id))).go();
+  Future<void> delete(String id) async {
+    await (_db.delete(
+      _db.settingsEntries,
+    )..where((s) => s.key.equals('$_titlePrefix$id'))).go();
+    await (_db.delete(_db.memos)..where((m) => m.id.equals(id))).go();
+  }
 
   /// Every memo id — the launch sweep uses it to tell live audio files
   /// from orphans (§7.1).
@@ -139,8 +184,9 @@ class MemoRepository {
       if (candidate == row.filePath || !File(candidate).existsSync()) {
         continue;
       }
-      await (_db.update(_db.memos)..where((m) => m.id.equals(row.id)))
-          .write(MemosCompanion(filePath: Value(candidate)));
+      await (_db.update(_db.memos)..where((m) => m.id.equals(row.id))).write(
+        MemosCompanion(filePath: Value(candidate)),
+      );
       rebased++;
     }
     return rebased;

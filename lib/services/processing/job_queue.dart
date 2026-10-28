@@ -38,6 +38,15 @@ enum JobType {
       this == transcribe || this == cleanupTranscript || this == summarizeMemo;
 }
 
+enum ProcessingStage { transcription, memoSummary }
+
+class ProcessingCompletion {
+  const ProcessingCompletion({required this.memoId, required this.stage});
+
+  final String memoId;
+  final ProcessingStage stage;
+}
+
 /// §6.7 (revised 2026-07-28): only transcripts estimated *longer* than this
 /// many tokens get a memo gist — anything shorter is its own summary, so the
 /// LLM pass would only restate it (and burn battery). The cassette overview
@@ -53,11 +62,17 @@ const int gistTokenThreshold = 117;
 /// switch takes effect without rebuilding the queue (rebuilding could let two
 /// queues drain the same jobs).
 class JobQueue {
-  JobQueue(this._db, this._memos, this._cassettes, this._settings,
-      this._transcription, this._summarization,
-      {this._transcoder,
-      this._retryDelayUnit = const Duration(seconds: 1),
-      this._systemZhScript = _defaultZhScript});
+  JobQueue(
+    this._db,
+    this._memos,
+    this._cassettes,
+    this._settings,
+    this._transcription,
+    this._summarization, {
+    this._transcoder,
+    this._retryDelayUnit = const Duration(seconds: 1),
+    this._systemZhScript = _defaultZhScript,
+  });
 
   final AppDatabase _db;
   final MemoRepository _memos;
@@ -82,6 +97,10 @@ class JobQueue {
 
   /// In-flight cancellation handles, by memo id (§14 delete-during-processing).
   final Map<String, CancelToken> _active = {};
+  final _completions = StreamController<ProcessingCompletion>.broadcast();
+
+  /// Successful per-memo processing stages, used for best-effort OS notices.
+  Stream<ProcessingCompletion> get completions => _completions.stream;
 
   Future<void>? _draining;
   bool _recoveredOrphans = false;
@@ -132,8 +151,11 @@ class JobQueue {
     // Atomic pair, like retranscribe: a kill between the write and the
     // enqueue must not strand the memo without its follow-up job.
     await _db.transaction(() async {
-      await _memos.setEditedTranscript(memoId, transcript,
-          wantsGist ? MemoStatus.transcribed : MemoStatus.ready);
+      await _memos.setEditedTranscript(
+        memoId,
+        transcript,
+        wantsGist ? MemoStatus.transcribed : MemoStatus.ready,
+      );
       if (wantsGist) {
         await _insertJob(JobType.summarizeMemo, memoId);
       } else {
@@ -179,9 +201,9 @@ class JobQueue {
   /// Cancels pending *and in-flight* work for a deleted memo (§14).
   Future<void> cancelJobsFor(String targetId) async {
     _active[targetId]?.cancel();
-    await (_db.delete(_db.jobs)
-          ..where(
-              (j) => j.targetId.equals(targetId) & j.status.equals('queued')))
+    await (_db.delete(_db.jobs)..where(
+          (j) => j.targetId.equals(targetId) & j.status.equals('queued'),
+        ))
         .go();
   }
 
@@ -200,8 +222,8 @@ class JobQueue {
   /// restart), after every enqueue, when a model finishes downloading, and
   /// when summaries are re-enabled. Awaiting joins the drain already in
   /// flight, if any.
-  Future<void> drain() => _draining ??=
-      _drainLoop().whenComplete(() => _draining = null);
+  Future<void> drain() =>
+      _draining ??= _drainLoop().whenComplete(() => _draining = null);
 
   Future<void> _drainLoop() async {
     if (!_recoveredOrphans) {
@@ -239,11 +261,14 @@ class JobQueue {
         ]);
       }
 
-      final job = await (_db.select(_db.jobs)
-            ..where((j) => j.status.equals('queued') & j.type.isIn(runnable))
-            ..orderBy([(j) => OrderingTerm.asc(j.createdAt)])
-            ..limit(1))
-          .getSingleOrNull();
+      final job =
+          await (_db.select(_db.jobs)
+                ..where(
+                  (j) => j.status.equals('queued') & j.type.isIn(runnable),
+                )
+                ..orderBy([(j) => OrderingTerm.asc(j.createdAt)])
+                ..limit(1))
+              .getSingleOrNull();
       if (job == null) return;
       await _run(job);
     }
@@ -276,8 +301,11 @@ class JobQueue {
     } catch (_) {
       final attempts = job.attempts + 1;
       final permanent = attempts >= _maxAttempts;
-      await _setJob(job.id, permanent ? 'failed' : 'queued',
-          attempts: attempts);
+      await _setJob(
+        job.id,
+        permanent ? 'failed' : 'queued',
+        attempts: attempts,
+      );
       if (permanent) {
         // Memo stays playable; a retry affordance is offered (§14). Cassette
         // jobs leave no failed memo — their digests stay unfolded and ride
@@ -303,8 +331,9 @@ class JobQueue {
     final row = await _memoRow(memoId);
     if (row == null) return; // deleted meanwhile (§14)
     await _memos.updateStatus(
-        memoId,
-        row.transcript == null ? MemoStatus.stored : MemoStatus.transcribed);
+      memoId,
+      row.transcript == null ? MemoStatus.stored : MemoStatus.transcribed,
+    );
   }
 
   /// A job stays 'running' in the DB for the length of its stage — if the
@@ -320,9 +349,9 @@ class JobQueue {
   /// the engine natively exhausts [_maxAttempts] across launches instead of
   /// crash-looping the app forever.
   Future<void> _recoverOrphans() async {
-    final orphans = await (_db.select(_db.jobs)
-          ..where((j) => j.status.equals('running')))
-        .get();
+    final orphans = await (_db.select(
+      _db.jobs,
+    )..where((j) => j.status.equals('running'))).get();
     for (final job in orphans) {
       final permanent = job.attempts >= _maxAttempts;
       await _setJob(job.id, permanent ? 'failed' : 'queued');
@@ -343,18 +372,20 @@ class JobQueue {
   /// transcription" forever and, not being `failed`, offers no retry.
   /// Re-enter the pipeline at the right stage, like [retryEnrichment].
   Future<void> _reconcileStrandedMemos() async {
-    final live = await (_db.select(_db.jobs)
-          ..where((j) => j.status.isIn(['queued', 'running'])))
-        .get();
+    final live = await (_db.select(
+      _db.jobs,
+    )..where((j) => j.status.isIn(['queued', 'running']))).get();
     final covered = {for (final job in live) job.targetId};
-    final rows = await (_db.select(_db.memos)
-          ..where((m) => m.status.isIn([
+    final rows =
+        await (_db.select(_db.memos)..where(
+              (m) => m.status.isIn([
                 MemoStatus.stored.name,
                 MemoStatus.transcribing.name,
                 MemoStatus.transcribed.name,
                 MemoStatus.summarizing.name,
-              ])))
-        .get();
+              ]),
+            ))
+            .get();
     for (final row in rows) {
       if (covered.contains(row.id)) continue;
       if (row.transcript == null) {
@@ -375,14 +406,14 @@ class JobQueue {
   Future<void> _reconcileStrandedWavs() async {
     if (_transcoder == null) return;
     final covered = {
-      for (final job in await (_db.select(_db.jobs)
-            ..where((j) => j.type.equals(JobType.transcodeAudio.name)))
-          .get())
+      for (final job in await (_db.select(
+        _db.jobs,
+      )..where((j) => j.type.equals(JobType.transcodeAudio.name))).get())
         job.targetId,
     };
-    final rows = await (_db.select(_db.memos)
-          ..where((m) => m.filePath.like('%.wav')))
-        .get();
+    final rows = await (_db.select(
+      _db.memos,
+    )..where((m) => m.filePath.like('%.wav'))).get();
     for (final row in rows) {
       if (covered.contains(row.id)) continue;
       await _insertJob(JobType.transcodeAudio, row.id);
@@ -460,6 +491,12 @@ class JobQueue {
         // summaries are disabled — the drain gate holds it, never the memo.
         await _insertJob(JobType.summarizeMemo, memoId);
       }
+      _completions.add(
+        ProcessingCompletion(
+          memoId: memoId,
+          stage: ProcessingStage.transcription,
+        ),
+      );
     } finally {
       _active.remove(memoId);
     }
@@ -481,7 +518,8 @@ class JobQueue {
     if (transcriptJson == null) return; // can't happen; be safe
 
     final transcript = Transcript.fromJson(
-        (jsonDecode(transcriptJson) as Map).cast<String, dynamic>());
+      (jsonDecode(transcriptJson) as Map).cast<String, dynamic>(),
+    );
     if (transcript.isEmpty) {
       // Nothing to summarize (§6.7) — reachable via retryEnrichment on a
       // silent memo; complete the enrichment instead of prompting the LLM.
@@ -502,19 +540,29 @@ class JobQueue {
     // matchChineseScript is belt-and-braces (D8): the prompt pins
     // Simplified/Traditional, but small models drift.
     final summary = matchChineseScript(
-        (await _summarization()
-                .summarizeMemo(transcript, languageCode: language))
-            .trim(),
-        language);
+      (await _summarization().summarizeMemo(
+        transcript,
+        languageCode: language,
+      )).trim(),
+      language,
+    );
 
     // An empty gist (model produced nothing usable) is recorded as "no
     // summary", not a failure — the memo is still fully enriched (§6.7).
     // The overview updates either way: gistless memos contribute their
     // transcript.
     await _memos.setMemoSummary(
-        memoId, summary.isEmpty ? null : summary, MemoStatus.ready);
+      memoId,
+      summary.isEmpty ? null : summary,
+      MemoStatus.ready,
+    );
     await _enqueueCassetteUpdate(row.cassetteId);
+    if (summary.isNotEmpty) _notifySummaryCompletion(memoId);
   }
+
+  void _notifySummaryCompletion(String memoId) => _completions.add(
+    ProcessingCompletion(memoId: memoId, stage: ProcessingStage.memoSummary),
+  );
 
   /// §6.7: short transcripts are their own summary — no gist.
   bool _wantsGist(Transcript t) =>
@@ -526,24 +574,26 @@ class JobQueue {
   /// additions and deletions alike — at the cost of re-reading every
   /// digest (bounded by the prompt's char budget).
   Future<void> _updateCassetteSummary(String cassetteId) async {
-    final cassette = await (_db.select(_db.cassettes)
-          ..where((c) => c.id.equals(cassetteId)))
-        .getSingleOrNull();
+    final cassette = await (_db.select(
+      _db.cassettes,
+    )..where((c) => c.id.equals(cassetteId))).getSingleOrNull();
     if (cassette == null) return; // deleted meanwhile (§14)
 
-    final rows = await (_db.select(_db.memos)
-          ..where((m) =>
-              m.cassetteId.equals(cassetteId) &
-              (m.memoSummary.isNotNull() | m.transcript.isNotNull()))
-          ..orderBy([
-            (m) => OrderingTerm.asc(m.createdAt),
-            (m) => OrderingTerm.asc(m.id),
-          ]))
-        .get();
+    final rows =
+        await (_db.select(_db.memos)
+              ..where(
+                (m) =>
+                    m.cassetteId.equals(cassetteId) &
+                    (m.memoSummary.isNotNull() | m.transcript.isNotNull()),
+              )
+              ..orderBy([
+                (m) => OrderingTerm.asc(m.createdAt),
+                (m) => OrderingTerm.asc(m.id),
+              ]))
+            .get();
     final contributing = <(MemoRow, String)>[
       for (final row in rows)
-        if (row.memoSummary ?? _transcriptText(row.transcript)
-            case final text?)
+        if (row.memoSummary ?? _transcriptText(row.transcript) case final text?)
           (row, text), // silent memos yield null and drop out
     ];
     if (contributing.isEmpty) {
@@ -555,19 +605,19 @@ class JobQueue {
 
     final language = await _languageFor(contributing.first.$1.detectedLang);
     final summary = matchChineseScript(
-        (await _summarization().updateCassetteSummary(
-          previousSummary: null,
-          newMemos: [
-            for (final (row, text) in contributing)
-              MemoDigest(
-                memoSummary: text,
-                createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAt),
-              ),
-          ],
-          languageCode: language,
-        ))
-            .trim(),
-        language);
+      (await _summarization().updateCassetteSummary(
+        previousSummary: null,
+        newMemos: [
+          for (final (row, text) in contributing)
+            MemoDigest(
+              memoSummary: text,
+              createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAt),
+            ),
+        ],
+        languageCode: language,
+      )).trim(),
+      language,
+    );
     if (summary.isEmpty) return;
 
     await _cassettes.setSummary(cassetteId, summary);
@@ -577,10 +627,12 @@ class JobQueue {
     // put until the user renames.
     if (cassette.label == null && !cassette.titleIsUserSet) {
       final title = matchChineseScript(
-          (await _summarization()
-                  .suggestTitle(summary, languageCode: language))
-              .trim(),
-          language);
+        (await _summarization().suggestTitle(
+          summary,
+          languageCode: language,
+        )).trim(),
+        language,
+      );
       if (title.isNotEmpty) {
         await _cassettes.setSuggestedLabel(cassetteId, title);
       }
@@ -592,7 +644,8 @@ class JobQueue {
   String? _transcriptText(String? transcriptJson) {
     if (transcriptJson == null) return null;
     final transcript = Transcript.fromJson(
-        (jsonDecode(transcriptJson) as Map).cast<String, dynamic>());
+      (jsonDecode(transcriptJson) as Map).cast<String, dynamic>(),
+    );
     if (transcript.isEmpty) return null;
     return transcript.plainText.replaceAll('\n', ' ');
   }
@@ -607,36 +660,43 @@ class JobQueue {
   /// time, so one queued cassette job covers every gist (or deletion) that
   /// lands before it runs — bursts collapse into a single update.
   Future<void> _enqueueCassetteUpdate(String cassetteId) async {
-    final queued = await (_db.select(_db.jobs)
-          ..where((j) =>
-              j.targetId.equals(cassetteId) &
-              j.status.equals('queued') &
-              j.type.isIn([
-                JobType.updateCassetteSummary.name,
-                JobType.recomputeCassetteSummary.name,
-              ])))
-        .get();
+    final queued =
+        await (_db.select(_db.jobs)..where(
+              (j) =>
+                  j.targetId.equals(cassetteId) &
+                  j.status.equals('queued') &
+                  j.type.isIn([
+                    JobType.updateCassetteSummary.name,
+                    JobType.recomputeCassetteSummary.name,
+                  ]),
+            ))
+            .get();
     if (queued.isNotEmpty) return;
     await _insertJob(JobType.updateCassetteSummary, cassetteId);
   }
 
-  Future<MemoRow?> _memoRow(String memoId) =>
-      (_db.select(_db.memos)..where((m) => m.id.equals(memoId)))
-          .getSingleOrNull();
+  Future<MemoRow?> _memoRow(String memoId) => (_db.select(
+    _db.memos,
+  )..where((m) => m.id.equals(memoId))).getSingleOrNull();
 
-  Future<void> _insertJob(JobType type, String targetId) =>
-      _db.into(_db.jobs).insert(JobRow(
-            id: _uuid.v4(),
-            type: type.name,
-            targetId: targetId,
-            status: 'queued',
-            attempts: 0,
-            createdAt: DateTime.now().millisecondsSinceEpoch,
-          ));
+  Future<void> _insertJob(JobType type, String targetId) => _db
+      .into(_db.jobs)
+      .insert(
+        JobRow(
+          id: _uuid.v4(),
+          type: type.name,
+          targetId: targetId,
+          status: 'queued',
+          attempts: 0,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
 
   Future<void> _setJob(String id, String status, {int? attempts}) =>
-      (_db.update(_db.jobs)..where((j) => j.id.equals(id))).write(JobsCompanion(
-        status: Value(status),
-        attempts: attempts == null ? const Value.absent() : Value(attempts),
-      ));
+      (_db.update(_db.jobs)..where((j) => j.id.equals(id))).write(
+        JobsCompanion(
+          status: Value(status),
+          attempts: attempts == null ? const Value.absent() : Value(attempts),
+        ),
+      );
 }

@@ -18,8 +18,7 @@ void main() {
 
   tearDown(() => root.deleteSync(recursive: true));
 
-  Future<File> put(String cassetteId, String memoId,
-      {bool old = true}) async {
+  Future<File> put(String cassetteId, String memoId, {bool old = true}) async {
     final file = File(await store.pathFor(cassetteId, memoId))
       ..writeAsStringSync('audio');
     if (old) file.setLastModifiedSync(past);
@@ -39,24 +38,24 @@ void main() {
     expect(orphan.existsSync(), isFalse);
   });
 
-  test('a fresh orphan is spared — it may be a capture that just started',
-      () async {
-    final fresh = await put('c1', 'memo-inflight', old: false);
-    final removed = await store.sweepOrphans(
-      (_) => false,
-      cutoff: DateTime.now().subtract(const Duration(hours: 1)),
-    );
+  test(
+    'a fresh orphan is spared — it may be a capture that just started',
+    () async {
+      final fresh = await put('c1', 'memo-inflight', old: false);
+      final removed = await store.sweepOrphans(
+        (_) => false,
+        cutoff: DateTime.now().subtract(const Duration(hours: 1)),
+      );
 
-    expect(removed, 0);
-    expect(fresh.existsSync(), isTrue);
-  });
+      expect(removed, 0);
+      expect(fresh.existsSync(), isTrue);
+    },
+  );
 
   test('an empty or missing root is a no-op', () async {
-    expect(
-        await store.sweepOrphans((_) => true, cutoff: DateTime.now()), 0);
+    expect(await store.sweepOrphans((_) => true, cutoff: DateTime.now()), 0);
     root.deleteSync(recursive: true);
-    expect(
-        await store.sweepOrphans((_) => true, cutoff: DateTime.now()), 0);
+    expect(await store.sweepOrphans((_) => true, cutoff: DateTime.now()), 0);
     root.createSync(); // for tearDown
   });
 }

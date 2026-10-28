@@ -16,8 +16,12 @@ const wildcardToken = 'qqwildcardqq';
 
 /// Counts from one minimum-edit alignment of hypothesis against reference.
 class EditCounts {
-  const EditCounts(this.substitutions, this.deletions, this.insertions,
-      this.referenceLength);
+  const EditCounts(
+    this.substitutions,
+    this.deletions,
+    this.insertions,
+    this.referenceLength,
+  );
 
   final int substitutions;
   final int deletions;
@@ -36,14 +40,50 @@ final _nonWord = RegExp(r'[^\p{L}\p{N}]+', unicode: true);
 
 const _digitWords = {
   'en': [
-    'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-    'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
-    'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty',
+    'zero',
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+    'ten',
+    'eleven',
+    'twelve',
+    'thirteen',
+    'fourteen',
+    'fifteen',
+    'sixteen',
+    'seventeen',
+    'eighteen',
+    'nineteen',
+    'twenty',
   ],
   'cs': [
-    'nula', 'jedna', 'dva', 'tři', 'čtyři', 'pět', 'šest', 'sedm', 'osm',
-    'devět', 'deset', 'jedenáct', 'dvanáct', 'třináct', 'čtrnáct', 'patnáct',
-    'šestnáct', 'sedmnáct', 'osmnáct', 'devatenáct', 'dvacet',
+    'nula',
+    'jedna',
+    'dva',
+    'tři',
+    'čtyři',
+    'pět',
+    'šest',
+    'sedm',
+    'osm',
+    'devět',
+    'deset',
+    'jedenáct',
+    'dvanáct',
+    'třináct',
+    'čtrnáct',
+    'patnáct',
+    'šestnáct',
+    'sedmnáct',
+    'osmnáct',
+    'devatenáct',
+    'dvacet',
   ],
 };
 
@@ -58,24 +98,30 @@ List<String> normalizeWords(String text, {String? language}) {
       .split(' ')
       .where((w) => w.isNotEmpty)
       .map((w) {
-    if (digits == null) return w;
-    final n = int.tryParse(w);
-    return n != null && n >= 0 && n < digits.length ? digits[n] : w;
-  }).toList();
+        if (digits == null) return w;
+        final n = int.tryParse(w);
+        return n != null && n >= 0 && n < digits.length ? digits[n] : w;
+      })
+      .toList();
 }
 
-EditCounts wordErrors(String reference, String hypothesis,
-        {String? language}) =>
-    _editCounts(normalizeWords(reference, language: language),
-        normalizeWords(hypothesis, language: language));
+EditCounts wordErrors(
+  String reference,
+  String hypothesis, {
+  String? language,
+}) => _editCounts(
+  normalizeWords(reference, language: language),
+  normalizeWords(hypothesis, language: language),
+);
 
 /// CER over the same normalized text. `[???]` has no character-level
 /// expansion — it is dropped from the reference (the hypothesis word it
 /// covers counts as insertions; one clip, secondary metric).
-EditCounts charErrors(String reference, String hypothesis,
-    {String? language}) {
-  final ref = normalizeWords(reference, language: language)
-      .where((w) => w != wildcardToken);
+EditCounts charErrors(String reference, String hypothesis, {String? language}) {
+  final ref = normalizeWords(
+    reference,
+    language: language,
+  ).where((w) => w != wildcardToken);
   final hyp = normalizeWords(hypothesis, language: language);
   return _editCounts(ref.join(' ').split(''), hyp.join(' ').split(''));
 }
@@ -102,8 +148,11 @@ EditCounts _editCounts(List<String> ref, List<String> hyp) {
       final diagonal = cost[i + 1][j + 1] + (match ? 0 : 1);
       final deletion = cost[i + 1][j] + skipCost(i);
       final insertion = cost[i][j + 1] + 1;
-      cost[i][j] = [diagonal, deletion, insertion]
-          .reduce((a, b) => a < b ? a : b);
+      cost[i][j] = [
+        diagonal,
+        deletion,
+        insertion,
+      ].reduce((a, b) => a < b ? a : b);
     }
   }
 
@@ -128,6 +177,5 @@ EditCounts _editCounts(List<String> ref, List<String> hyp) {
     }
   }
   final wildcards = [for (var k = 0; k < n; k++) wild(k)].where((w) => w);
-  return EditCounts(substitutions, deletions, insertions,
-      n - wildcards.length);
+  return EditCounts(substitutions, deletions, insertions, n - wildcards.length);
 }

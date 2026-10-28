@@ -24,13 +24,13 @@ void main() {
   tearDown(() => db.close());
 
   Memo makeMemo(String cassetteId, String id, {int durationMs = 1000}) => Memo(
-        id: id,
-        cassetteId: cassetteId,
-        filePath: '/audio/$cassetteId/$id.m4a',
-        durationMs: durationMs,
-        createdAt: DateTime.now(),
-        status: MemoStatus.stored,
-      );
+    id: id,
+    cassetteId: cassetteId,
+    filePath: '/audio/$cassetteId/$id.m4a',
+    durationMs: durationMs,
+    createdAt: DateTime.now(),
+    status: MemoStatus.stored,
+  );
 
   test('create → overview aggregates count and duration', () async {
     final c = await cassettes.create();
@@ -56,19 +56,21 @@ void main() {
     expect(overviews.last.cassette.id, b.id);
   });
 
-  test('rename sets D10 override; empty rename reverts to placeholder',
-      () async {
-    final c = await cassettes.create();
-    await cassettes.rename(c.id, 'Nákupy');
-    var row = await cassettes.watchCassette(c.id).first;
-    expect(row!.label, 'Nákupy');
-    expect(row.titleIsUserSet, isTrue);
+  test(
+    'rename sets D10 override; empty rename reverts to placeholder',
+    () async {
+      final c = await cassettes.create();
+      await cassettes.rename(c.id, 'Nákupy');
+      var row = await cassettes.watchCassette(c.id).first;
+      expect(row!.label, 'Nákupy');
+      expect(row.titleIsUserSet, isTrue);
 
-    await cassettes.rename(c.id, '  ');
-    row = await cassettes.watchCassette(c.id).first;
-    expect(row!.label, isNull);
-    expect(row.titleIsUserSet, isFalse);
-  });
+      await cassettes.rename(c.id, '  ');
+      row = await cassettes.watchCassette(c.id).first;
+      expect(row!.label, isNull);
+      expect(row.titleIsUserSet, isFalse);
+    },
+  );
 
   test('deleting a cassette cascades to its memos', () async {
     final c = await cassettes.create();
@@ -82,11 +84,16 @@ void main() {
   test('transcript JSON round-trips through the DB', () async {
     final c = await cassettes.create();
     await memos.insert(makeMemo(c.id, 'm1'));
-    const t = Transcript(languageCode: 'cs', segments: [
-      Segment(startMs: 0, endMs: 900, words: [
-        Word(text: 'Ahoj', startMs: 0, endMs: 300),
-      ]),
-    ]);
+    const t = Transcript(
+      languageCode: 'cs',
+      segments: [
+        Segment(
+          startMs: 0,
+          endMs: 900,
+          words: [Word(text: 'Ahoj', startMs: 0, endMs: 300)],
+        ),
+      ],
+    );
     await memos.setTranscript('m1', t, MemoStatus.transcribed);
 
     final list = await memos.watchMemosOf(c.id).first;
@@ -105,7 +112,10 @@ void main() {
     tearDown(() => root.delete(recursive: true));
 
     Future<Memo> insertWithPath(
-        String cassetteId, String id, String path) async {
+      String cassetteId,
+      String id,
+      String path,
+    ) async {
       final memo = Memo(
         id: id,
         cassetteId: cassetteId,
@@ -118,18 +128,23 @@ void main() {
       return memo;
     }
 
-    Future<File> canonicalFile(String cassetteId, String id,
-        {String ext = '.m4a'}) async {
+    Future<File> canonicalFile(
+      String cassetteId,
+      String id, {
+      String ext = '.m4a',
+    }) async {
       final file = File('${root.path}/$cassetteId/$id$ext');
       await file.create(recursive: true);
       return file;
     }
 
-    test('stale path with audio at the canonical spot is repointed',
-        () async {
+    test('stale path with audio at the canonical spot is repointed', () async {
       final c = await cassettes.create();
       await insertWithPath(
-          c.id, 'm1', '/var/gone-container/Documents/audio/${c.id}/m1.m4a');
+        c.id,
+        'm1',
+        '/var/gone-container/Documents/audio/${c.id}/m1.m4a',
+      );
       final file = await canonicalFile(c.id, 'm1');
 
       expect(await memos.rebaseAudioPaths(root.path), 1);
@@ -163,8 +178,7 @@ void main() {
 
     test('the stored extension is preserved (.wav fixtures)', () async {
       final c = await cassettes.create();
-      await insertWithPath(
-          c.id, 'm1', '/var/gone/audio/${c.id}/m1.wav');
+      await insertWithPath(c.id, 'm1', '/var/gone/audio/${c.id}/m1.wav');
       final file = await canonicalFile(c.id, 'm1', ext: '.wav');
 
       expect(await memos.rebaseAudioPaths(root.path), 1);
@@ -179,13 +193,46 @@ void main() {
     expect(s.chimeEnabled, isTrue);
     expect(s.whisperTier, 'small');
     expect(s.theme, 'system');
+    expect(s.localSummaryInstructions, isEmpty);
+    expect(s.summaryProvider, 'local');
+    expect(s.geminiSummaryModel, 'gemini-2.5-flash');
+    expect(s.geminiSummaryInstructions, isEmpty);
 
     await settings.setChimeEnabled(false);
     await settings.setTheme('dark');
     await settings.setAppLanguage('cs');
+    await settings.setLocalSummaryInstructions('Use short bullets.');
+    await settings.setSummaryProvider('gemini');
+    await settings.setGeminiSummaryModel('gemini-3.8-flash');
+    await settings.setGeminiSummaryInstructions('Incluye acuerdos.');
     s = await settings.watch().first;
     expect(s.chimeEnabled, isFalse);
     expect(s.theme, 'dark');
     expect(s.appLanguage, 'cs');
+    expect(s.localSummaryInstructions, 'Use short bullets.');
+    expect(s.summaryProvider, 'gemini');
+    expect(s.geminiSummaryModel, 'gemini-3.8-flash');
+    expect(s.geminiSummaryInstructions, 'Incluye acuerdos.');
+
+    await settings.setLocalSummaryInstructions('');
+    await settings.setSummaryProvider('unsupported');
+    var saved = await settings.get();
+    expect(saved.localSummaryInstructions, isEmpty);
+    expect(saved.summaryProvider, 'local');
+
+    await settings.setGeminiSummaryInstructions('');
+    expect((await settings.get()).geminiSummaryInstructions, isEmpty);
+
+    expect(
+      () => settings.setLocalSummaryInstructions('x' * 2001),
+      throwsArgumentError,
+    );
+    expect((await settings.get()).localSummaryInstructions, isEmpty);
+    expect(
+      () => settings.setGeminiSummaryInstructions('x' * 2001),
+      throwsArgumentError,
+    );
+    saved = await settings.get();
+    expect(saved.geminiSummaryInstructions, isEmpty);
   });
 }

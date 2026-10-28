@@ -26,12 +26,13 @@ Future<void> writeCaptureMarker({
   required String memoId,
   required String cassetteId,
   required DateTime startedAt,
-}) =>
-    File(captureMarkerPath(wavPath)).writeAsString(jsonEncode({
-      'memoId': memoId,
-      'cassetteId': cassetteId,
-      'startedAt': startedAt.millisecondsSinceEpoch,
-    }));
+}) => File(captureMarkerPath(wavPath)).writeAsString(
+  jsonEncode({
+    'memoId': memoId,
+    'cassetteId': cassetteId,
+    'startedAt': startedAt.millisecondsSinceEpoch,
+  }),
+);
 
 /// Removed once the finished memo's row exists (or the capture is
 /// discarded) — from then on the normal machinery owns the file.
@@ -95,8 +96,10 @@ class CaptureRecovery {
   }
 
   Future<bool> _recoverOne(File marker, Set<String> existingMemoIds) async {
-    final wavPath =
-        marker.path.substring(0, marker.path.length - '.capture'.length);
+    final wavPath = marker.path.substring(
+      0,
+      marker.path.length - '.capture'.length,
+    );
     Map<String, dynamic>? data;
     try {
       data = (jsonDecode(await marker.readAsString()) as Map)
@@ -134,16 +137,18 @@ class CaptureRecovery {
     // Mirror a normal stop (D7): createdAt is when the capture *ended* —
     // for a killed one, its start plus however much audio hit the disk.
     final createdAt = DateTime.fromMillisecondsSinceEpoch(
-        (startedAt ?? DateTime.now().millisecondsSinceEpoch) +
-            info.durationMs);
-    await _memos.insert(Memo(
-      id: memoId,
-      cassetteId: cassetteId,
-      filePath: wavPath,
-      durationMs: info.durationMs,
-      createdAt: createdAt,
-      status: MemoStatus.stored,
-    ));
+      (startedAt ?? DateTime.now().millisecondsSinceEpoch) + info.durationMs,
+    );
+    await _memos.insert(
+      Memo(
+        id: memoId,
+        cassetteId: cassetteId,
+        filePath: wavPath,
+        durationMs: info.durationMs,
+        createdAt: createdAt,
+        status: MemoStatus.stored,
+      ),
+    );
     await _cassettes.touch(cassetteId);
     await _enqueueTranscription(memoId);
     await _enqueueTranscode(memoId);

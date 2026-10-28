@@ -97,15 +97,15 @@ class QualityConfig {
 
   /// The config facets that make cached per-clip results reusable.
   Map<String, dynamic> fingerprint() => {
-        'whisperModel':
-            whisperModel == null ? null : File(whisperModel!).uri.pathSegments.last,
-        'ffmpegFilter': ffmpegFilter,
-        'forceLanguage': forceLanguage,
-        if (highPassHz != null) 'highPassHz': highPassHz,
-        if (beamSize > 1) 'beamSize': beamSize,
-        if (vadModelPath != null)
-          'vad': File(vadModelPath!).uri.pathSegments.last,
-      };
+    'whisperModel': whisperModel == null
+        ? null
+        : File(whisperModel!).uri.pathSegments.last,
+    'ffmpegFilter': ffmpegFilter,
+    'forceLanguage': forceLanguage,
+    if (highPassHz != null) 'highPassHz': highPassHz,
+    if (beamSize > 1) 'beamSize': beamSize,
+    if (vadModelPath != null) 'vad': File(vadModelPath!).uri.pathSegments.last,
+  };
 }
 
 class Clip {
@@ -129,8 +129,8 @@ List<Clip> discoverClips(Directory fixtures) {
     final language = name.contains('_cs')
         ? 'cs'
         : name.contains('_en')
-            ? 'en'
-            : 'unknown';
+        ? 'en'
+        : 'unknown';
     clips.add(Clip(name, entry.path, ref.readAsStringSync().trim(), language));
   }
   clips.sort((a, b) => a.name.compareTo(b.name));
@@ -143,7 +143,9 @@ final int benchThreads = max(1, min(Platform.numberOfProcessors - 2, 8));
 Future<void> runVariant(QualityConfig config) async {
   final clips = discoverClips(config.fixturesDir);
   if (clips.isEmpty) {
-    throw StateError('no .m4a/.txt fixture pairs in ${config.fixturesDir.path}');
+    throw StateError(
+      'no .m4a/.txt fixture pairs in ${config.fixturesDir.path}',
+    );
   }
   config.outDir.createSync(recursive: true);
   final outFile = File('${config.outDir.path}/${config.variant}.json');
@@ -155,9 +157,10 @@ Future<void> runVariant(QualityConfig config) async {
     final wanted = jsonEncode(config.fingerprint());
     if (existing != wanted) {
       throw StateError(
-          'results file ${outFile.path} was produced by a different config:\n'
-          '  existing: $existing\n  wanted:   $wanted\n'
-          'delete the file (or rename the variant) to re-run');
+        'results file ${outFile.path} was produced by a different config:\n'
+        '  existing: $existing\n  wanted:   $wanted\n'
+        'delete the file (or rename the variant) to re-run',
+      );
     }
   } else {
     results = {
@@ -181,8 +184,10 @@ Future<void> runVariant(QualityConfig config) async {
         if (config.rescore) {
           final entry = clipResults[clip.name] as Map<String, dynamic>;
           score(entry, clip, entry['text'] as String);
-          stdout.writeln('[bench] ${clip.name}: rescored → WER '
-              '${((entry['wer'] as double) * 100).toStringAsFixed(1)}%');
+          stdout.writeln(
+            '[bench] ${clip.name}: rescored → WER '
+            '${((entry['wer'] as double) * 100).toStringAsFixed(1)}%',
+          );
         } else {
           stdout.writeln('[bench] ${clip.name}: cached, skipping');
         }
@@ -191,7 +196,8 @@ Future<void> runVariant(QualityConfig config) async {
       stdout.writeln('[bench] ${clip.name}: running…');
       final entry = <String, dynamic>{'language': clip.language};
 
-      final pcmPath = '${Directory.systemTemp.path}/dk_quality_'
+      final pcmPath =
+          '${Directory.systemTemp.path}/dk_quality_'
           '${clip.name}.f32';
       final decodeWatch = Stopwatch()..start();
       await decodeToF32(clip.audioPath, pcmPath, config.ffmpegFilter);
@@ -232,24 +238,30 @@ Future<void> runVariant(QualityConfig config) async {
       results['aggregate'] = aggregate(clipResults);
       results['updatedAt'] = DateTime.now().toIso8601String();
       outFile.writeAsStringSync(
-          const JsonEncoder.withIndent('  ').convert(results));
-      stdout.writeln('[bench] ${clip.name}: WER '
-          '${((entry['wer'] as double) * 100).toStringAsFixed(1)}% '
-          '(${(entry['substitutions'] as int) + (entry['deletions'] as int) + (entry['insertions'] as int)}'
-          '/${entry['referenceWords']})');
+        const JsonEncoder.withIndent('  ').convert(results),
+      );
+      stdout.writeln(
+        '[bench] ${clip.name}: WER '
+        '${((entry['wer'] as double) * 100).toStringAsFixed(1)}% '
+        '(${(entry['substitutions'] as int) + (entry['deletions'] as int) + (entry['insertions'] as int)}'
+        '/${entry['referenceWords']})',
+      );
     }
 
     results['aggregate'] = aggregate(clipResults);
 
     results['completed'] = true;
     results['updatedAt'] = DateTime.now().toIso8601String();
-    outFile
-        .writeAsStringSync(const JsonEncoder.withIndent('  ').convert(results));
+    outFile.writeAsStringSync(
+      const JsonEncoder.withIndent('  ').convert(results),
+    );
     stdout.writeln('[bench] variant ${config.variant} done → ${outFile.path}');
     final agg = results['aggregate'] as Map<String, dynamic>;
-    stdout.writeln('[bench] pooled WER ${(agg['wer'] * 100).toStringAsFixed(1)}%'
-        ' (cs ${(agg['werCs'] * 100).toStringAsFixed(1)}%,'
-        ' en ${(agg['werEn'] * 100).toStringAsFixed(1)}%)');
+    stdout.writeln(
+      '[bench] pooled WER ${(agg['wer'] * 100).toStringAsFixed(1)}%'
+      ' (cs ${(agg['werCs'] * 100).toStringAsFixed(1)}%,'
+      ' en ${(agg['werEn'] * 100).toStringAsFixed(1)}%)',
+    );
   } finally {
     calloc.free(cancelFlag);
     await whisper.dispose();
@@ -284,7 +296,8 @@ Map<String, dynamic> aggregate(Map<String, dynamic> clips) {
   var misdetected = 0;
   for (final entry in clips.values) {
     final clip = entry as Map<String, dynamic>;
-    final clipErrors = (clip['substitutions'] as int) +
+    final clipErrors =
+        (clip['substitutions'] as int) +
         (clip['deletions'] as int) +
         (clip['insertions'] as int);
     final clipRef = clip['referenceWords'] as int;
@@ -310,19 +323,31 @@ Map<String, dynamic> aggregate(Map<String, dynamic> clips) {
 /// ffmpeg decode to raw f32le 16 kHz mono — the desktop production path
 /// (FfmpegPcmDecoder) plus the bench-only optional `-af` hook.
 Future<void> decodeToF32(
-    String audioPath, String pcmPath, String? filter) async {
+  String audioPath,
+  String pcmPath,
+  String? filter,
+) async {
   final result = await Process.run('ffmpeg', [
     '-y',
-    '-v', 'error',
-    '-i', audioPath,
+    '-v',
+    'error',
+    '-i',
+    audioPath,
     if (filter != null) ...['-af', filter],
-    '-f', 'f32le',
-    '-ac', '1',
-    '-ar', '16000',
+    '-f',
+    'f32le',
+    '-ac',
+    '1',
+    '-ar',
+    '16000',
     pcmPath,
   ]);
   if (result.exitCode != 0) {
     throw ProcessException(
-        'ffmpeg', const [], result.stderr.toString(), result.exitCode);
+      'ffmpeg',
+      const [],
+      result.stderr.toString(),
+      result.exitCode,
+    );
   }
 }

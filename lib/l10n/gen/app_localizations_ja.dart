@@ -255,6 +255,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'おすすめ — はるかに高精度で、特に騒音下で強みがあります（文字起こし中に約 2.5 GB の RAM を使用）。';
 
   @override
+  String get whisperFullLargeDesc =>
+      '最高精度 — 2.9 GiB のダウンロード。RAM は 8 GB 以上を推奨します。';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '2.9 GiB のダウンロード — 実行には約 8 GB の RAM が必要です。';
+
+  @override
   String get llmDefaultDesc => 'おすすめ — コンパクトな多言語対応の要約。';
 
   @override
@@ -321,10 +329,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon は、聞き取りも、書き起こしも、要約も、すべてお使いのスマートフォンの中で行います。\n\n録音・文字起こし・要約が端末の外に出ることはありません。アカウントも、クラウドも、分析ツールもありません。データが外に出るのは、ご自身で行うバックアップやエクスポートだけです。';
+      'Diktafon Pro は、聞き取りも、書き起こしも、要約も、すべてお使いのスマートフォンの中で行います。\n\n録音・文字起こし・要約が端末の外に出ることはありません。アカウントも、クラウドも、分析ツールもありません。データが外に出るのは、ご自身で行うバックアップやエクスポートだけです。';
 
   @override
-  String get aboutOpenSource => 'Diktafon は無料のオープンソースソフトウェアです：';
+  String get aboutOpenSource => 'Diktafon Pro は無料のオープンソースソフトウェアです：';
 
   @override
   String get aboutPrivacyPolicy => 'プライバシーポリシー';
@@ -384,7 +392,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Diktafon へようこそ';
+  String get firstRunWelcome => 'Diktafon Pro へようこそ';
 
   @override
   String get firstRunIntro =>
@@ -444,7 +452,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'カセットの一覧・文字起こし・要約は、端末標準のバックアップで自動的に保護されます。録音音声はサイズが大きいため、明示的に持ち出します。エクスポートすると、カセットの音声・文字起こし・要約が 1 つの .zip アーカイブにまとまり、そのアーカイブをインポートすれば元に戻せます。Diktafon が何かをアップロードすることはありません。';
+      'カセットの一覧・文字起こし・要約は、端末標準のバックアップで自動的に保護されます。録音音声はサイズが大きいため、明示的に持ち出します。エクスポートすると、カセットの音声・文字起こし・要約が 1 つの .zip アーカイブにまとまり、そのアーカイブをインポートすれば元に戻せます。Diktafon Pro が何かをアップロードすることはありません。';
 
   @override
   String get groupExport => 'エクスポート';
@@ -491,6 +499,42 @@ class AppLocalizationsJa extends AppLocalizations {
   String get importing => 'インポート中…';
 
   @override
+  String get importAudio => '音声をインポート';
+
+  @override
+  String get importingAudio => '音声をインポート中…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '音声メモを$count件追加しました。文字起こしは自動的に開始されます。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '音声ファイル$count件をインポートできませんでした。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '音声メモ$count件をインポートしましたが、文字起こしをキューに追加できませんでした。',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get importDialogTitle => 'カセットをインポートしますか？';
 
   @override
@@ -535,7 +579,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return '$date に Diktafon からエクスポートされました。';
+    return '$date に Diktafon Pro からエクスポートされました。';
   }
 
   @override
@@ -606,8 +650,58 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => '文字起こしが完了しました';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      '音声の文字起こしを Diktafon Pro で確認できます。';
+
+  @override
+  String get notifSummaryCompleted => '要約が完了しました';
+
+  @override
+  String get notifSummaryCompletedBody => '音声の要約を Diktafon Pro で確認できます。';
+
+  @override
   String get notifRecording => '録音中';
 
   @override
   String get notifRecordingChannel => '録音';
+
+  @override
+  String get insufficientModelStorage =>
+      'このモデルをダウンロードする空き容量がありません。空き容量を確保して再試行してください。';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'モデルのダウンロードをバックグラウンドで続けるには、通知を許可してください。';
+
+  @override
+  String get importAudioTooltip => 'このカセットに音声をインポート';
+
+  @override
+  String get localSummaryInstructionsGroup => 'ローカル要約の指示';
+
+  @override
+  String get localSummaryInstructionsHint => '例：決定事項、タスク、期限を中心にまとめる。';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'この指示はこの端末に保存され、Gemini や ChatGPT に送信されません。';
+
+  @override
+  String get localSummarySaveFailed => 'ローカル要約の指示を保存できませんでした。';
+
+  @override
+  String get localSummaryInstructionsTitle => '要約の指示';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · 推定最小 RAM：$ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'ダウンロード $size · 推定最小 RAM：$ram GB';
+  }
 }

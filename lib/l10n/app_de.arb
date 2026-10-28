@@ -1,6 +1,5 @@
 {
   "@@locale": "de",
-
   "untitledCassette": "Unbenannte Kassette",
   "rename": "Umbenennen",
   "delete": "Löschen",
@@ -9,7 +8,6 @@
   "deleteAction": "LÖSCHEN",
   "ok": "OK",
   "back": "Zurück",
-
   "settingsTooltip": "Einstellungen",
   "homeEmpty": "Noch keine Kassetten.\nMit + beginnt ein neues Band.",
   "newCassette": "Neue Kassette",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Name der Kassette",
   "deleteCassetteTitle": "KASSETTE LÖSCHEN?",
   "deleteCassetteBody": "„{label}“ und {count, plural, =1{1 Memo} other{{count} Memos}} werden gelöscht. Das lässt sich nicht rückgängig machen.",
-
   "memoCount": "{count, plural, =1{1 Memo} other{{count} Memos}}",
   "cardEmptyMeta": "leer · zum Öffnen drücken",
   "cardMetaNaming": "{memos} · benennt sich…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "heute {time}",
   "yesterday": "gestern",
-
   "deleteCassette": "Kassette löschen",
   "blankTape": "Ein leeres Band.\nZum Aufnehmen die rote Taste drücken.",
   "emptyTape": "LEERES BAND",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Memo {n} wird entfernt und das Band schließt die Lücke. Das lässt sich nicht rückgängig machen.",
   "timelineLabel": "Bandzeitleiste",
   "timelinePosition": "{position} von {total}",
-
   "noSpeech": "(keine Sprache)",
   "transcriptionFailedRetry": "Transkription fehlgeschlagen — zum Wiederholen tippen (der Ton spielt weiter)",
   "queuedForTranscription": "wartet auf Transkription…",
@@ -55,7 +50,6 @@
   "summarizing": "wird zusammengefasst…",
   "summaryFailedRetry": "Zusammenfassung fehlgeschlagen — zum Wiederholen tippen",
   "transcribing": "wird transkribiert…",
-
   "settingsTitle": "EINSTELLUNGEN",
   "groupLanguage": "Sprache",
   "transcriptionLanguage": "Transkriptionssprache",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Kleiner und schneller — weniger genau, besonders bei lauten Aufnahmen.",
   "whisperLargeDesc": "Höhere Genauigkeit; braucht ein leistungsfähiges Gerät (~2,5 GB RAM beim Transkribieren).",
   "whisperLargeDescCapable": "Empfohlen — deutlich genauer, besonders bei Lärm (~2,5 GB RAM beim Transkribieren).",
+  "whisperFullLargeDesc": "Höchste Genauigkeit — 2,9 GiB Download; 8 GB RAM empfohlen.",
+  "whisperFullLargeDescBlocked": "2,9 GiB Download — dieses Gerät benötigt etwa 8 GB RAM.",
   "llmDefaultDesc": "Empfohlen — kompakte mehrsprachige Zusammenfassungen.",
   "llm4bDesc": "Hochwertigere Zusammenfassungen & Titel; braucht ein leistungsfähiges Gerät (~3 GB RAM beim Zusammenfassen).",
   "summariesOffValue": "Keine Zusammenfassungen · zum Einrichten tippen",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Über & Datenschutz",
   "aboutPrivacyDesc": "Audio verlässt dieses Gerät nie",
   "aboutTitle": "ÜBER & DATENSCHUTZ",
-  "aboutBody": "Diktafon hört zu, schreibt mit und fasst zusammen — direkt auf deinem Telefon.\n\nAufnahmen, Transkripte und Zusammenfassungen verlassen das Gerät nie. Es gibt kein Konto, keine Cloud und keine Analyse. Daten verlassen das Gerät nur über eine Sicherung oder einen Export, den du selbst startest.",
-  "aboutOpenSource": "Diktafon ist kostenlos und quelloffen:",
+  "aboutBody": "Diktafon Pro hört zu, schreibt mit und fasst zusammen — direkt auf deinem Telefon.\n\nAufnahmen, Transkripte und Zusammenfassungen verlassen das Gerät nie. Es gibt kein Konto, keine Cloud und keine Analyse. Daten verlassen das Gerät nur über eine Sicherung oder einen Export, den du selbst startest.",
+  "aboutOpenSource": "Diktafon Pro ist kostenlos und quelloffen:",
   "aboutPrivacyPolicy": "Datenschutzerklärung",
-
   "modelPickerTranscriptionTitle": "TRANSKRIPTIONSMODELL",
   "modelPickerSummaryTitle": "ZUSAMMENFASSUNGSMODELL",
   "pickerInstalled": "installiert · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} ist bereit — wartende Memos werden transkribiert.",
   "modelReadySummarize": "{label} ist bereit — wartende Memos werden zusammengefasst.",
   "downloadFailed": "Download von {label} fehlgeschlagen — Verbindung prüfen und erneut versuchen.",
-
-  "firstRunWelcome": "Willkommen bei Diktafon",
+  "firstRunWelcome": "Willkommen bei Diktafon Pro",
   "firstRunIntro": "Es hört zu, schreibt mit und fasst zusammen — direkt auf deinem Telefon. Aufnahmen, Transkripte und Zusammenfassungen **verlassen dieses Gerät nie**. Es gibt kein Konto und keine Cloud.",
   "firstRunSetupHeader": "Ersteinrichtung",
   "allowMicRow": "Mikrofon erlauben",
@@ -126,9 +120,8 @@
   "provisionChoose": "tippen, um ein Modell zum Herunterladen zu wählen",
   "downloadsFinishInBackground": "Downloads laufen im Hintergrund weiter.",
   "startRecordingKey": "AUFNAHME STARTEN",
-
   "backupTitle": "EXPORT & IMPORT",
-  "backupIntro": "Die Sicherung deines Geräts erfasst Kassettenliste, Transkripte und Zusammenfassungen automatisch. Audioaufnahmen sind groß — nimm sie ausdrücklich mit: ein Export packt Audio, Transkripte und Zusammenfassungen einer Kassette in ein .zip-Archiv, und ein Import bringt sie zurück. Diktafon lädt nichts hoch.",
+  "backupIntro": "Die Sicherung deines Geräts erfasst Kassettenliste, Transkripte und Zusammenfassungen automatisch. Audioaufnahmen sind groß — nimm sie ausdrücklich mit: ein Export packt Audio, Transkripte und Zusammenfassungen einer Kassette in ein .zip-Archiv, und ein Import bringt sie zurück. Diktafon Pro lädt nichts hoch.",
   "groupExport": "Export",
   "exportAll": "Alle Kassetten exportieren",
   "exportAllDesc": "Alles in eine Archivdatei",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, =1{1 Kassette konnte nicht importiert werden.} other{{count} Kassetten konnten nicht importiert werden.}}",
   "importNothingFound": "Keine Kassetten in diesem Archiv gefunden.",
   "importFailed": "Import fehlgeschlagen: {error}",
-
-  "exportNote": "Exportiert aus Diktafon am {date}.",
+  "exportNote": "Exportiert aus Diktafon Pro am {date}.",
   "exportSummaryHeading": "Zusammenfassung",
   "exportNotTranscribed": "(nicht transkribiert)",
-
   "openSystemSettings": "EINSTELLUNGEN",
   "changeColor": "Farbe ändern",
   "retranscribe": "Neu transkribieren",
@@ -168,6 +159,69 @@
   "memoActions": "Memo-Aktionen",
   "notifDownloading": "{label} wird heruntergeladen",
   "notifModelInstalled": "{label} installiert",
+  "notifTranscriptionCompleted": "Transkription abgeschlossen",
+  "notifTranscriptionCompletedBody": "Die Audiotranskription ist in Diktafon Pro verfügbar.",
+  "notifSummaryCompleted": "Zusammenfassung abgeschlossen",
+  "notifSummaryCompletedBody": "Die Audiozusammenfassung ist in Diktafon Pro verfügbar.",
   "notifRecording": "Aufnahme läuft",
-  "notifRecordingChannel": "Aufnahme"
+  "notifRecordingChannel": "Aufnahme",
+  "importAudio": "Audio importieren",
+  "importingAudio": "Audio wird importiert…",
+  "importedAudioFiles": "{count, plural, =1{1 Audionotiz hinzugefügt. Die Transkription startet automatisch.} other{{count} Audionotizen hinzugefügt. Die Transkription startet automatisch.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{1 Audiodatei konnte nicht importiert werden.} other{{count} Audiodateien konnten nicht importiert werden.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{1 Audionotiz wurde importiert, ihre Transkription konnte jedoch nicht in die Warteschlange eingereiht werden.} other{{count} Audionotizen wurden importiert, ihre Transkriptionen konnten jedoch nicht in die Warteschlange eingereiht werden.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Nicht genügend Speicherplatz für dieses Modell. Machen Sie Speicher frei und versuchen Sie es erneut.",
+  "downloadNotificationsPermissionRequired": "Erlaube Mitteilungen, damit Modelldownloads im Hintergrund fortgesetzt werden können.",
+  "importAudioTooltip": "Audio in diese Kassette importieren",
+  "localSummaryInstructionsGroup": "Anweisungen für lokale Zusammenfassungen",
+  "localSummaryInstructionsHint": "Zum Beispiel: Entscheidungen, Aufgaben und Fristen hervorheben.",
+  "localSummaryInstructionsPrivacy": "Diese Anweisungen bleiben auf diesem Gerät und werden nie an Gemini oder ChatGPT gesendet.",
+  "localSummarySaveFailed": "Anweisungen für die lokale Zusammenfassung konnten nicht gespeichert werden.",
+  "localSummaryInstructionsTitle": "Deine Anweisungen für Zusammenfassungen",
+  "llmModelDetails": "{quantization} · {license} · geschätzter Mindest-RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "Download {size} · geschätzter Mindest-RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

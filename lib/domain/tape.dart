@@ -15,8 +15,7 @@ class TapePosition {
 }
 
 class Tape {
-  Tape(this.memos)
-      : offsetsMs = List<int>.unmodifiable(_computeOffsets(memos));
+  Tape(this.memos) : offsetsMs = List<int>.unmodifiable(_computeOffsets(memos));
 
   /// Chronologically ordered memos (the caller queries ORDER BY createdAt).
   final List<Memo> memos;

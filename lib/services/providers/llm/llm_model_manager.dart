@@ -24,8 +24,11 @@ class LlmModel implements ModelSpec {
     required this.sha256Hex,
     required this.contextTokens,
     this.minRamGb = 0,
+    this.quantization = 'Q8_0',
+    this.license = 'Apache-2.0',
     this.listed = true,
     this.urlOverride,
+    this.revision,
   });
 
   @override
@@ -53,13 +56,24 @@ class LlmModel implements ModelSpec {
   /// Soft device gate for the Settings picker; 0 = ungated.
   final int minRamGb;
 
+  /// GGUF quantization shown with the model size in the picker.
+  final String quantization;
+
+  /// License declared by the model distribution.
+  final String license;
+
   /// Tests point this at a local server; production uses the HF mirror.
   final Uri? urlOverride;
+
+  /// Immutable Hugging Face commit for reproducible model downloads.
+  final String? revision;
 
   @override
   Uri get url =>
       urlOverride ??
-      Uri.parse('https://huggingface.co/$repo/resolve/main/$fileName');
+      Uri.parse(
+        'https://huggingface.co/$repo/resolve/${revision ?? 'main'}/$fileName',
+      );
 
   @override
   String get sizeLabel =>
@@ -93,7 +107,8 @@ class LlmModel implements ModelSpec {
   static const qwen3_4b = LlmModel(
     tier: 'qwen3-4b',
     label: 'Qwen3 4B',
-    description: 'Higher-quality summaries & titles; needs a capable device '
+    description:
+        'Higher-quality summaries & titles; needs a capable device '
         '(~3 GB RAM while summarizing).',
     repo: 'Qwen/Qwen3-4B-GGUF',
     fileName: 'Qwen3-4B-Q4_K_M.gguf',
@@ -101,10 +116,63 @@ class LlmModel implements ModelSpec {
     sha256Hex:
         '7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5',
     contextTokens: 4096,
+    quantization: 'Q4_K_M',
     minRamGb: 6,
   );
 
-  static const all = [qwen3_0_6b, qwen3_1_7b, qwen3_4b];
+  static const gemma4E2b = LlmModel(
+    tier: 'gemma4-e2b-q4_0',
+    label: 'Gemma 4 E2B · Q4_0 · Apache-2.0',
+    description: 'Google QAT GGUF; estimated 6 GB minimum RAM.',
+    repo: 'google/gemma-4-E2B-it-qat-q4_0-gguf',
+    fileName: 'gemma-4-E2B_q4_0-it.gguf',
+    sizeBytes: 3349516256,
+    sha256Hex:
+        'fa401b55b07ee70a54c6dae3903c783a6e65064312529ea57175cb5f8dec6634',
+    contextTokens: 4096,
+    minRamGb: 6,
+    quantization: 'Q4_0',
+    revision: '675cff42a74c774d6cb76f76d8eacb49b48c9b93',
+  );
+
+  static const gemma4E4b = LlmModel(
+    tier: 'gemma4-e4b-q4_0',
+    label: 'Gemma 4 E4B · Q4_0 · Apache-2.0',
+    description: 'Google QAT GGUF; estimated 8 GB minimum RAM.',
+    repo: 'google/gemma-4-E4B-it-qat-q4_0-gguf',
+    fileName: 'gemma-4-E4B_q4_0-it.gguf',
+    sizeBytes: 5154941280,
+    sha256Hex:
+        '676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee',
+    contextTokens: 4096,
+    minRamGb: 8,
+    quantization: 'Q4_0',
+    revision: '4b4a2c1d584be7264f87aac328a1bc739ce81b6c',
+  );
+
+  static const qwen3_5_2b = LlmModel(
+    tier: 'qwen3.5-2b-q4_k_m',
+    label: 'Qwen3.5 2B · Q4_K_M · Apache-2.0',
+    description: 'Compact multilingual GGUF; estimated 4 GB minimum RAM.',
+    repo: 'SoAIHQ/Qwen3.5-2B-GGUF',
+    fileName: 'Qwen3.5-2B-Q4_K_M.gguf',
+    sizeBytes: 1312165056,
+    sha256Hex:
+        'a8b50de00b780c0f3c16f07cb041a1ecd678b6e22fd8cde91e57fe4b5031523b',
+    contextTokens: 4096,
+    minRamGb: 4,
+    quantization: 'Q4_K_M',
+    revision: '377fa65bb36aa83414de1ab3b40f6f15b0324cdc',
+  );
+
+  static const all = [
+    qwen3_0_6b,
+    qwen3_1_7b,
+    qwen3_4b,
+    gemma4E2b,
+    gemma4E4b,
+    qwen3_5_2b,
+  ];
 
   static LlmModel byTier(String tier) =>
       all.firstWhere((m) => m.tier == tier, orElse: () => qwen3_1_7b);

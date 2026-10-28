@@ -1,6 +1,5 @@
 {
   "@@locale": "cs",
-
   "untitledCassette": "Kazeta bez názvu",
   "rename": "Přejmenovat",
   "delete": "Smazat",
@@ -9,7 +8,6 @@
   "deleteAction": "SMAZAT",
   "ok": "OK",
   "back": "Zpět",
-
   "settingsTooltip": "Nastavení",
   "homeEmpty": "Zatím žádné kazety.\nNovou pásku začnete tlačítkem +.",
   "newCassette": "Nová kazeta",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Název kazety",
   "deleteCassetteTitle": "SMAZAT KAZETU?",
   "deleteCassetteBody": "„{label}“ a {count, plural, one{1 její záznam} few{{count} její záznamy} other{{count} jejích záznamů}} budou smazány. Tohle nejde vrátit.",
-
   "memoCount": "{count, plural, one{1 záznam} few{{count} záznamy} other{{count} záznamů}}",
   "cardEmptyMeta": "prázdná · otevřete stisknutím",
   "cardMetaNaming": "{memos} · pojmenovává se…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "dnes {time}",
   "yesterday": "včera",
-
   "deleteCassette": "Smazat kazetu",
   "blankTape": "Prázdná páska.\nNahrávejte červenou klávesou.",
   "emptyTape": "PRÁZDNÁ PÁSKA",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Záznam {n} bude odstraněn a páska se spojí. Tohle nejde vrátit.",
   "timelineLabel": "Časová osa pásky",
   "timelinePosition": "{position} z {total}",
-
   "noSpeech": "(žádná řeč)",
   "transcriptionFailedRetry": "přepis selhal — klepnutím to zkusíte znovu (zvuk hraje dál)",
   "queuedForTranscription": "čeká na přepis…",
@@ -55,7 +50,6 @@
   "summarizing": "vytváří se souhrn…",
   "summaryFailedRetry": "souhrn selhal — klepnutím to zkusíte znovu",
   "transcribing": "přepisuje se…",
-
   "settingsTitle": "NASTAVENÍ",
   "groupLanguage": "Jazyk",
   "transcriptionLanguage": "Jazyk přepisu",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Menší a rychlejší — méně přesný, zvlášť u hlučných nahrávek.",
   "whisperLargeDesc": "Vyšší přesnost; vyžaduje výkonné zařízení (~2,5 GB RAM při přepisu).",
   "whisperLargeDescCapable": "Doporučený — výrazně přesnější, zvlášť v hluku (~2,5 GB RAM při přepisu).",
+  "whisperFullLargeDesc": "Maximální přesnost — stažení 2,9 GiB; doporučeno 8 GB RAM.",
+  "whisperFullLargeDescBlocked": "Stažení 2,9 GiB — zařízení potřebuje ke spuštění přibližně 8 GB RAM.",
   "llmDefaultDesc": "Doporučený — kompaktní vícejazyčné souhrny.",
   "llm4bDesc": "Kvalitnější souhrny a názvy; vyžaduje výkonné zařízení (~3 GB RAM při vytváření souhrnu).",
   "summariesOffValue": "Bez souhrnů · klepnutím nastavíte",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "O aplikaci a soukromí",
   "aboutPrivacyDesc": "Zvuk nikdy neopustí toto zařízení",
   "aboutTitle": "O APLIKACI A SOUKROMÍ",
-  "aboutBody": "Diktafon poslouchá, zapisuje a shrnuje přímo ve vašem telefonu.\n\nNahrávky, přepisy ani souhrny nikdy neopustí zařízení. Žádný účet, žádný cloud, žádná analytika. Data odcházejí jen zálohou nebo exportem, který spustíte sami.",
-  "aboutOpenSource": "Diktafon je zdarma a s otevřeným zdrojovým kódem:",
+  "aboutBody": "Diktafon Pro poslouchá, zapisuje a shrnuje přímo ve vašem telefonu.\n\nNahrávky, přepisy ani souhrny nikdy neopustí zařízení. Žádný účet, žádný cloud, žádná analytika. Data odcházejí jen zálohou nebo exportem, který spustíte sami.",
+  "aboutOpenSource": "Diktafon Pro je zdarma a s otevřeným zdrojovým kódem:",
   "aboutPrivacyPolicy": "Zásady ochrany soukromí",
-
   "modelPickerTranscriptionTitle": "MODEL PŘEPISU",
   "modelPickerSummaryTitle": "MODEL SOUHRNŮ",
   "pickerInstalled": "nainstalováno · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} je připraven — přepisuji čekající záznamy.",
   "modelReadySummarize": "{label} je připraven — shrnuji čekající záznamy.",
   "downloadFailed": "Stažení modelu {label} selhalo — zkontrolujte připojení a zkuste to znovu.",
-
-  "firstRunWelcome": "Vítejte v Diktafonu",
+  "firstRunWelcome": "Vítejte v Diktafon Prou",
   "firstRunIntro": "Poslouchá, zapisuje a shrnuje přímo ve vašem telefonu. Nahrávky, přepisy a souhrny **nikdy neopustí toto zařízení**. Žádný účet, žádný cloud.",
   "firstRunSetupHeader": "Počáteční nastavení",
   "allowMicRow": "Povolit mikrofon",
@@ -126,9 +120,8 @@
   "provisionChoose": "klepnutím vyberte model ke stažení",
   "downloadsFinishInBackground": "Stahování doběhne na pozadí.",
   "startRecordingKey": "ZAČÍT NAHRÁVAT",
-
   "backupTitle": "EXPORT A IMPORT",
-  "backupIntro": "Záloha vašeho zařízení se o seznam kazet, přepisy a souhrny postará automaticky. Nahrávky jsou velké — vezměte si je výslovně: export zabalí zvuk, přepisy a souhrny kazety do jednoho archivu .zip a import archivu je vrátí zpět. Diktafon nic nikam nenahrává.",
+  "backupIntro": "Záloha vašeho zařízení se o seznam kazet, přepisy a souhrny postará automaticky. Nahrávky jsou velké — vezměte si je výslovně: export zabalí zvuk, přepisy a souhrny kazety do jednoho archivu .zip a import archivu je vrátí zpět. Diktafon Pro nic nikam nenahrává.",
   "groupExport": "Export",
   "exportAll": "Exportovat všechny kazety",
   "exportAllDesc": "Všechno do jednoho archivu",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{1 kazetu se nepodařilo importovat.} few{{count} kazety se nepodařilo importovat.} other{{count} kazet se nepodařilo importovat.}}",
   "importNothingFound": "V tomto archivu žádné kazety nejsou.",
   "importFailed": "Import selhal: {error}",
-
-  "exportNote": "Exportováno z Diktafonu {date}.",
+  "exportNote": "Exportováno z Diktafon Prou {date}.",
   "exportSummaryHeading": "Souhrn",
   "exportNotTranscribed": "(bez přepisu)",
-
   "openSystemSettings": "NASTAVENÍ",
   "changeColor": "Změnit barvu",
   "retranscribe": "Přepsat znovu",
@@ -168,6 +159,69 @@
   "memoActions": "Akce záznamu",
   "notifDownloading": "Stahuje se {label}",
   "notifModelInstalled": "{label} — nainstalováno",
+  "notifTranscriptionCompleted": "Přepis dokončen",
+  "notifTranscriptionCompletedBody": "Přepis zvuku je připraven v aplikaci Diktafon Pro.",
+  "notifSummaryCompleted": "Shrnutí dokončeno",
+  "notifSummaryCompletedBody": "Shrnutí zvuku je připraveno v aplikaci Diktafon Pro.",
   "notifRecording": "Probíhá nahrávání",
-  "notifRecordingChannel": "Nahrávání"
+  "notifRecordingChannel": "Nahrávání",
+  "importAudio": "Importovat zvuk",
+  "importingAudio": "Import zvuku…",
+  "importedAudioFiles": "{count, plural, =1{Přidán 1 zvukový záznam. Přepis se spustí automaticky.} few{Přidány {count} zvukové záznamy. Přepis se spustí automaticky.} other{Přidáno {count} zvukových záznamů. Přepis se spustí automaticky.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{1 zvukový soubor se nepodařilo importovat.} few{{count} zvukové soubory se nepodařilo importovat.} other{{count} zvukových souborů se nepodařilo importovat.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{1 zvukový záznam byl importován, ale jeho přepis se nepodařilo zařadit do fronty.} few{{count} zvukové záznamy byly importovány, ale jejich přepis se nepodařilo zařadit do fronty.} other{{count} zvukových záznamů bylo importováno, ale jejich přepis se nepodařilo zařadit do fronty.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Pro stažení tohoto modelu není dost volného místa. Uvolněte místo a zkuste to znovu.",
+  "downloadNotificationsPermissionRequired": "Povolte oznámení, aby stahování modelů mohlo pokračovat na pozadí.",
+  "importAudioTooltip": "Importovat zvuk do této kazety",
+  "localSummaryInstructionsGroup": "Pokyny pro místní souhrny",
+  "localSummaryInstructionsHint": "Například: zaměř se na rozhodnutí, úkoly a termíny.",
+  "localSummaryInstructionsPrivacy": "Tyto pokyny zůstávají v tomto zařízení a nikdy se neposílají do Gemini ani ChatGPT.",
+  "localSummarySaveFailed": "Pokyny pro místní souhrn se nepodařilo uložit.",
+  "localSummaryInstructionsTitle": "Tvoje pokyny pro souhrny",
+  "llmModelDetails": "{quantization} · {license} · odhadovaná minimální RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "stažení {size} · odhadovaná minimální RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

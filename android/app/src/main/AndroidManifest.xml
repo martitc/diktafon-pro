@@ -11,9 +11,11 @@
     <!-- Model-download progress notifications (Android 13+ runtime-gated;
          requested lazily when the first download starts). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Android 14+ may run large model downloads as user-initiated transfers. -->
+    <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS"/>
     <!-- Backup policy (§8): DB auto-backs-up; audio/models excluded — see res/xml. -->
     <application
-        android:label="Diktafon"
+        android:label="${appLabel}"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"

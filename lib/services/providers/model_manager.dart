@@ -8,7 +8,10 @@ library;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:background_downloader/background_downloader.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'transcription_provider.dart' show ModelStatus, ProgressSink;
 
@@ -68,6 +71,19 @@ class ModelDownloadPaused implements Exception {
   const ModelDownloadPaused();
 }
 
+class InsufficientModelStorage implements Exception {
+  const InsufficientModelStorage({
+    required this.requiredBytes,
+    required this.availableBytes,
+  });
+  final int requiredBytes;
+  final int availableBytes;
+}
+
+class ModelNotificationPermissionDenied implements Exception {
+  const ModelNotificationPermissionDenied();
+}
+
 class ModelManager<M extends ModelSpec> {
   ModelManager(
     this._dir, {
@@ -87,14 +103,67 @@ class ModelManager<M extends ModelSpec> {
   final List<M> catalog;
 
   final _changes = StreamController<void>.broadcast();
+  final _installed = StreamController<M>.broadcast();
   final Map<String, double> _progress = {};
   final Map<String, Future<void>> _downloads = {};
   final Map<String, HttpClient> _clients = {};
   final Set<String> _cancelRequested = {};
   final Set<String> _pauseRequested = {};
+  final Map<String, DownloadTask> _nativeTasks = {};
+  final Map<String, TaskStatus> _nativeStatus = {};
+  final Map<String, Completer<void>> _nativeCompletions = {};
+  static StreamSubscription<TaskUpdate>? _sharedNativeUpdates;
+  static final Set<void Function(TaskUpdate)> _nativeUpdateListeners = {};
+  late final void Function(TaskUpdate) _nativeUpdateListener =
+      _handleNativeUpdate;
+  bool _backgroundTasksAttached = false;
 
   /// Emits whenever any tier's status/progress changes.
   Stream<void> get changes => _changes.stream;
+  Stream<M> get installed => _installed.stream;
+
+  /// Subscribe before FileDownloader.start(), so persisted completion events
+  /// are replayed and validated when Android relaunches the app.
+  void attachBackgroundTasks() {
+    if (_backgroundTasksAttached) return;
+    _backgroundTasksAttached = true;
+    _nativeUpdateListeners.add(_nativeUpdateListener);
+    _sharedNativeUpdates ??= FileDownloader().updates.listen((update) {
+      for (final listener in List.of(_nativeUpdateListeners)) {
+        listener(update);
+      }
+    });
+  }
+
+  void _handleNativeUpdate(TaskUpdate update) {
+    final model = catalog
+        .where((item) => update.task.taskId == 'model-${item.tier}')
+        .firstOrNull;
+    if (model == null) return;
+    switch (update) {
+      case TaskProgressUpdate(:final progress):
+        _progress[model.tier] = progress;
+        _changes.add(null);
+      case TaskStatusUpdate(:final status):
+        _nativeStatus[model.tier] = status;
+        if (status == TaskStatus.complete) {
+          _nativeCompletions.remove(model.tier)?.complete();
+        } else if (status == TaskStatus.failed ||
+            status == TaskStatus.canceled) {
+          final completion = _nativeCompletions.remove(model.tier);
+          if (completion != null) {
+            completion.completeError(
+              const HttpException('Background model download failed.'),
+            );
+          }
+        }
+        if (status == TaskStatus.complete &&
+            !_downloads.containsKey(model.tier)) {
+          unawaited(_finalizeNative(model));
+        }
+        _changes.add(null);
+    }
+  }
 
   File fileOf(M model) => File('${_dir.path}/${model.fileName}');
 
@@ -108,6 +177,14 @@ class ModelManager<M extends ModelSpec> {
   ModelStatus statusOf(M model) {
     if (_downloads.containsKey(model.tier)) return ModelStatus.downloading;
     if (fileOf(model).existsSync()) return ModelStatus.ready;
+    if (_nativeStatus[model.tier] == TaskStatus.enqueued ||
+        _nativeStatus[model.tier] == TaskStatus.running ||
+        _nativeStatus[model.tier] == TaskStatus.waitingToRetry) {
+      return ModelStatus.downloading;
+    }
+    if (_nativeStatus[model.tier] == TaskStatus.paused) {
+      return ModelStatus.paused;
+    }
     if (_partFileOf(model).existsSync() || _pausedFileOf(model).existsSync()) {
       return ModelStatus.paused;
     }
@@ -118,7 +195,7 @@ class ModelManager<M extends ModelSpec> {
     final status = statusOf(model);
     return ModelState(model, status, switch (status) {
       ModelStatus.downloading => _progress[model.tier] ?? 0,
-      ModelStatus.paused => _partialFraction(model),
+      ModelStatus.paused => _progress[model.tier] ?? _partialFraction(model),
       _ => 0,
     });
   }
@@ -132,8 +209,9 @@ class ModelManager<M extends ModelSpec> {
     return 0;
   }
 
-  List<ModelState<M>> snapshot() =>
-      [for (final model in catalog) stateOf(model)];
+  List<ModelState<M>> snapshot() => [
+    for (final model in catalog) stateOf(model),
+  ];
 
   /// Total disk footprint of installed models (Settings shows storage used).
   int installedBytes() => catalog
@@ -145,16 +223,25 @@ class ModelManager<M extends ModelSpec> {
   /// the in-flight download. Progress is reported both through [onProgress]
   /// and the [changes] stream. A partial file left by an interrupted attempt
   /// is resumed with an HTTP Range request, not thrown away.
-  Future<void> download(M model, {ProgressSink? onProgress}) {
+  Future<void> download(
+    M model, {
+    ProgressSink? onProgress,
+    bool requestNotificationPermission = true,
+  }) {
     if (statusOf(model) == ModelStatus.ready) return Future.value();
     final inFlight = _downloads[model.tier];
     if (inFlight != null) return inFlight;
 
-    final download = _download(model, onProgress).whenComplete(() {
-      _downloads.remove(model.tier);
-      _progress.remove(model.tier);
-      _changes.add(null);
-    });
+    final download =
+        _download(
+          model,
+          onProgress,
+          requestNotificationPermission: requestNotificationPermission,
+        ).whenComplete(() {
+          _downloads.remove(model.tier);
+          _progress.remove(model.tier);
+          _changes.add(null);
+        });
     _downloads[model.tier] = download;
     // A resume already has bytes on disk — start the visible progress there,
     // not at 0 % (re-hashing a big partial takes a while and the bar would
@@ -170,6 +257,11 @@ class ModelManager<M extends ModelSpec> {
   void cancel(M model) {
     if (!_downloads.containsKey(model.tier)) return;
     _cancelRequested.add(model.tier);
+    final task = _nativeTasks[model.tier];
+    if (task != null) {
+      unawaited(FileDownloader().cancelTaskWithId(task.taskId));
+      return;
+    }
     _clients[model.tier]?.close(force: true);
   }
 
@@ -180,6 +272,11 @@ class ModelManager<M extends ModelSpec> {
   void pause(M model) {
     if (!_downloads.containsKey(model.tier)) return;
     _pauseRequested.add(model.tier);
+    final task = _nativeTasks[model.tier];
+    if (task != null) {
+      unawaited(FileDownloader().pause(task));
+      return;
+    }
     _clients[model.tier]?.close(force: true);
   }
 
@@ -191,15 +288,60 @@ class ModelManager<M extends ModelSpec> {
   /// at least one model landed (callers drain parked jobs then).
   Future<bool> resumeInterrupted() async {
     var landed = false;
+    if (Platform.isAndroid) {
+      for (final model in catalog) {
+        final record = await FileDownloader().database.recordForId(
+          'model-${model.tier}',
+        );
+        if (record == null || record.task is! DownloadTask) continue;
+        if (record.status == TaskStatus.complete) {
+          landed = await _finalizeNative(model) || landed;
+        } else if (record.status == TaskStatus.paused) {
+          _progress[model.tier] = record.progress;
+          if (await FileDownloader().resume(record.task as DownloadTask)) {
+            _nativeStatus[model.tier] = TaskStatus.running;
+          }
+        } else if (record.status == TaskStatus.enqueued ||
+            record.status == TaskStatus.running ||
+            record.status == TaskStatus.waitingToRetry) {
+          _nativeStatus[model.tier] = record.status;
+          _progress[model.tier] = record.progress;
+        }
+      }
+    }
     await Future.wait([
       for (final model in catalog)
         if (statusOf(model) == ModelStatus.paused &&
             _partFileOf(model).existsSync())
-          download(model).then<void>((_) {
-            landed = true;
-          }).catchError((_) {}),
+          download(model, requestNotificationPermission: false)
+              .then<void>((_) {
+                landed = true;
+              })
+              .catchError((_) {}),
     ]);
     return landed;
+  }
+
+  Future<bool> _finalizeNative(M model) async {
+    final part = _partFileOf(model);
+    if (!await part.exists() || await part.length() != model.sizeBytes) {
+      _nativeStatus.remove(model.tier);
+      return false;
+    }
+    final digestSink = _DigestSink();
+    final hasher = sha256.startChunkedConversion(digestSink);
+    await for (final chunk in part.openRead()) {
+      hasher.add(chunk);
+    }
+    hasher.close();
+    if (digestSink.digest.toString() != model.sha256Hex) return false;
+    if (await fileOf(model).exists()) await fileOf(model).delete();
+    await part.rename(fileOf(model).path);
+    _installed.add(model);
+    _nativeStatus[model.tier] = TaskStatus.complete;
+    _progress[model.tier] = 1;
+    _changes.add(null);
+    return true;
   }
 
   /// Switch-mid-download semantics (§5.6): selecting a tier cancels every
@@ -210,7 +352,11 @@ class ModelManager<M extends ModelSpec> {
     }
   }
 
-  Future<void> _download(M model, ProgressSink? onProgress) async {
+  Future<void> _download(
+    M model,
+    ProgressSink? onProgress, {
+    required bool requestNotificationPermission,
+  }) async {
     await _dir.create(recursive: true);
     final part = _partFileOf(model);
     final paused = _pausedFileOf(model);
@@ -223,6 +369,70 @@ class ModelManager<M extends ModelSpec> {
         await part.exists()
             ? await paused.delete()
             : await paused.rename(part.path);
+      }
+
+      if (Platform.isAndroid) {
+        final permissions = FileDownloader().permissions;
+        var notificationPermission = await permissions.status(
+          PermissionType.notifications,
+        );
+        if (notificationPermission != PermissionStatus.granted) {
+          notificationPermission = await permissions.request(
+            PermissionType.notifications,
+          );
+        }
+        if (notificationPermission != PermissionStatus.granted) {
+          throw const ModelNotificationPermissionDenied();
+        }
+
+        final available = await _availableStorageBytes();
+        var remainingBytes = model.sizeBytes;
+        if (await part.exists()) {
+          remainingBytes = (model.sizeBytes - await part.length()).clamp(
+            0,
+            model.sizeBytes,
+          );
+        }
+        final existingTask = await FileDownloader().database.recordForId(
+          'model-${model.tier}',
+        );
+        if (existingTask != null && existingTask.progress > 0) {
+          remainingBytes = (model.sizeBytes * (1 - existingTask.progress))
+              .ceil()
+              .clamp(0, model.sizeBytes);
+        }
+        final required = remainingBytes + 128 * 1024 * 1024;
+        if (available != null && available < required) {
+          throw InsufficientModelStorage(
+            requiredBytes: required,
+            availableBytes: available,
+          );
+        }
+        await _downloadAndroid(
+          model,
+          part,
+          onProgress,
+          requestNotificationPermission: requestNotificationPermission,
+        );
+        final digestSink = _DigestSink();
+        final hasher = sha256.startChunkedConversion(digestSink);
+        await for (final chunk in part.openRead()) {
+          if (_cancelRequested.contains(model.tier)) {
+            throw const ModelDownloadCancelled();
+          }
+          hasher.add(chunk);
+        }
+        hasher.close();
+        final received = await part.length();
+        if (received != model.sizeBytes ||
+            digestSink.digest.toString() != model.sha256Hex) {
+          throw const ModelVerificationException(
+            'Downloaded model failed integrity check.',
+          );
+        }
+        await part.rename(fileOf(model).path);
+        _installed.add(model);
+        return;
       }
 
       // An interrupted attempt (network drop, app killed mid-download) left
@@ -238,8 +448,8 @@ class ModelManager<M extends ModelSpec> {
         request.headers.set(HttpHeaders.rangeHeader, 'bytes=$existing-');
       }
       final response = await request.close();
-      final resumed = existing > 0 &&
-          response.statusCode == HttpStatus.partialContent;
+      final resumed =
+          existing > 0 && response.statusCode == HttpStatus.partialContent;
       if (response.statusCode == HttpStatus.requestedRangeNotSatisfiable) {
         // The remote file no longer matches the partial — start over.
         await part.delete();
@@ -271,8 +481,9 @@ class ModelManager<M extends ModelSpec> {
         _changes.add(null);
       }
 
-      final sink =
-          part.openWrite(mode: resumed ? FileMode.append : FileMode.write);
+      final sink = part.openWrite(
+        mode: resumed ? FileMode.append : FileMode.write,
+      );
       try {
         // A WiFi→cellular handover or a silent carrier drop (no FIN) can
         // freeze the body stream forever with no error — the progress bar
@@ -303,10 +514,12 @@ class ModelManager<M extends ModelSpec> {
       if (received != model.sizeBytes ||
           digestSink.digest.toString() != model.sha256Hex) {
         throw ModelVerificationException(
-            '${model.fileName}: got $received bytes, '
-            'sha256 ${digestSink.digest}');
+          '${model.fileName}: got $received bytes, '
+          'sha256 ${digestSink.digest}',
+        );
       }
       await part.rename(fileOf(model).path);
+      _installed.add(model);
     } catch (e) {
       // Proven-bad bytes and explicit aborts drop the partial file; a pause
       // stashes it; a transient failure keeps it so the next attempt
@@ -333,16 +546,141 @@ class ModelManager<M extends ModelSpec> {
     }
   }
 
+  Future<int?> _availableStorageBytes() async {
+    try {
+      return await const MethodChannel(
+        'diktafon/model_storage',
+      ).invokeMethod<int>('availableBytes', {'path': _dir.path});
+    } catch (_) {
+      // Storage probing is best-effort on older or restricted Android builds.
+      return null;
+    }
+  }
+
+  Future<void> _downloadAndroid(
+    M model,
+    File partial,
+    ProgressSink? onProgress, {
+    required bool requestNotificationPermission,
+  }) async {
+    final permissions = FileDownloader().permissions;
+    var notificationPermission = await permissions.status(
+      PermissionType.notifications,
+    );
+    if (notificationPermission != PermissionStatus.granted &&
+        requestNotificationPermission) {
+      notificationPermission = await permissions.request(
+        PermissionType.notifications,
+      );
+    }
+    if (notificationPermission != PermissionStatus.granted) {
+      throw const ModelNotificationPermissionDenied();
+    }
+
+    final support = await getApplicationSupportDirectory();
+    final normalizedSupport = '${support.path}${Platform.pathSeparator}';
+    final normalizedDir = _dir.absolute.path;
+    if (!normalizedDir.startsWith(normalizedSupport)) {
+      throw const FileSystemException(
+        'Model folder is outside app support storage.',
+      );
+    }
+    final directory = normalizedDir.substring(normalizedSupport.length);
+    final task = DownloadTask(
+      taskId: 'model-${model.tier}',
+      url: model.url.toString(),
+      filename: partial.uri.pathSegments.last,
+      directory: directory,
+      baseDirectory: BaseDirectory.applicationSupport,
+      group: 'diktafon-models',
+      updates: Updates.statusAndProgress,
+      retries: 3,
+      allowPause: true,
+      priority: 0,
+      displayName: model.label,
+      metaData: model.tier,
+    );
+    final existing = await FileDownloader().database.recordForId(task.taskId);
+    if (existing != null && existing.status == TaskStatus.paused) {
+      final completion = Completer<void>();
+      _nativeCompletions[model.tier] = completion;
+      if (!await FileDownloader().resume(existing.task as DownloadTask)) {
+        _nativeCompletions.remove(model.tier);
+        throw const HttpException(
+          'Could not resume background model download.',
+        );
+      }
+      await completion.future;
+      return;
+    }
+    if (existing != null && existing.status == TaskStatus.complete) {
+      if (await _finalizeNative(model)) return;
+    }
+    if (existing != null &&
+        (existing.status == TaskStatus.failed ||
+            existing.status == TaskStatus.canceled ||
+            existing.status == TaskStatus.complete)) {
+      await FileDownloader().database.deleteRecordWithId(task.taskId);
+    }
+    _nativeTasks[model.tier] = task;
+    try {
+      final update = await FileDownloader().download(
+        task,
+        onProgress: (fraction) {
+          _progress[model.tier] = fraction;
+          onProgress?.call(fraction);
+          _changes.add(null);
+        },
+        onStatus: (status) {
+          if (status == TaskStatus.paused) _pauseRequested.add(model.tier);
+          _changes.add(null);
+        },
+      );
+      if (update.status == TaskStatus.paused ||
+          _pauseRequested.contains(model.tier)) {
+        throw const ModelDownloadPaused();
+      }
+      if (update.status == TaskStatus.canceled ||
+          _cancelRequested.contains(model.tier)) {
+        throw const ModelDownloadCancelled();
+      }
+      if (update.status != TaskStatus.complete) {
+        throw const HttpException('Background model download failed.');
+      }
+    } finally {
+      _nativeTasks.remove(model.tier);
+    }
+  }
+
   /// Removes the installed file *and* any partial — the picker's delete
   /// action also discards a paused download the user changed their mind on.
   void delete(M model) {
-    for (final file in [fileOf(model), _partFileOf(model), _pausedFileOf(model)]) {
+    if (Platform.isAndroid) {
+      unawaited(FileDownloader().cancelTaskWithId('model-${model.tier}'));
+      unawaited(
+        FileDownloader().database.deleteRecordWithId('model-${model.tier}'),
+      );
+    }
+    _nativeStatus.remove(model.tier);
+    _progress.remove(model.tier);
+    for (final file in [
+      fileOf(model),
+      _partFileOf(model),
+      _pausedFileOf(model),
+    ]) {
       if (file.existsSync()) file.deleteSync();
     }
     _changes.add(null);
   }
 
-  void dispose() => _changes.close();
+  void dispose() {
+    if (_backgroundTasksAttached) {
+      _nativeUpdateListeners.remove(_nativeUpdateListener);
+      _backgroundTasksAttached = false;
+    }
+    _changes.close();
+    _installed.close();
+  }
 }
 
 class _DigestSink implements Sink<Digest> {

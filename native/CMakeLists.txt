@@ -58,6 +58,14 @@ set(LLAMA_BUILD_APP        OFF CACHE BOOL "" FORCE)
 # note above, now moot).
 set(GGML_OPENMP OFF CACHE BOOL "" FORCE)
 
+# The LLAMAFILE SGEMM fast path aborts on valid Silero VAD matrix shapes on
+# Android ARM64 (assertion `ldb >= k` in llamafile_sgemm). Keep the portable
+# ggml CPU kernels on Android so local transcription cannot terminate the
+# process while Whisper runs VAD. Desktop and iOS retain their platform defaults.
+if(ANDROID)
+  set(GGML_LLAMAFILE OFF CACHE BOOL "" FORCE)
+endif()
+
 # llama.cpp must come first: it defines the `ggml` target that whisper.cpp
 # then reuses via its `if (NOT TARGET ggml)` guard. Both vendored trees pin
 # ggml 0.15.1 (whisper v1.9.1 2026-06-19, llama b9700 2026-06-18).

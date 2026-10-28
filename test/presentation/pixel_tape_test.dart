@@ -43,8 +43,9 @@ void main() {
     final frame = await codec.getNextFrame();
     expect(frame.image.width, tapeSpriteWidth);
     expect(frame.image.height, tapeSpriteHeight);
-    final data =
-        await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = await frame.image.toByteData(
+      format: ui.ImageByteFormat.rawRgba,
+    );
     base = data!.buffer.asUint8List();
   });
 
@@ -58,8 +59,7 @@ void main() {
       expect(tapeWindingWidth(0.87), lessThanOrEqualTo(19));
     });
 
-    test('snaps to the full span at >= 88 % — a 1-px sliver never renders',
-        () {
+    test('snaps to the full span at >= 88 % — a 1-px sliver never renders', () {
       expect(tapeWindingWidth(0.88), 21);
       expect(tapeWindingWidth(1.0), 21);
       for (var f = 0.0; f < 0.88; f += 0.01) {
@@ -100,8 +100,12 @@ void main() {
 
     test('dark lifts every shell pixel one step, nothing else (r11)', () {
       final accent = TapeColors.light.hues[2];
-      final out = composeTapePixels(base,
-          accent: accent, windingWidth: 11, dark: true);
+      final out = composeTapePixels(
+        base,
+        accent: accent,
+        windingWidth: 11,
+        dark: true,
+      );
       expect(count(out, shell), 0);
       expect(count(out, shellLifted), count(base, shell));
       // Depth survives: cream band, accent and wound tape keep their colors.
@@ -117,8 +121,11 @@ void main() {
     });
 
     test('label band and inks are untouched by the swap', () {
-      final out = composeTapePixels(base,
-          accent: const Color(0xFF2F9C8D), windingWidth: 2);
+      final out = composeTapePixels(
+        base,
+        accent: const Color(0xFF2F9C8D),
+        windingWidth: 2,
+      );
       // Cream label band pixel and shell ink pixel keep their fixed colors.
       expect(argbAt(out, 47, 12), argbAt(base, 47, 12));
       expect(argbAt(out, 0, 5), argbAt(base, 0, 5));

@@ -67,4 +67,3 @@ abstract interface class TranscriptionProvider {
     CancelToken? cancel,
   });
 }
-

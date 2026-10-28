@@ -25,62 +25,111 @@ String resolveWhisperLibraryPath() {
     return '$executableDir/lib/libdiktafon_whisper.so';
   }
   throw UnsupportedError(
-      'no whisper engine build for ${Platform.operatingSystem} yet');
+    'no whisper engine build for ${Platform.operatingSystem} yet',
+  );
 }
 
 class WhisperBindings {
   WhisperBindings(DynamicLibrary lib)
-      : init = lib.lookupFunction<Pointer<Void> Function(Pointer<Utf8>),
-            Pointer<Void> Function(Pointer<Utf8>)>('dk_whisper_init'),
-        free = lib.lookupFunction<Void Function(Pointer<Void>),
-            void Function(Pointer<Void>)>('dk_whisper_free'),
-        setBeamSize = lib.lookupFunction<Void Function(Pointer<Void>, Int32),
-            void Function(Pointer<Void>, int)>('dk_whisper_set_beam_size'),
-        setVadModel = lib.lookupFunction<
+    : init = lib
+          .lookupFunction<
+            Pointer<Void> Function(Pointer<Utf8>),
+            Pointer<Void> Function(Pointer<Utf8>)
+          >('dk_whisper_init'),
+      free = lib
+          .lookupFunction<
+            Void Function(Pointer<Void>),
+            void Function(Pointer<Void>)
+          >('dk_whisper_free'),
+      setBeamSize = lib
+          .lookupFunction<
+            Void Function(Pointer<Void>, Int32),
+            void Function(Pointer<Void>, int)
+          >('dk_whisper_set_beam_size'),
+      setVadModel = lib
+          .lookupFunction<
             Void Function(Pointer<Void>, Pointer<Utf8>),
-            void Function(
-                Pointer<Void>, Pointer<Utf8>)>('dk_whisper_set_vad_model'),
-        transcribe = lib.lookupFunction<
-            Int32 Function(Pointer<Void>, Pointer<Float>, Int32, Pointer<Utf8>,
-                Int32, Pointer<Int32>),
-            int Function(Pointer<Void>, Pointer<Float>, int, Pointer<Utf8>,
-                int, Pointer<Int32>)>('dk_whisper_transcribe'),
-        lang = lib.lookupFunction<Pointer<Utf8> Function(Pointer<Void>),
-            Pointer<Utf8> Function(Pointer<Void>)>('dk_whisper_lang'),
-        nSegments = lib.lookupFunction<Int32 Function(Pointer<Void>),
-            int Function(Pointer<Void>)>('dk_whisper_n_segments'),
-        segmentT0Ms = lib.lookupFunction<Int64 Function(Pointer<Void>, Int32),
-            int Function(Pointer<Void>, int)>('dk_whisper_segment_t0_ms'),
-        segmentT1Ms = lib.lookupFunction<Int64 Function(Pointer<Void>, Int32),
-            int Function(Pointer<Void>, int)>('dk_whisper_segment_t1_ms'),
-        nTokens = lib.lookupFunction<Int32 Function(Pointer<Void>, Int32),
-            int Function(Pointer<Void>, int)>('dk_whisper_n_tokens'),
-        tokenText = lib.lookupFunction<
-            Pointer<Uint8> Function(Pointer<Void>, Int32, Int32),
-            Pointer<Uint8> Function(
-                Pointer<Void>, int, int)>('dk_whisper_token_text'),
-        tokenT0Ms = lib.lookupFunction<
-            Int64 Function(Pointer<Void>, Int32, Int32),
-            int Function(Pointer<Void>, int, int)>('dk_whisper_token_t0_ms'),
-        tokenT1Ms = lib.lookupFunction<
-            Int64 Function(Pointer<Void>, Int32, Int32),
-            int Function(Pointer<Void>, int, int)>('dk_whisper_token_t1_ms'),
-        tokenIsText = lib.lookupFunction<
-            Int32 Function(Pointer<Void>, Int32, Int32),
+            void Function(Pointer<Void>, Pointer<Utf8>)
+          >('dk_whisper_set_vad_model'),
+      transcribe = lib
+          .lookupFunction<
+            Int32 Function(
+              Pointer<Void>,
+              Pointer<Float>,
+              Int32,
+              Pointer<Utf8>,
+              Int32,
+              Pointer<Int32>,
+            ),
             int Function(
-                Pointer<Void>, int, int)>('dk_whisper_token_is_text'),
-        segmentNoSpeechProb = lib.lookupFunction<
+              Pointer<Void>,
+              Pointer<Float>,
+              int,
+              Pointer<Utf8>,
+              int,
+              Pointer<Int32>,
+            )
+          >('dk_whisper_transcribe'),
+      lang = lib
+          .lookupFunction<
+            Pointer<Utf8> Function(Pointer<Void>),
+            Pointer<Utf8> Function(Pointer<Void>)
+          >('dk_whisper_lang'),
+      nSegments = lib
+          .lookupFunction<
+            Int32 Function(Pointer<Void>),
+            int Function(Pointer<Void>)
+          >('dk_whisper_n_segments'),
+      segmentT0Ms = lib
+          .lookupFunction<
+            Int64 Function(Pointer<Void>, Int32),
+            int Function(Pointer<Void>, int)
+          >('dk_whisper_segment_t0_ms'),
+      segmentT1Ms = lib
+          .lookupFunction<
+            Int64 Function(Pointer<Void>, Int32),
+            int Function(Pointer<Void>, int)
+          >('dk_whisper_segment_t1_ms'),
+      nTokens = lib
+          .lookupFunction<
+            Int32 Function(Pointer<Void>, Int32),
+            int Function(Pointer<Void>, int)
+          >('dk_whisper_n_tokens'),
+      tokenText = lib
+          .lookupFunction<
+            Pointer<Uint8> Function(Pointer<Void>, Int32, Int32),
+            Pointer<Uint8> Function(Pointer<Void>, int, int)
+          >('dk_whisper_token_text'),
+      tokenT0Ms = lib
+          .lookupFunction<
+            Int64 Function(Pointer<Void>, Int32, Int32),
+            int Function(Pointer<Void>, int, int)
+          >('dk_whisper_token_t0_ms'),
+      tokenT1Ms = lib
+          .lookupFunction<
+            Int64 Function(Pointer<Void>, Int32, Int32),
+            int Function(Pointer<Void>, int, int)
+          >('dk_whisper_token_t1_ms'),
+      tokenIsText = lib
+          .lookupFunction<
+            Int32 Function(Pointer<Void>, Int32, Int32),
+            int Function(Pointer<Void>, int, int)
+          >('dk_whisper_token_is_text'),
+      segmentNoSpeechProb = lib
+          .lookupFunction<
             Float Function(Pointer<Void>, Int32),
-            double Function(
-                Pointer<Void>, int)>('dk_whisper_segment_no_speech_prob'),
-        segmentAvgTokenP = lib.lookupFunction<
+            double Function(Pointer<Void>, int)
+          >('dk_whisper_segment_no_speech_prob'),
+      segmentAvgTokenP = lib
+          .lookupFunction<
             Float Function(Pointer<Void>, Int32),
-            double Function(
-                Pointer<Void>, int)>('dk_whisper_segment_avg_token_p'),
-        vadHasSpeech = lib.lookupFunction<
+            double Function(Pointer<Void>, int)
+          >('dk_whisper_segment_avg_token_p'),
+      vadHasSpeech = lib
+          .lookupFunction<
             Int32 Function(Pointer<Utf8>, Pointer<Float>, Int32, Int32),
-            int Function(Pointer<Utf8>, Pointer<Float>, int,
-                int)>('dk_whisper_vad_has_speech');
+            int Function(Pointer<Utf8>, Pointer<Float>, int, int)
+          >('dk_whisper_vad_has_speech');
 
   factory WhisperBindings.open(String libraryPath) =>
       WhisperBindings(DynamicLibrary.open(libraryPath));
@@ -91,11 +140,19 @@ class WhisperBindings {
   /// > 1 = beam search with that beam size on subsequent transcribes;
   /// otherwise greedy (the default).
   final void Function(Pointer<Void>, int beamSize) setBeamSize;
+
   /// Silero VAD ggml model for subsequent transcribes; empty string
   /// disables VAD (the default).
   final void Function(Pointer<Void>, Pointer<Utf8> modelPath) setVadModel;
-  final int Function(Pointer<Void>, Pointer<Float> pcm, int nSamples,
-      Pointer<Utf8> lang, int nThreads, Pointer<Int32> cancel) transcribe;
+  final int Function(
+    Pointer<Void>,
+    Pointer<Float> pcm,
+    int nSamples,
+    Pointer<Utf8> lang,
+    int nThreads,
+    Pointer<Int32> cancel,
+  )
+  transcribe;
   final Pointer<Utf8> Function(Pointer<Void>) lang;
   final int Function(Pointer<Void>) nSegments;
   final int Function(Pointer<Void>, int) segmentT0Ms;
@@ -114,8 +171,13 @@ class WhisperBindings {
   /// Gate-only VAD: 1 = the PCM contains speech, 0 = none, -1 = error.
   /// Standalone (no dk_whisper context) — the large tier uses it to skip
   /// inference entirely on non-speech memos without altering the audio.
-  final int Function(Pointer<Utf8> vadModelPath, Pointer<Float> pcm,
-      int nSamples, int nThreads) vadHasSpeech;
+  final int Function(
+    Pointer<Utf8> vadModelPath,
+    Pointer<Float> pcm,
+    int nSamples,
+    int nThreads,
+  )
+  vadHasSpeech;
 }
 
 /// Copies a NUL-terminated C string as raw bytes. Token text may hold a

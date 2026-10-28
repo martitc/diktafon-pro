@@ -47,8 +47,7 @@ bool isNaturalAdvance({
   required bool playing,
   required bool seeking,
   required bool loading,
-}) =>
-    playing && !seeking && !loading && from != null && to == from + 1;
+}) => playing && !seeking && !loading && from != null && to == from + 1;
 
 /// Trouble the deck can't fix silently (§14): a dead audio source mid-tape,
 /// or memos whose files are gone entirely (metadata-only OS restore,
@@ -69,12 +68,14 @@ class TapePlayerService {
     // The only error surface every backend shares: a source that fails to
     // load/play (file missing or truncated) errors here. Pause so the
     // transport doesn't keep looking alive over dead air, and tell the UI.
-    _eventsSub = _player.playbackEventStream
-        .listen((_) {}, onError: (Object e, StackTrace st) {
-      unawaited(_player.pause().then<void>((_) {}, onError: (_) {}));
-      _reportIssue(TapePlayerIssue.playbackError);
-      _emit();
-    });
+    _eventsSub = _player.playbackEventStream.listen(
+      (_) {},
+      onError: (Object e, StackTrace st) {
+        unawaited(_player.pause().then<void>((_) {}, onError: (_) {}));
+        _reportIssue(TapePlayerIssue.playbackError);
+        _emit();
+      },
+    );
     _playingSub = _player.playingStream.listen((_) => _emit());
     _indexSub = _player.currentIndexStream.listen((index) {
       final from = _lastIndex;
@@ -100,8 +101,7 @@ class TapePlayerService {
 
   final AudioPlayer _player = AudioPlayer();
   final _stateController = StreamController<TapePlaybackState>.broadcast();
-  final _issueController =
-      StreamController<(TapePlayerIssue, int)>.broadcast();
+  final _issueController = StreamController<(TapePlayerIssue, int)>.broadcast();
 
   /// Issues with their affected-memo count (0 = unknown); the cassette
   /// screen turns these into snackbars. Debounced: backends can error
@@ -205,10 +205,11 @@ class TapePlayerService {
         seekCount: _seekCount,
       );
     }
-    final index =
-        (_player.currentIndex ?? 0).clamp(0, _tape.memoCount - 1);
-    final localMs = _player.position.inMilliseconds
-        .clamp(0, _tape.memos[index].durationMs);
+    final index = (_player.currentIndex ?? 0).clamp(0, _tape.memoCount - 1);
+    final localMs = _player.position.inMilliseconds.clamp(
+      0,
+      _tape.memos[index].durationMs,
+    );
     return TapePlaybackState(
       globalMs: _tape.toGlobalMs(index, localMs),
       totalMs: _tape.totalDurationMs,
@@ -269,8 +270,9 @@ class TapePlayerService {
     // Auto-resume only survives a same-tape re-flow; a switched-to cassette
     // waits for its own play press.
     final wasPlaying = _player.playing && sameCassette;
-    final previousGlobalMs =
-        sameCassette ? state.globalMs : (_lastPositions[cassetteId] ?? 0);
+    final previousGlobalMs = sameCassette
+        ? state.globalMs
+        : (_lastPositions[cassetteId] ?? 0);
     if (!sameCassette) {
       final leaving = _cassetteId;
       if (leaving != null) _lastPositions[leaving] = state.globalMs;
@@ -336,11 +338,11 @@ class TapePlayerService {
   /// The tape's files handed to the player without preloading; [position]
   /// becomes the initial playhead when playback first starts.
   Future<void> _setSources(TapePosition? position) => _player.setAudioSources(
-        [for (final memo in _tape.memos) AudioSource.file(memo.filePath)],
-        initialIndex: position?.memoIndex ?? 0,
-        initialPosition: Duration(milliseconds: position?.localMs ?? 0),
-        preload: false,
-      );
+    [for (final memo in _tape.memos) AudioSource.file(memo.filePath)],
+    initialIndex: position?.memoIndex ?? 0,
+    initialPosition: Duration(milliseconds: position?.localMs ?? 0),
+    preload: false,
+  );
 
   /// Newest requested target while a seek is in flight — scrub gestures fire
   /// faster than seeks complete, so intermediate targets are dropped.
@@ -402,8 +404,10 @@ class TapePlayerService {
     if (_player.processingState == ProcessingState.loading) {
       await _player.processingStateStream
           .firstWhere((s) => s != ProcessingState.loading)
-          .timeout(const Duration(seconds: 3),
-              onTimeout: () => _player.processingState);
+          .timeout(
+            const Duration(seconds: 3),
+            onTimeout: () => _player.processingState,
+          );
     }
     if (_player.processingState == ProcessingState.idle) {
       _pendingIdleSeek = position;

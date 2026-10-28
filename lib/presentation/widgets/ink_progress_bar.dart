@@ -12,13 +12,12 @@ class InkProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: double.infinity,
-        height: 10,
-        child: CustomPaint(
-          painter: _InkProgressPainter(
-              fraction.clamp(0.0, 1.0), context.tape.ink),
-        ),
-      );
+    width: double.infinity,
+    height: 10,
+    child: CustomPaint(
+      painter: _InkProgressPainter(fraction.clamp(0.0, 1.0), context.tape.ink),
+    ),
+  );
 }
 
 class _InkProgressPainter extends CustomPainter {
@@ -34,11 +33,13 @@ class _InkProgressPainter extends CustomPainter {
       ..strokeWidth = 1.5
       ..color = ink;
     canvas.drawRect(
-        Rect.fromLTWH(0.75, 0.75, size.width - 1.5, size.height - 1.5),
-        border);
+      Rect.fromLTWH(0.75, 0.75, size.width - 1.5, size.height - 1.5),
+      border,
+    );
     canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.width * fraction, size.height),
-        Paint()..color = ink);
+      Rect.fromLTWH(0, 0, size.width * fraction, size.height),
+      Paint()..color = ink,
+    );
   }
 
   @override

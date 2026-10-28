@@ -47,7 +47,7 @@ void main() {
 
       expect(transcript.languageCode, 'en', reason: 'auto-detected (D8)');
       final words = [
-        for (final segment in transcript.segments) ...segment.words
+        for (final segment in transcript.segments) ...segment.words,
       ];
       final text = words.map((w) => w.text).join(' ').toLowerCase();
       expect(text, contains('ask not what your country'));
@@ -60,8 +60,11 @@ void main() {
         expect(word.endMs, lessThanOrEqualTo(12_000));
       }
       for (var i = 1; i < words.length; i++) {
-        expect(words[i].startMs, greaterThanOrEqualTo(words[i - 1].startMs),
-            reason: 'word starts are monotonic');
+        expect(
+          words[i].startMs,
+          greaterThanOrEqualTo(words[i - 1].startMs),
+          reason: 'word starts are monotonic',
+        );
       }
 
       // Second run reuses the warm context (same worker, same model).
@@ -71,7 +74,7 @@ void main() {
     skip: available
         ? false
         : 'set DIKTAFON_LIBWHISPER / DIKTAFON_WHISPER_MODEL / '
-            'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
+              'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
     timeout: const Timeout(Duration(minutes: 3)),
   );
 
@@ -99,11 +102,14 @@ void main() {
 
       final transcript = await provider.transcribe(AudioRef(sample!));
       final words = [
-        for (final segment in transcript.segments) ...segment.words
+        for (final segment in transcript.segments) ...segment.words,
       ];
       final text = words.map((w) => w.text).join(' ').toLowerCase();
-      expect(text, contains('ask not what your country'),
-          reason: 'VAD must not eat real speech');
+      expect(
+        text,
+        contains('ask not what your country'),
+        reason: 'VAD must not eat real speech',
+      );
       // Token times are interpolated back from the VAD-collapsed stream
       // onto the original timeline — they must stay usable for tap-to-seek.
       for (final word in words) {
@@ -112,14 +118,17 @@ void main() {
         expect(word.endMs, lessThanOrEqualTo(12_000));
       }
       for (var i = 1; i < words.length; i++) {
-        expect(words[i].startMs, greaterThanOrEqualTo(words[i - 1].startMs),
-            reason: 'word starts are monotonic after VAD re-mapping');
+        expect(
+          words[i].startMs,
+          greaterThanOrEqualTo(words[i - 1].startMs),
+          reason: 'word starts are monotonic after VAD re-mapping',
+        );
       }
     },
     skip: available
         ? false
         : 'set DIKTAFON_LIBWHISPER / DIKTAFON_WHISPER_MODEL / '
-            'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
+              'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
     timeout: const Timeout(Duration(minutes: 3)),
   );
 
@@ -135,7 +144,10 @@ void main() {
       await FfmpegPcmDecoder().decodeToF32(sample!, speechPcm);
       expect(
         await worker.detectSpeech(
-            vadModelPath: vadModel, pcmPath: speechPcm, threads: 4),
+          vadModelPath: vadModel,
+          pcmPath: speechPcm,
+          threads: 4,
+        ),
         isTrue,
       );
 
@@ -144,23 +156,27 @@ void main() {
       File(silencePcm).writeAsBytesSync(List.filled(16000 * 5 * 4, 0));
       expect(
         await worker.detectSpeech(
-            vadModelPath: vadModel, pcmPath: silencePcm, threads: 4),
+          vadModelPath: vadModel,
+          pcmPath: silencePcm,
+          threads: 4,
+        ),
         isFalse,
       );
 
       // A bad model path surfaces as an exception (the provider fails open).
       expect(
         () => worker.detectSpeech(
-            vadModelPath: '${dir.path}/missing.bin',
-            pcmPath: silencePcm,
-            threads: 4),
+          vadModelPath: '${dir.path}/missing.bin',
+          pcmPath: silencePcm,
+          threads: 4,
+        ),
         throwsA(isA<WhisperWorkerException>()),
       );
     },
     skip: available
         ? false
         : 'set DIKTAFON_LIBWHISPER / DIKTAFON_WHISPER_MODEL / '
-            'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
+              'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
     timeout: const Timeout(Duration(minutes: 3)),
   );
 
@@ -191,7 +207,7 @@ void main() {
     skip: available
         ? false
         : 'set DIKTAFON_LIBWHISPER / DIKTAFON_WHISPER_MODEL / '
-            'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
+              'DIKTAFON_WHISPER_SAMPLE to run the real engine test',
     timeout: const Timeout(Duration(minutes: 3)),
   );
 
@@ -224,19 +240,25 @@ void main() {
         final transcript = await provider.transcribe(AudioRef(langSample!));
         expect(transcript.languageCode, code, reason: 'auto-detected (D8)');
         final words = [
-          for (final segment in transcript.segments) ...segment.words
+          for (final segment in transcript.segments) ...segment.words,
         ];
-        expect(words.length, greaterThan(1),
-            reason: 'transcript must split into words, not one blob');
+        expect(
+          words.length,
+          greaterThan(1),
+          reason: 'transcript must split into words, not one blob',
+        );
         for (var i = 1; i < words.length; i++) {
-          expect(words[i].startMs, greaterThanOrEqualTo(words[i - 1].startMs),
-              reason: 'word starts are monotonic');
+          expect(
+            words[i].startMs,
+            greaterThanOrEqualTo(words[i - 1].startMs),
+            reason: 'word starts are monotonic',
+          );
         }
       },
       skip: lib != null && model != null && langSample != null
           ? false
           : 'set DIKTAFON_LIBWHISPER / DIKTAFON_WHISPER_MODEL / $envKey '
-              'to run the $code probe',
+                'to run the $code probe',
       timeout: const Timeout(Duration(minutes: 3)),
     );
   }

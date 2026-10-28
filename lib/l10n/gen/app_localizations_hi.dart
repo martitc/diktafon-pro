@@ -269,6 +269,14 @@ class AppLocalizationsHi extends AppLocalizations {
       'सुझाया गया — काफ़ी ज़्यादा सटीक, खासकर शोर में (ट्रांसक्राइब करते समय ~2.5 GB RAM)।';
 
   @override
+  String get whisperFullLargeDesc =>
+      'अधिकतम सटीकता — 2.9 GiB डाउनलोड; 8 GB RAM की सलाह दी जाती है।';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '2.9 GiB डाउनलोड — इसे चलाने के लिए इस डिवाइस में लगभग 8 GB RAM चाहिए।';
+
+  @override
   String get llmDefaultDesc => 'सुझाया गया — छोटे, बहुभाषी सारांश।';
 
   @override
@@ -337,10 +345,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon आपके फ़ोन पर ही सुनता, लिखता और सारांश बनाता है।\n\nरिकॉर्डिंग, ट्रांसक्रिप्ट और सारांश कभी डिवाइस से बाहर नहीं जाते। न कोई खाता है, न क्लाउड, न कोई एनालिटिक्स। डेटा सिर्फ़ तभी बाहर जाता है जब आप खुद बैकअप या निर्यात करते हैं।';
+      'Diktafon Pro आपके फ़ोन पर ही सुनता, लिखता और सारांश बनाता है।\n\nरिकॉर्डिंग, ट्रांसक्रिप्ट और सारांश कभी डिवाइस से बाहर नहीं जाते। न कोई खाता है, न क्लाउड, न कोई एनालिटिक्स। डेटा सिर्फ़ तभी बाहर जाता है जब आप खुद बैकअप या निर्यात करते हैं।';
 
   @override
-  String get aboutOpenSource => 'Diktafon मुफ़्त और ओपन सोर्स है:';
+  String get aboutOpenSource => 'Diktafon Pro मुफ़्त और ओपन सोर्स है:';
 
   @override
   String get aboutPrivacyPolicy => 'निजता नीति';
@@ -400,7 +408,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Diktafon में आपका स्वागत है';
+  String get firstRunWelcome => 'Diktafon Pro में आपका स्वागत है';
 
   @override
   String get firstRunIntro =>
@@ -461,7 +469,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'आपके डिवाइस का अपना बैकअप कैसेट सूची, ट्रांसक्रिप्ट और सारांश अपने-आप सहेज लेता है। ऑडियो रिकॉर्डिंग बड़ी होती हैं — उन्हें खुद साथ ले जाएं: निर्यात एक कैसेट का ऑडियो, ट्रांसक्रिप्ट और सारांश एक .zip आर्काइव में समेट देता है, और आर्काइव का आयात उन्हें वापस ले आता है। Diktafon कुछ भी अपलोड नहीं करता।';
+      'आपके डिवाइस का अपना बैकअप कैसेट सूची, ट्रांसक्रिप्ट और सारांश अपने-आप सहेज लेता है। ऑडियो रिकॉर्डिंग बड़ी होती हैं — उन्हें खुद साथ ले जाएं: निर्यात एक कैसेट का ऑडियो, ट्रांसक्रिप्ट और सारांश एक .zip आर्काइव में समेट देता है, और आर्काइव का आयात उन्हें वापस ले आता है। Diktafon Pro कुछ भी अपलोड नहीं करता।';
 
   @override
   String get groupExport => 'निर्यात';
@@ -507,6 +515,47 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get importing => 'आयात हो रहा है…';
+
+  @override
+  String get importAudio => 'ऑडियो आयात करें';
+
+  @override
+  String get importingAudio => 'ऑडियो आयात हो रहा है…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ऑडियो मेमो जोड़े गए। लिप्यंतरण अपने आप शुरू हो जाएगा।',
+      one: '1 ऑडियो मेमो जोड़ा गया। लिप्यंतरण अपने आप शुरू हो जाएगा।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ऑडियो फ़ाइलें आयात नहीं हो सकीं।',
+      one: '1 ऑडियो फ़ाइल आयात नहीं हो सकी।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count ऑडियो मेमो आयात हुए, लेकिन उनके लिप्यंतरण कतार में नहीं जोड़े जा सके।',
+      one:
+          '1 ऑडियो मेमो आयात हुआ, लेकिन उसका लिप्यंतरण कतार में नहीं जोड़ा जा सका।',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'कैसेट आयात करें?';
@@ -562,7 +611,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Diktafon से $date को निर्यात किया गया।';
+    return 'Diktafon Pro से $date को निर्यात किया गया।';
   }
 
   @override
@@ -634,8 +683,61 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'ट्रांसक्रिप्शन पूरा हुआ';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'ऑडियो ट्रांसक्रिप्शन Diktafon Pro में तैयार है।';
+
+  @override
+  String get notifSummaryCompleted => 'सारांश पूरा हुआ';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'ऑडियो सारांश Diktafon Pro में तैयार है।';
+
+  @override
   String get notifRecording => 'रिकॉर्डिंग जारी है';
 
   @override
   String get notifRecordingChannel => 'रिकॉर्डिंग';
+
+  @override
+  String get insufficientModelStorage =>
+      'इस मॉडल को डाउनलोड करने के लिए पर्याप्त जगह नहीं है। जगह खाली करके फिर कोशिश करें।';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'मॉडल डाउनलोड को बैकग्राउंड में जारी रखने के लिए सूचनाओं की अनुमति दें।';
+
+  @override
+  String get importAudioTooltip => 'इस कैसेट में ऑडियो आयात करें';
+
+  @override
+  String get localSummaryInstructionsGroup => 'स्थानीय सारांश के निर्देश';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'उदाहरण: फैसलों, कामों और समय-सीमाओं पर ध्यान दें।';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'ये निर्देश इसी डिवाइस पर रहते हैं और Gemini या ChatGPT को नहीं भेजे जाते।';
+
+  @override
+  String get localSummarySaveFailed =>
+      'स्थानीय सारांश के निर्देश सहेजे नहीं जा सके।';
+
+  @override
+  String get localSummaryInstructionsTitle => 'आपके सारांश निर्देश';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · अनुमानित न्यूनतम RAM: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'डाउनलोड $size · अनुमानित न्यूनतम RAM: $ram GB';
+  }
 }

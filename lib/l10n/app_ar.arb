@@ -1,6 +1,5 @@
 {
   "@@locale": "ar",
-
   "untitledCassette": "كاسيت بلا اسم",
   "rename": "إعادة تسمية",
   "delete": "حذف",
@@ -9,7 +8,6 @@
   "deleteAction": "حذف",
   "ok": "حسنًا",
   "back": "رجوع",
-
   "settingsTooltip": "الإعدادات",
   "homeEmpty": "لا توجد كاسيتات بعد.\nاضغط على + لبدء شريط جديد.",
   "newCassette": "كاسيت جديد",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "اسم الكاسيت",
   "deleteCassetteTitle": "حذف الكاسيت؟",
   "deleteCassetteBody": "سيُحذف الكاسيت «{label}» {count, plural, zero{وهو لا يحتوي على أي مذكرات} one{ومعه مذكرة واحدة} two{ومعه مذكرتان} few{ومعه {count} مذكرات} many{ومعه {count} مذكرة} other{ومعه {count} مذكرة}}. لا يمكن التراجع عن هذا الإجراء.",
-
   "memoCount": "{count, plural, zero{لا مذكرات} one{مذكرة واحدة} two{مذكرتان} few{{count} مذكرات} many{{count} مذكرة} other{{count} مذكرة}}",
   "cardEmptyMeta": "فارغ · اضغط للفتح",
   "cardMetaNaming": "{memos} · جارٍ اختيار الاسم…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}، {memos}",
   "todayAt": "اليوم {time}",
   "yesterday": "أمس",
-
   "deleteCassette": "حذف الكاسيت",
   "blankTape": "شريط فارغ.\nاضغط على الزر الأحمر للتسجيل.",
   "emptyTape": "شريط فارغ",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "ستُزال المذكرة {n} وسيُغلق الشريط الفجوة. لا يمكن التراجع عن هذا الإجراء.",
   "timelineLabel": "الخط الزمني للشريط",
   "timelinePosition": "{position} من {total}",
-
   "noSpeech": "(لا كلام)",
   "transcriptionFailedRetry": "فشل التفريغ — انقر لإعادة المحاولة (لا يزال الصوت قابلًا للتشغيل)",
   "queuedForTranscription": "في قائمة انتظار التفريغ…",
@@ -55,7 +50,6 @@
   "summarizing": "جارٍ التلخيص…",
   "summaryFailedRetry": "فشل التلخيص — انقر لإعادة المحاولة",
   "transcribing": "جارٍ التفريغ…",
-
   "settingsTitle": "الإعدادات",
   "groupLanguage": "اللغة",
   "transcriptionLanguage": "لغة التفريغ",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "أخف وأسرع — أقل دقة، خصوصًا في التسجيلات الصاخبة.",
   "whisperLargeDesc": "دقة أعلى؛ يحتاج إلى جهاز قوي (نحو 2.5 غيغابايت من الذاكرة أثناء التفريغ).",
   "whisperLargeDescCapable": "موصى به — أدق بكثير، خصوصًا مع الضوضاء (نحو 2.5 غيغابايت من الذاكرة أثناء التفريغ).",
+  "whisperFullLargeDesc": "أعلى دقة — تنزيل 2.9 GiB؛ يُوصى بذاكرة RAM بسعة 8 GB.",
+  "whisperFullLargeDescBlocked": "تنزيل 2.9 GiB — يحتاج هذا الجهاز إلى نحو 8 GB من RAM لتشغيله.",
   "llmDefaultDesc": "موصى به — ملخصات موجزة متعددة اللغات.",
   "llm4bDesc": "ملخصات وعناوين أعلى جودة؛ يحتاج إلى جهاز قوي (نحو 3 غيغابايت من الذاكرة أثناء التلخيص).",
   "summariesOffValue": "بدون ملخصات · انقر للإعداد",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "حول التطبيق والخصوصية",
   "aboutPrivacyDesc": "الصوت لا يغادر هذا الجهاز أبدًا",
   "aboutTitle": "حول التطبيق والخصوصية",
-  "aboutBody": "Diktafon يستمع ويكتب ويلخّص هنا على هاتفك مباشرة.\n\nالتسجيلات والنصوص والملخصات لا تغادر الجهاز أبدًا. لا حساب ولا سحابة ولا تحليلات استخدام. الطريقة الوحيدة لخروج البيانات هي نسخة احتياطية أو تصدير تبدأه بنفسك.",
-  "aboutOpenSource": "Diktafon مجاني ومفتوح المصدر:",
+  "aboutBody": "Diktafon Pro يستمع ويكتب ويلخّص هنا على هاتفك مباشرة.\n\nالتسجيلات والنصوص والملخصات لا تغادر الجهاز أبدًا. لا حساب ولا سحابة ولا تحليلات استخدام. الطريقة الوحيدة لخروج البيانات هي نسخة احتياطية أو تصدير تبدأه بنفسك.",
+  "aboutOpenSource": "Diktafon Pro مجاني ومفتوح المصدر:",
   "aboutPrivacyPolicy": "سياسة الخصوصية",
-
   "modelPickerTranscriptionTitle": "نموذج التفريغ",
   "modelPickerSummaryTitle": "نموذج التلخيص",
   "pickerInstalled": "مثبَّت · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} جاهز — جارٍ تفريغ المذكرات المنتظرة.",
   "modelReadySummarize": "{label} جاهز — جارٍ تلخيص المذكرات المنتظرة.",
   "downloadFailed": "فشل تنزيل {label} — تحقق من اتصالك وحاول مرة أخرى.",
-
-  "firstRunWelcome": "مرحبًا بك في Diktafon",
+  "firstRunWelcome": "مرحبًا بك في Diktafon Pro",
   "firstRunIntro": "يستمع ويكتب ويلخّص هنا على هاتفك مباشرة. التسجيلات والنصوص والملخصات **لا تغادر هذا الجهاز أبدًا**. لا حساب ولا سحابة.",
   "firstRunSetupHeader": "الإعداد الأولي",
   "allowMicRow": "السماح بالميكروفون",
@@ -126,9 +120,8 @@
   "provisionChoose": "انقر لاختيار نموذج لتنزيله",
   "downloadsFinishInBackground": "تكتمل التنزيلات في الخلفية.",
   "startRecordingKey": "بدء التسجيل",
-
   "backupTitle": "التصدير والاستيراد",
-  "backupIntro": "يشمل النسخ الاحتياطي الخاص بجهازك قائمة الكاسيتات والنصوص والملخصات تلقائيًا. أما التسجيلات الصوتية فحجمها كبير — خذها معك بنفسك: يجمع التصدير صوت الكاسيت ونصوصه وملخصاته في أرشيف zip واحد، ويعيدها استيراد الأرشيف. لا يرفع Diktafon أي شيء.",
+  "backupIntro": "يشمل النسخ الاحتياطي الخاص بجهازك قائمة الكاسيتات والنصوص والملخصات تلقائيًا. أما التسجيلات الصوتية فحجمها كبير — خذها معك بنفسك: يجمع التصدير صوت الكاسيت ونصوصه وملخصاته في أرشيف zip واحد، ويعيدها استيراد الأرشيف. لا يرفع Diktafon Pro أي شيء.",
   "groupExport": "التصدير",
   "exportAll": "تصدير كل الكاسيتات",
   "exportAllDesc": "كل شيء، في ملف أرشيف واحد",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, zero{لم يتعذر استيراد أي كاسيت.} one{تعذر استيراد كاسيت واحد.} two{تعذر استيراد كاسيتين.} few{تعذر استيراد {count} كاسيتات.} many{تعذر استيراد {count} كاسيتًا.} other{تعذر استيراد {count} كاسيت.}}",
   "importNothingFound": "لم يُعثر على كاسيتات في هذا الأرشيف.",
   "importFailed": "فشل الاستيراد: {error}",
-
-  "exportNote": "صُدِّر من Diktafon في {date}.",
+  "exportNote": "صُدِّر من Diktafon Pro في {date}.",
   "exportSummaryHeading": "الملخص",
   "exportNotTranscribed": "(لم يُفرَّغ)",
-
   "openSystemSettings": "الإعدادات",
   "changeColor": "تغيير اللون",
   "retranscribe": "إعادة التفريغ",
@@ -168,6 +159,69 @@
   "memoActions": "إجراءات المذكرة",
   "notifDownloading": "جارٍ تنزيل {label}",
   "notifModelInstalled": "تم تثبيت {label}",
+  "notifTranscriptionCompleted": "اكتمل التفريغ الصوتي",
+  "notifTranscriptionCompletedBody": "أصبح تفريغ الصوت جاهزًا في Diktafon Pro.",
+  "notifSummaryCompleted": "اكتمل الملخص",
+  "notifSummaryCompletedBody": "أصبح ملخص الصوت جاهزًا في Diktafon Pro.",
   "notifRecording": "جارٍ التسجيل",
-  "notifRecordingChannel": "التسجيل"
+  "notifRecordingChannel": "التسجيل",
+  "importAudio": "استيراد صوت",
+  "importingAudio": "جارٍ استيراد الصوت…",
+  "importedAudioFiles": "{count, plural, =1{تمت إضافة مذكرة صوتية واحدة. يبدأ التفريغ النصي تلقائيًا.} other{عدد المذكرات الصوتية المضافة: {count}. يبدأ التفريغ النصي تلقائيًا.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{تعذر استيراد ملف صوتي واحد.} other{عدد الملفات الصوتية التي تعذر استيرادها: {count}.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{تم استيراد مذكرة صوتية واحدة، لكن تعذرت إضافة تفريغها النصي إلى قائمة الانتظار.} other{عدد المذكرات الصوتية المستوردة التي تعذرت إضافة تفريغها النصي إلى قائمة الانتظار: {count}.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "لا توجد مساحة كافية لتنزيل هذا النموذج. أفرغ بعض المساحة ثم أعد المحاولة.",
+  "downloadNotificationsPermissionRequired": "اسمح بالإشعارات لتستمر تنزيلات النماذج في الخلفية.",
+  "importAudioTooltip": "استيراد صوت إلى هذا الشريط",
+  "localSummaryInstructionsGroup": "تعليمات الملخص المحلي",
+  "localSummaryInstructionsHint": "مثال: ركّز على القرارات والمهام والمواعيد النهائية.",
+  "localSummaryInstructionsPrivacy": "تبقى هذه التعليمات على هذا الجهاز ولا تُرسل إلى Gemini أو ChatGPT.",
+  "localSummarySaveFailed": "تعذّر حفظ تعليمات الملخص المحلي.",
+  "localSummaryInstructionsTitle": "تعليماتك للملخصات",
+  "llmModelDetails": "{quantization} · {license} · الحد الأدنى المقدّر للذاكرة: {ram} غيغابايت",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "التنزيل {size} · الحد الأدنى المقدّر للذاكرة: {ram} غيغابايت",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

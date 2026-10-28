@@ -20,24 +20,24 @@ bool _inAny(int rune, List<(int, int)> ranges) {
 /// katakana (incl. phonetic extensions and the U+30FC prolonged-sound mark),
 /// and the iteration marks 々〆〇 from the punctuation block.
 bool isCjkWordRune(int rune) => _inAny(rune, const [
-      (0x3005, 0x3007), // 々〆〇 — word-forming despite the block
-      (0x3040, 0x30FF), // hiragana + katakana
-      (0x31F0, 0x31FF), // katakana phonetic extensions
-      (0x3400, 0x9FFF), // Han (ext A + unified)
-      (0xF900, 0xFAFF), // Han compatibility
-      (0x20000, 0x2FA1F), // Han ext B+ (astral)
-    ]);
+  (0x3005, 0x3007), // 々〆〇 — word-forming despite the block
+  (0x3040, 0x30FF), // hiragana + katakana
+  (0x31F0, 0x31FF), // katakana phonetic extensions
+  (0x3400, 0x9FFF), // Han (ext A + unified)
+  (0xF900, 0xFAFF), // Han compatibility
+  (0x20000, 0x2FA1F), // Han ext B+ (astral)
+]);
 
 /// CJK punctuation and fullwidth forms — 。、！？「」（）… They attach to
 /// neighbouring CJK text without spaces on either side.
 bool isCjkPunctRune(int rune) => _inAny(rune, const [
-      (0x3000, 0x3004), // ideographic space, 。 、 〃 〄
-      (0x3008, 0x303F), // brackets, marks (々〆〇 carved out above)
-      (0xFF00, 0xFF0F), // fullwidth ！＂＃…／ (，．)
-      (0xFF1A, 0xFF20), // fullwidth ：；＜…＠ (？)
-      (0xFF3B, 0xFF40), // fullwidth ［＼］…｀
-      (0xFF5B, 0xFF65), // fullwidth ｛｜｝～ + halfwidth 。「」、・
-    ]);
+  (0x3000, 0x3004), // ideographic space, 。 、 〃 〄
+  (0x3008, 0x303F), // brackets, marks (々〆〇 carved out above)
+  (0xFF00, 0xFF0F), // fullwidth ！＂＃…／ (，．)
+  (0xFF1A, 0xFF20), // fullwidth ：；＜…＠ (？)
+  (0xFF3B, 0xFF40), // fullwidth ［＼］…｀
+  (0xFF5B, 0xFF65), // fullwidth ｛｜｝～ + halfwidth 。「」、・
+]);
 
 bool _noSpaceRune(int rune) => isCjkWordRune(rune) || isCjkPunctRune(rune);
 

@@ -24,8 +24,9 @@ const fontFallback = <String>[
 ];
 
 ThemeData buildTheme(Brightness brightness) {
-  final tape =
-      brightness == Brightness.light ? TapeColors.light : TapeColors.dark;
+  final tape = brightness == Brightness.light
+      ? TapeColors.light
+      : TapeColors.dark;
 
   final base = ThemeData(
     useMaterial3: true,
@@ -76,46 +77,52 @@ ThemeData buildTheme(Brightness brightness) {
         color: tape.ink,
       ),
       contentTextStyle: TextStyle(
-          fontFamily: bodyFont,
-          fontFamilyFallback: fontFallback,
-          fontSize: 13,
-          color: tape.ink2),
+        fontFamily: bodyFont,
+        fontFamilyFallback: fontFallback,
+        fontSize: 13,
+        color: tape.ink2,
+      ),
     ),
     popupMenuTheme: PopupMenuThemeData(
       shape: hard.copyWith(side: BorderSide(color: tape.ink, width: 2)),
       color: tape.surface,
       textStyle: TextStyle(
-          fontFamily: bodyFont,
-          fontFamilyFallback: fontFallback,
-          fontSize: 13,
-          color: tape.ink),
+        fontFamily: bodyFont,
+        fontFamilyFallback: fontFallback,
+        fontSize: 13,
+        color: tape.ink,
+      ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         shape: hard,
         foregroundColor: tape.ink,
         textStyle: const TextStyle(
-            fontFamily: bodyFont,
-            fontFamilyFallback: fontFallback,
-            fontWeight: FontWeight.w700,
-            fontSize: 13),
+          fontFamily: bodyFont,
+          fontFamilyFallback: fontFallback,
+          fontWeight: FontWeight.w700,
+          fontSize: 13,
+        ),
       ),
     ),
     switchTheme: SwitchThemeData(
       // Rectangular ink switches (mockup 05): squared track, paper thumb.
       thumbColor: WidgetStatePropertyAll(tape.paper),
-      trackColor: WidgetStateProperty.resolveWith((states) =>
-          states.contains(WidgetState.selected) ? tape.ink : tape.line),
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? tape.ink : tape.line,
+      ),
       trackOutlineColor: WidgetStatePropertyAll(tape.ink),
       trackOutlineWidth: const WidgetStatePropertyAll(2),
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: tape.ink,
       contentTextStyle: TextStyle(
-          fontFamily: bodyFont,
-          fontFamilyFallback: fontFallback,
-          fontSize: 12.5,
-          color: tape.paper),
+        fontFamily: bodyFont,
+        fontFamilyFallback: fontFallback,
+        fontSize: 12.5,
+        color: tape.paper,
+      ),
       shape: hard,
       behavior: SnackBarBehavior.floating,
     ),
@@ -138,17 +145,17 @@ ThemeData buildTheme(Brightness brightness) {
         borderSide: BorderSide(color: tape.accent, width: 2),
       ),
       hintStyle: TextStyle(
-          fontFamily: bodyFont,
-          fontFamilyFallback: fontFallback,
-          fontStyle: FontStyle.italic,
-          color: tape.ink2),
+        fontFamily: bodyFont,
+        fontFamilyFallback: fontFallback,
+        fontStyle: FontStyle.italic,
+        color: tape.ink2,
+      ),
     ),
   );
 }
 
 /// LCD-style display text (counters, titles) — Jersey 10 (§10.1).
-TextStyle lcdStyle(BuildContext context,
-        {double size = 22, Color? color}) =>
+TextStyle lcdStyle(BuildContext context, {double size = 22, Color? color}) =>
     TextStyle(
       fontFamily: displayFont,
       fontFamilyFallback: fontFallback,

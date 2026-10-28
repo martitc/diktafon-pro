@@ -68,8 +68,11 @@ Transcript? retimeEditedTranscript(
   final timed = List<_TimedToken?>.filled(newTokens.length, null);
   anchors.forEach((newIndex, originalIndex) {
     final engine = originalTokens[originalIndex];
-    timed[newIndex] =
-        _TimedToken(newTokens[newIndex], engine.startMs, engine.endMs);
+    timed[newIndex] = _TimedToken(
+      newTokens[newIndex],
+      engine.startMs,
+      engine.endMs,
+    );
   });
 
   // Each run of unanchored words shares the window between its neighbouring
@@ -87,16 +90,16 @@ Transcript? retimeEditedTranscript(
     final left = i == 0 ? spanStart : timed[i - 1]!.endMs;
     final right = j == timed.length ? spanEnd : timed[j]!.startMs;
     final span = max(0, right - left);
-    final weights = [
-      for (var k = i; k < j; k++) newTokens[k].runes.length + 1,
-    ];
+    final weights = [for (var k = i; k < j; k++) newTokens[k].runes.length + 1];
     final total = weights.fold(0, (sum, w) => sum + w);
     var startMs = left;
     var used = 0;
     for (var k = i; k < j; k++) {
       used += weights[k - i];
-      final endMs =
-          max(startMs, k == j - 1 ? right : left + (span * used) ~/ total);
+      final endMs = max(
+        startMs,
+        k == j - 1 ? right : left + (span * used) ~/ total,
+      );
       timed[k] = _TimedToken(newTokens[k], startMs, endMs);
       startMs = endMs;
     }
@@ -120,8 +123,13 @@ Transcript? retimeEditedTranscript(
       final t = timed[index]!;
       words.add(Word(text: t.text, startMs: t.startMs, endMs: t.endMs));
     }
-    segments.add(Segment(
-        startMs: words.first.startMs, endMs: words.last.endMs, words: words));
+    segments.add(
+      Segment(
+        startMs: words.first.startMs,
+        endMs: words.last.endMs,
+        words: words,
+      ),
+    );
   }
   return Transcript(languageCode: original.languageCode, segments: segments);
 }
@@ -173,7 +181,10 @@ List<_TimedToken> _explode(Word word) {
   if (parts.length <= 1) {
     return [
       _TimedToken(
-          parts.isEmpty ? word.text : parts.single, word.startMs, word.endMs),
+        parts.isEmpty ? word.text : parts.single,
+        word.startMs,
+        word.endMs,
+      ),
     ];
   }
   final total = parts.fold(0, (sum, p) => sum + p.runes.length);
@@ -183,16 +194,22 @@ List<_TimedToken> _explode(Word word) {
   var used = 0;
   for (var i = 0; i < parts.length; i++) {
     used += parts[i].runes.length;
-    final endMs = max(startMs,
-        i == parts.length - 1 ? word.endMs : word.startMs + (span * used) ~/ total);
+    final endMs = max(
+      startMs,
+      i == parts.length - 1
+          ? word.endMs
+          : word.startMs + (span * used) ~/ total,
+    );
     out.add(_TimedToken(parts[i], startMs, endMs));
     startMs = endMs;
   }
   return out;
 }
 
-final _edgePunctuation =
-    RegExp(r'^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$', unicode: true);
+final _edgePunctuation = RegExp(
+  r'^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$',
+  unicode: true,
+);
 
 /// How words are compared for anchoring: case-insensitive, edge punctuation
 /// ignored — edits mostly fix casing and punctuation, and those fixes must
@@ -248,9 +265,7 @@ Map<int, int> _anchor(List<String> original, List<String> edited) {
 /// punctuation) never match — there is no timing worth anchoring to.
 Map<int, int> _lcsAnchors(List<String> original, List<String> edited) {
   final n = original.length, m = edited.length;
-  final dp = [
-    for (var i = 0; i <= n; i++) List<int>.filled(m + 1, 0),
-  ];
+  final dp = [for (var i = 0; i <= n; i++) List<int>.filled(m + 1, 0)];
   for (var i = n - 1; i >= 0; i--) {
     for (var j = m - 1; j >= 0; j--) {
       dp[i][j] = original[i] == edited[j] && original[i].isNotEmpty

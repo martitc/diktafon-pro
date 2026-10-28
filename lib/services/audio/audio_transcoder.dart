@@ -25,16 +25,25 @@ class FfmpegAudioTranscoder implements AudioTranscoder {
   Future<void> transcode(String wavPath, String outPath) async {
     final result = await Process.run('ffmpeg', [
       '-y',
-      '-v', 'error',
-      '-i', wavPath,
-      '-c:a', 'aac',
-      '-b:a', '48k',
-      '-movflags', '+faststart',
+      '-v',
+      'error',
+      '-i',
+      wavPath,
+      '-c:a',
+      'aac',
+      '-b:a',
+      '48k',
+      '-movflags',
+      '+faststart',
       outPath,
     ]);
     if (result.exitCode != 0) {
       throw ProcessException(
-          'ffmpeg', const [], result.stderr.toString(), result.exitCode);
+        'ffmpeg',
+        const [],
+        result.stderr.toString(),
+        result.exitCode,
+      );
     }
   }
 }

@@ -13,22 +13,22 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Set<String> keysOf(File f) =>
-      (jsonDecode(f.readAsStringSync()) as Map<String, dynamic>)
-          .keys
+      (jsonDecode(f.readAsStringSync()) as Map<String, dynamic>).keys
           .where((k) => !k.startsWith('@'))
           .toSet();
 
-  List<File> arbFiles() => Directory('lib/l10n')
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.arb'))
-      .toList();
+  List<File> arbFiles() => Directory(
+    'lib/l10n',
+  ).listSync().whereType<File>().where((f) => f.path.endsWith('.arb')).toList();
 
   test('every locale ARB carries every template message', () {
     final template = keysOf(File('lib/l10n/app_en.arb'));
     final arbs = arbFiles();
-    expect(arbs.length, greaterThanOrEqualTo(14),
-        reason: 'en fr es pt de pl cs tr ru ko + wave 2 (§13)');
+    expect(
+      arbs.length,
+      greaterThanOrEqualTo(14),
+      reason: 'en fr es pt de pl cs tr ru ko + wave 2 (§13)',
+    );
     for (final arb in arbs) {
       expect(keysOf(arb), template, reason: arb.path);
     }
@@ -36,8 +36,11 @@ void main() {
 
   test('every Settings picker language has a prompt language name', () {
     for (final code in SettingsScreen.languages.keys) {
-      expect(languageName(code), isNot(code),
-          reason: 'prompts would read "Write a summary in $code"');
+      expect(
+        languageName(code),
+        isNot(code),
+        reason: 'prompts would read "Write a summary in $code"',
+      );
     }
   });
 
@@ -52,9 +55,11 @@ void main() {
       for (final count in [1, 2, 5, 11, 21, 100]) {
         // one/two branches may legitimately spell the number out (Arabic
         // singular/dual); from 3 up every language shows the numeral.
-        expect(l10n.memoCount(count),
-            count > 2 ? contains('$count') : isNotEmpty,
-            reason: '$locale memoCount($count)');
+        expect(
+          l10n.memoCount(count),
+          count > 2 ? contains('$count') : isNotEmpty,
+          reason: '$locale memoCount($count)',
+        );
         expect(l10n.deleteCassetteBody('x', count), isNotEmpty);
         expect(l10n.exportedAllTo(count, '/tmp'), isNotEmpty);
         expect(l10n.retranscribeBody(count), isNotEmpty);

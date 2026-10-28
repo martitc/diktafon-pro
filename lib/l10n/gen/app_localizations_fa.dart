@@ -269,6 +269,14 @@ class AppLocalizationsFa extends AppLocalizations {
       'پیشنهادی — بسیار دقیق‌تر، به‌ویژه در محیط پرنویز (حدود ۲٫۵ گیگابایت رم هنگام رونویسی).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'بیشترین دقت — دانلود ۲٫۹ گیبی‌بایت؛ ۸ گیگابایت RAM توصیه می‌شود.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'دانلود ۲٫۹ گیبی‌بایت — این دستگاه برای اجرا به حدود ۸ گیگابایت RAM نیاز دارد.';
+
+  @override
   String get llmDefaultDesc => 'پیشنهادی — خلاصه‌های فشردهٔ چندزبانه.';
 
   @override
@@ -337,10 +345,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon همین‌جا روی گوشی شما گوش می‌دهد، می‌نویسد و خلاصه می‌کند.\n\nضبط‌ها، رونوشت‌ها و خلاصه‌ها هرگز از دستگاه خارج نمی‌شوند. حساب کاربری، فضای ابری و ابزار تحلیلی در کار نیست. داده‌ها تنها زمانی از دستگاه خارج می‌شوند که خودتان پشتیبان‌گیری یا برون‌بری را آغاز کنید.';
+      'Diktafon Pro همین‌جا روی گوشی شما گوش می‌دهد، می‌نویسد و خلاصه می‌کند.\n\nضبط‌ها، رونوشت‌ها و خلاصه‌ها هرگز از دستگاه خارج نمی‌شوند. حساب کاربری، فضای ابری و ابزار تحلیلی در کار نیست. داده‌ها تنها زمانی از دستگاه خارج می‌شوند که خودتان پشتیبان‌گیری یا برون‌بری را آغاز کنید.';
 
   @override
-  String get aboutOpenSource => 'Diktafon رایگان و متن‌باز است:';
+  String get aboutOpenSource => 'Diktafon Pro رایگان و متن‌باز است:';
 
   @override
   String get aboutPrivacyPolicy => 'سیاست حریم خصوصی';
@@ -400,7 +408,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'به Diktafon خوش آمدید';
+  String get firstRunWelcome => 'به Diktafon Pro خوش آمدید';
 
   @override
   String get firstRunIntro =>
@@ -461,7 +469,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'پشتیبان‌گیری خود دستگاه، فهرست کاست‌ها، رونوشت‌ها و خلاصه‌ها را به‌طور خودکار پوشش می‌دهد. فایل‌های صوتی حجیم‌اند — آن‌ها را خودتان با خود ببرید: برون‌بری، صدا، رونوشت‌ها و خلاصه‌های یک کاست را در یک فایل .zip بسته‌بندی می‌کند و درون‌ریزی آن فایل همه را بازمی‌گرداند. Diktafon هیچ چیزی را آپلود نمی‌کند.';
+      'پشتیبان‌گیری خود دستگاه، فهرست کاست‌ها، رونوشت‌ها و خلاصه‌ها را به‌طور خودکار پوشش می‌دهد. فایل‌های صوتی حجیم‌اند — آن‌ها را خودتان با خود ببرید: برون‌بری، صدا، رونوشت‌ها و خلاصه‌های یک کاست را در یک فایل .zip بسته‌بندی می‌کند و درون‌ریزی آن فایل همه را بازمی‌گرداند. Diktafon Pro هیچ چیزی را آپلود نمی‌کند.';
 
   @override
   String get groupExport => 'برون‌بری';
@@ -507,6 +515,46 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get importing => 'در حال درون‌ریزی…';
+
+  @override
+  String get importAudio => 'وارد کردن صدا';
+
+  @override
+  String get importingAudio => 'در حال وارد کردن صدا…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count یادداشت صوتی اضافه شد. رونویسی به‌طور خودکار شروع می‌شود.',
+      one: '۱ یادداشت صوتی اضافه شد. رونویسی به‌طور خودکار شروع می‌شود.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'وارد کردن $count فایل صوتی ممکن نشد.',
+      one: 'وارد کردن ۱ فایل صوتی ممکن نشد.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count یادداشت صوتی وارد شد، اما افزودن رونویسی آن‌ها به صف ممکن نشد.',
+      one: '۱ یادداشت صوتی وارد شد، اما افزودن رونویسی آن به صف ممکن نشد.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'کاست‌ها درون‌ریزی شوند؟';
@@ -562,7 +610,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'در تاریخ $date از Diktafon برون‌بری شد.';
+    return 'در تاریخ $date از Diktafon Pro برون‌بری شد.';
   }
 
   @override
@@ -634,8 +682,61 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'رونویسی تمام شد';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'رونویسی صدا در Diktafon Pro آماده است.';
+
+  @override
+  String get notifSummaryCompleted => 'خلاصه آماده شد';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'خلاصهٔ صدا در Diktafon Pro آماده است.';
+
+  @override
   String get notifRecording => 'در حال ضبط';
 
   @override
   String get notifRecordingChannel => 'ضبط';
+
+  @override
+  String get insufficientModelStorage =>
+      'فضای خالی کافی برای دریافت این مدل وجود ندارد. فضا خالی کنید و دوباره تلاش کنید.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'برای ادامه دانلود مدل‌ها در پس‌زمینه، اعلان‌ها را مجاز کنید.';
+
+  @override
+  String get importAudioTooltip => 'وارد کردن صدا به این کاست';
+
+  @override
+  String get localSummaryInstructionsGroup => 'دستورهای خلاصه‌سازی محلی';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'مثلاً: روی تصمیم‌ها، کارها و مهلت‌ها تمرکز کن.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'این دستورها روی همین دستگاه می‌مانند و به Gemini یا ChatGPT فرستاده نمی‌شوند.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'ذخیرهٔ دستورهای خلاصه‌سازی محلی ناموفق بود.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'دستورهای خلاصه‌سازی شما';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · حداقل حافظهٔ تخمینی: $ram گیگابایت';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'بارگیری $size · حداقل حافظهٔ تخمینی: $ram گیگابایت';
+  }
 }

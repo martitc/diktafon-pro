@@ -1,6 +1,5 @@
 {
   "@@locale": "tr",
-
   "untitledCassette": "Adsız kaset",
   "rename": "Yeniden adlandır",
   "delete": "Sil",
@@ -9,7 +8,6 @@
   "deleteAction": "SİL",
   "ok": "TAMAM",
   "back": "Geri",
-
   "settingsTooltip": "Ayarlar",
   "homeEmpty": "Henüz kaset yok.\nYeni bir bant başlatmak için + tuşuna basın.",
   "newCassette": "Yeni kaset",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Kaset adı",
   "deleteCassetteTitle": "KASET SİLİNSİN Mİ?",
   "deleteCassetteBody": "“{label}” ve üzerindeki {count, plural, =1{1 not} other{{count} not}} silinecek. Bu geri alınamaz.",
-
   "memoCount": "{count, plural, =1{1 not} other{{count} not}}",
   "cardEmptyMeta": "boş · açmak için dokunun",
   "cardMetaNaming": "{memos} · adını buluyor…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "bugün {time}",
   "yesterday": "dün",
-
   "deleteCassette": "Kaseti sil",
   "blankTape": "Boş bir bant.\nKaydetmek için kırmızı tuşa basın.",
   "emptyTape": "BOŞ BANT",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Not {n} kaldırılacak ve bant aradaki boşluğu kapatacak. Bu geri alınamaz.",
   "timelineLabel": "Bant zaman çizelgesi",
   "timelinePosition": "{position} / {total}",
-
   "noSpeech": "(konuşma yok)",
   "transcriptionFailedRetry": "yazıya dökülemedi — tekrar denemek için dokunun (ses çalmaya devam eder)",
   "queuedForTranscription": "yazıya dökülmek için sırada…",
@@ -55,7 +50,6 @@
   "summarizing": "özetleniyor…",
   "summaryFailedRetry": "özet oluşturulamadı — tekrar denemek için dokunun",
   "transcribing": "yazıya dökülüyor…",
-
   "settingsTitle": "AYARLAR",
   "groupLanguage": "Dil",
   "transcriptionLanguage": "Yazıya dökme dili",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Daha hafif ve hızlı — özellikle gürültülü kayıtlarda daha az doğru.",
   "whisperLargeDesc": "Daha yüksek doğruluk; güçlü bir cihaz gerektirir (yazıya dökme sırasında ~2,5 GB RAM).",
   "whisperLargeDescCapable": "Önerilen — özellikle gürültüde çok daha doğru (yazıya dökme sırasında ~2,5 GB RAM).",
+  "whisperFullLargeDesc": "En yüksek doğruluk — 2,9 GiB indirme; 8 GB RAM önerilir.",
+  "whisperFullLargeDescBlocked": "2,9 GiB indirme — bu cihazda çalışması için yaklaşık 8 GB RAM gerekir.",
   "llmDefaultDesc": "Önerilen — derli toplu çok dilli özetler.",
   "llm4bDesc": "Daha kaliteli özetler ve başlıklar; güçlü bir cihaz gerektirir (özetleme sırasında ~3 GB RAM).",
   "summariesOffValue": "Özet yok · kurmak için dokunun",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Hakkında ve gizlilik",
   "aboutPrivacyDesc": "Ses asla bu cihazdan çıkmaz",
   "aboutTitle": "HAKKINDA VE GİZLİLİK",
-  "aboutBody": "Diktafon doğrudan telefonunuzda dinler, yazar ve özetler.\n\nKayıtlar, transkriptler ve özetler cihazdan asla çıkmaz. Hesap yok, bulut yok, analitik yok. Veriler yalnızca sizin başlattığınız bir yedekleme veya dışa aktarmayla cihazdan ayrılır.",
-  "aboutOpenSource": "Diktafon ücretsiz ve açık kaynaklıdır:",
+  "aboutBody": "Diktafon Pro doğrudan telefonunuzda dinler, yazar ve özetler.\n\nKayıtlar, transkriptler ve özetler cihazdan asla çıkmaz. Hesap yok, bulut yok, analitik yok. Veriler yalnızca sizin başlattığınız bir yedekleme veya dışa aktarmayla cihazdan ayrılır.",
+  "aboutOpenSource": "Diktafon Pro ücretsiz ve açık kaynaklıdır:",
   "aboutPrivacyPolicy": "Gizlilik politikası",
-
   "modelPickerTranscriptionTitle": "YAZIYA DÖKME MODELİ",
   "modelPickerSummaryTitle": "ÖZET MODELİ",
   "pickerInstalled": "yüklü · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} hazır — bekleyen notlar yazıya dökülüyor.",
   "modelReadySummarize": "{label} hazır — bekleyen notlar özetleniyor.",
   "downloadFailed": "{label} indirilemedi — bağlantınızı kontrol edip tekrar deneyin.",
-
-  "firstRunWelcome": "Diktafon'a hoş geldiniz",
+  "firstRunWelcome": "Diktafon Pro'a hoş geldiniz",
   "firstRunIntro": "Doğrudan telefonunuzda dinler, yazar ve özetler. Kayıtlar, transkriptler ve özetler **bu cihazdan asla çıkmaz**. Hesap yok, bulut yok.",
   "firstRunSetupHeader": "İlk kurulum",
   "allowMicRow": "Mikrofona izin ver",
@@ -126,9 +120,8 @@
   "provisionChoose": "indirilecek modeli seçmek için dokunun",
   "downloadsFinishInBackground": "İndirmeler arka planda tamamlanır.",
   "startRecordingKey": "KAYDA BAŞLA",
-
   "backupTitle": "DIŞA VE İÇE AKTARMA",
-  "backupIntro": "Cihazınızın kendi yedeği kaset listesini, transkriptleri ve özetleri otomatik olarak kapsar. Ses kayıtları büyüktür — onları açıkça yanınıza alın: dışa aktarma, bir kasetin sesini, transkriptlerini ve özetlerini tek bir .zip arşivine paketler; arşivi içe aktarmak onları geri getirir. Diktafon hiçbir şeyi hiçbir yere yüklemez.",
+  "backupIntro": "Cihazınızın kendi yedeği kaset listesini, transkriptleri ve özetleri otomatik olarak kapsar. Ses kayıtları büyüktür — onları açıkça yanınıza alın: dışa aktarma, bir kasetin sesini, transkriptlerini ve özetlerini tek bir .zip arşivine paketler; arşivi içe aktarmak onları geri getirir. Diktafon Pro hiçbir şeyi hiçbir yere yüklemez.",
   "groupExport": "Dışa aktarma",
   "exportAll": "Tüm kasetleri dışa aktar",
   "exportAllDesc": "Her şey, tek bir arşiv dosyasına",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, =1{1 kaset içe aktarılamadı.} other{{count} kaset içe aktarılamadı.}}",
   "importNothingFound": "Bu arşivde kaset bulunamadı.",
   "importFailed": "İçe aktarma başarısız: {error}",
-
-  "exportNote": "{date} tarihinde Diktafon'dan dışa aktarıldı.",
+  "exportNote": "{date} tarihinde Diktafon Pro'dan dışa aktarıldı.",
   "exportSummaryHeading": "Özet",
   "exportNotTranscribed": "(yazıya dökülmedi)",
-
   "openSystemSettings": "AYARLAR",
   "changeColor": "Rengi değiştir",
   "retranscribe": "Yeniden yazıya dök",
@@ -168,6 +159,69 @@
   "memoActions": "Not işlemleri",
   "notifDownloading": "{label} indiriliyor",
   "notifModelInstalled": "{label} yüklendi",
+  "notifTranscriptionCompleted": "Döküm tamamlandı",
+  "notifTranscriptionCompletedBody": "Ses dökümü Diktafon Pro içinde hazır.",
+  "notifSummaryCompleted": "Özet tamamlandı",
+  "notifSummaryCompletedBody": "Ses özeti Diktafon Pro içinde hazır.",
   "notifRecording": "Kayıt yapılıyor",
-  "notifRecordingChannel": "Kayıt"
+  "notifRecordingChannel": "Kayıt",
+  "importAudio": "Ses içe aktar",
+  "importingAudio": "Ses içe aktarılıyor…",
+  "importedAudioFiles": "{count, plural, other{{count} sesli not eklendi. Metne dönüştürme otomatik olarak başlar.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{{count} ses dosyası içe aktarılamadı.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{{count} sesli not içe aktarıldı ancak metne dönüştürme işlemleri kuyruğa eklenemedi.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Bu modeli indirmek için yeterli boş alan yok. Yer açıp yeniden deneyin.",
+  "downloadNotificationsPermissionRequired": "Model indirmelerinin arka planda sürmesi için bildirimlere izin verin.",
+  "importAudioTooltip": "Bu kasete ses aktar",
+  "localSummaryInstructionsGroup": "Yerel özet talimatları",
+  "localSummaryInstructionsHint": "Örneğin: kararlara, görevlere ve son tarihlere odaklan.",
+  "localSummaryInstructionsPrivacy": "Bu talimatlar bu cihazda kalır ve Gemini veya ChatGPT’ye gönderilmez.",
+  "localSummarySaveFailed": "Yerel özet talimatları kaydedilemedi.",
+  "localSummaryInstructionsTitle": "Özet talimatların",
+  "llmModelDetails": "{quantization} · {license} · tahmini en az RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "indirme {size} · tahmini minimum RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

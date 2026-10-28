@@ -86,7 +86,9 @@ Uint8List composeTapePixels(
 
   final out = Uint8List.fromList(base);
   for (var i = 0; i < out.length; i += 4) {
-    if (out[i] == lr && out[i + 1] == lg && out[i + 2] == lb &&
+    if (out[i] == lr &&
+        out[i + 1] == lg &&
+        out[i + 2] == lb &&
         out[i + 3] == 0xff) {
       out[i] = ar;
       out[i + 1] = ag;
@@ -121,8 +123,9 @@ Future<Uint8List> _loadBasePixels() async {
   final data = await rootBundle.load('assets/images/tape.png');
   final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
   final frame = await codec.getNextFrame();
-  final bytes =
-      await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+  final bytes = await frame.image.toByteData(
+    format: ui.ImageByteFormat.rawRgba,
+  );
   frame.image.dispose();
   codec.dispose();
   return bytes!.buffer.asUint8List();
@@ -137,10 +140,12 @@ final _variants = <int, Future<ui.Image>>{};
 /// null → warm grey) at [windingWidth]. Accents always use the light-theme
 /// tokens — one sprite serves both themes (§5.2); [dark] only lifts the
 /// shell ink (r11).
-Future<ui.Image> tapeSpriteImage(
-        {int? hue, required int windingWidth, bool dark = false}) =>
-    _variants[((hue ?? -1) * 64 + windingWidth) * 2 + (dark ? 1 : 0)] ??=
-        _composeImage(hue, windingWidth, dark);
+Future<ui.Image> tapeSpriteImage({
+  int? hue,
+  required int windingWidth,
+  bool dark = false,
+}) => _variants[((hue ?? -1) * 64 + windingWidth) * 2 + (dark ? 1 : 0)] ??=
+    _composeImage(hue, windingWidth, dark);
 
 Future<ui.Image> _composeImage(int? hue, int windingWidth, bool dark) async {
   final base = await (_basePixels ??= _loadBasePixels());
@@ -151,7 +156,12 @@ Future<ui.Image> _composeImage(int? hue, int windingWidth, bool dark) async {
     dark: dark,
   );
   final completer = Completer<ui.Image>();
-  ui.decodeImageFromPixels(pixels, tapeSpriteWidth, tapeSpriteHeight,
-      ui.PixelFormat.rgba8888, completer.complete);
+  ui.decodeImageFromPixels(
+    pixels,
+    tapeSpriteWidth,
+    tapeSpriteHeight,
+    ui.PixelFormat.rgba8888,
+    completer.complete,
+  );
   return completer.future;
 }

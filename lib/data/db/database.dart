@@ -16,9 +16,9 @@ class Cassettes extends Table {
       boolean().withDefault(const Constant(false))();
   IntColumn get colorSeed => integer()();
   TextColumn get summary => text().nullable()();
-  IntColumn get summaryUpdatedAt => integer().nullable()();  // epoch ms
-  IntColumn get createdAt => integer()();  // epoch ms
-  IntColumn get updatedAt => integer()();  // epoch ms
+  IntColumn get summaryUpdatedAt => integer().nullable()(); // epoch ms
+  IntColumn get createdAt => integer()(); // epoch ms
+  IntColumn get updatedAt => integer()(); // epoch ms
 
   @override
   Set<Column> get primaryKey => {id};
@@ -31,7 +31,7 @@ class Memos extends Table {
       text().references(Cassettes, #id, onDelete: KeyAction.cascade)();
   TextColumn get filePath => text()();
   IntColumn get durationMs => integer()();
-  IntColumn get createdAt => integer()();  // epoch ms
+  IntColumn get createdAt => integer()(); // epoch ms
   TextColumn get detectedLang => text().nullable()();
 
   /// Transcript stored as a JSON blob per memo (§7.2 — no search in v1).
@@ -47,7 +47,7 @@ class Memos extends Table {
   /// Legacy M3 fold bookkeeping — no longer written since the cassette
   /// summary is rebuilt from all gists (§6.7 revised 2026-07-08); kept so
   /// existing databases need no migration.
-  IntColumn get foldedAt => integer().nullable()();  // epoch ms
+  IntColumn get foldedAt => integer().nullable()(); // epoch ms
   TextColumn get status => text()();
 
   @override
@@ -62,13 +62,13 @@ class Jobs extends Table {
   TextColumn get targetId => text()();
   TextColumn get status => text()();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
-  IntColumn get createdAt => integer()();  // epoch ms
+  IntColumn get createdAt => integer()(); // epoch ms
 
   @override
   Set<Column> get primaryKey => {id};
 }
 
-/// Key-value settings (single conceptual row, §7.2).
+/// Key-value app settings and per-memo metadata (memo titles).
 @DataClassName('SettingRow')
 class SettingsEntries extends Table {
   TextColumn get key => text()();
@@ -90,20 +90,20 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            // M3: cassette-summary fold bookkeeping.
-            await m.addColumn(memos, memos.foldedAt);
-          }
-          if (from < 3) {
-            // The retired transcript cleanup's raw-take column (§6.8).
-            await m.addColumn(memos, memos.rawTranscript);
-          }
-        },
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-      );
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        // M3: cassette-summary fold bookkeeping.
+        await m.addColumn(memos, memos.foldedAt);
+      }
+      if (from < 3) {
+        // The retired transcript cleanup's raw-take column (§6.8).
+        await m.addColumn(memos, memos.rawTranscript);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 
   static QueryExecutor _openConnection() {
     // §7.1: user data lives in app-documents so the OS backup captures it.

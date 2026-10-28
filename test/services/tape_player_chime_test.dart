@@ -8,12 +8,22 @@ void main() {
     test('fires on a one-step forward advance during playback', () {
       expect(
         isNaturalAdvance(
-            from: 0, to: 1, playing: true, seeking: false, loading: false),
+          from: 0,
+          to: 1,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isTrue,
       );
       expect(
         isNaturalAdvance(
-            from: 3, to: 4, playing: true, seeking: false, loading: false),
+          from: 3,
+          to: 4,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isTrue,
       );
     });
@@ -21,7 +31,12 @@ void main() {
     test('suppressed while a seek/scrub is in flight', () {
       expect(
         isNaturalAdvance(
-            from: 0, to: 1, playing: true, seeking: true, loading: false),
+          from: 0,
+          to: 1,
+          playing: true,
+          seeking: true,
+          loading: false,
+        ),
         isFalse,
       );
     });
@@ -29,7 +44,12 @@ void main() {
     test('suppressed while the tape (re)loads', () {
       expect(
         isNaturalAdvance(
-            from: 0, to: 1, playing: true, seeking: false, loading: true),
+          from: 0,
+          to: 1,
+          playing: true,
+          seeking: false,
+          loading: true,
+        ),
         isFalse,
       );
     });
@@ -37,7 +57,12 @@ void main() {
     test('suppressed when paused', () {
       expect(
         isNaturalAdvance(
-            from: 0, to: 1, playing: false, seeking: false, loading: false),
+          from: 0,
+          to: 1,
+          playing: false,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
     });
@@ -45,17 +70,32 @@ void main() {
     test('suppressed on backward or multi-step index jumps', () {
       expect(
         isNaturalAdvance(
-            from: 2, to: 1, playing: true, seeking: false, loading: false),
+          from: 2,
+          to: 1,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
       expect(
         isNaturalAdvance(
-            from: 0, to: 2, playing: true, seeking: false, loading: false),
+          from: 0,
+          to: 2,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
       expect(
         isNaturalAdvance(
-            from: 1, to: 1, playing: true, seeking: false, loading: false),
+          from: 1,
+          to: 1,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
     });
@@ -63,12 +103,22 @@ void main() {
     test('suppressed without a previous index (fresh load)', () {
       expect(
         isNaturalAdvance(
-            from: null, to: 0, playing: true, seeking: false, loading: false),
+          from: null,
+          to: 0,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
       expect(
         isNaturalAdvance(
-            from: 0, to: null, playing: true, seeking: false, loading: false),
+          from: 0,
+          to: null,
+          playing: true,
+          seeking: false,
+          loading: false,
+        ),
         isFalse,
       );
     });

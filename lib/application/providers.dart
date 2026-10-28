@@ -20,11 +20,16 @@ import '../services/audio/pcm_decoder.dart';
 import '../services/audio/recorder_service.dart';
 import '../services/audio/tape_player_service.dart';
 import '../services/import/cassette_importer.dart';
+import '../services/import/local_audio_importer.dart';
 import '../services/processing/job_queue.dart';
 import '../services/providers/llm/llama_bindings.dart';
 import '../services/providers/llm/llama_worker.dart';
 import '../services/providers/llm/llm_model_manager.dart';
 import '../services/providers/llm/llm_summarization_provider.dart';
+import '../services/providers/credential_vault.dart';
+import '../services/providers/gemini/gemini_transcription_provider.dart';
+import '../services/providers/gemini/gemini_summary_provider.dart';
+import '../services/providers/chatgpt/chatgpt_summary_provider.dart';
 import '../services/providers/summarization_provider.dart';
 import '../services/providers/transcription_provider.dart';
 import '../services/providers/whisper/whisper_bindings.dart';
@@ -41,25 +46,35 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 
 /// Overridden in main() with the opened store (needs async I/O).
 final audioFileStoreProvider = Provider<AudioFileStore>(
-    (ref) => throw UnimplementedError('overridden in main'));
+  (ref) => throw UnimplementedError('overridden in main'),
+);
 
 final cassetteRepositoryProvider = Provider<CassetteRepository>(
-    (ref) => CassetteRepository(ref.watch(appDatabaseProvider)));
+  (ref) => CassetteRepository(ref.watch(appDatabaseProvider)),
+);
 
 final memoRepositoryProvider = Provider<MemoRepository>(
-    (ref) => MemoRepository(ref.watch(appDatabaseProvider)));
+  (ref) => MemoRepository(ref.watch(appDatabaseProvider)),
+);
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
-    (ref) => SettingsRepository(ref.watch(appDatabaseProvider)));
+  (ref) => SettingsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final credentialVaultProvider = Provider<CredentialVault>(
+  (ref) => CredentialVault(),
+);
 
 /// Whisper model store under `<app-support>/models/whisper` (§7.1) —
 /// overridden in main() / tests with the resolved directory.
 final whisperModelManagerProvider = Provider<WhisperModelManager>(
-    (ref) => throw UnimplementedError('overridden in main'));
+  (ref) => throw UnimplementedError('overridden in main'),
+);
 
 /// LLM model store under `<app-support>/models/llm` (§7.1) — same deal.
 final llmModelManagerProvider = Provider<LlmModelManager>(
-    (ref) => throw UnimplementedError('overridden in main'));
+  (ref) => throw UnimplementedError('overridden in main'),
+);
 
 final pcmDecoderProvider = Provider<PcmDecoder>((ref) => defaultPcmDecoder());
 
@@ -85,6 +100,12 @@ final vadModelFileProvider = Provider<String?>((ref) => null);
 /// local LLM (D3, M3).
 final transcriptionProvider = Provider<TranscriptionProvider>((ref) {
   final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+  if (settings.transcriptionProvider == 'gemini') {
+    return GeminiTranscriptionProvider(
+      vault: ref.watch(credentialVaultProvider),
+      modelId: settings.geminiModel,
+    );
+  }
   return WhisperCppTranscriptionProvider(
     models: ref.watch(whisperModelManagerProvider),
     decoder: ref.watch(pcmDecoderProvider),
@@ -96,30 +117,48 @@ final transcriptionProvider = Provider<TranscriptionProvider>((ref) {
 
 final summarizationProvider = Provider<SummarizationProvider>((ref) {
   final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+  if (settings.summaryProvider == 'chatgpt') {
+    return ChatGptSummaryProvider(
+      vault: ref.watch(credentialVaultProvider),
+      model: settings.chatGptModel,
+      reasoning: settings.chatGptReasoning,
+    );
+  }
+  if (settings.summaryProvider == 'gemini') {
+    return GeminiSummaryProvider(
+      vault: ref.watch(credentialVaultProvider),
+      modelId: settings.geminiSummaryModel,
+      instructions: settings.geminiSummaryInstructions,
+    );
+  }
   return LocalLlmSummarizationProvider(
     models: ref.watch(llmModelManagerProvider),
     worker: ref.watch(llamaWorkerProvider),
     tier: settings.llmTier,
+    instructions: settings.localSummaryInstructions,
   );
 });
 
 /// Deliberately *not* watching the two engine providers: the queue survives
 /// a tier switch and resolves them per job instead (see JobQueue docs).
-final jobQueueProvider = Provider<JobQueue>((ref) => JobQueue(
-      ref.watch(appDatabaseProvider),
-      ref.watch(memoRepositoryProvider),
-      ref.watch(cassetteRepositoryProvider),
-      ref.watch(settingsRepositoryProvider),
-      () => ref.read(transcriptionProvider),
-      () => ref.read(summarizationProvider),
-      transcoder: () => ref.read(audioTranscoderProvider),
-      systemZhScript: systemZhScript,
-    ));
+final jobQueueProvider = Provider<JobQueue>(
+  (ref) => JobQueue(
+    ref.watch(appDatabaseProvider),
+    ref.watch(memoRepositoryProvider),
+    ref.watch(cassetteRepositoryProvider),
+    ref.watch(settingsRepositoryProvider),
+    () => ref.read(transcriptionProvider),
+    () => ref.read(summarizationProvider),
+    transcoder: () => ref.read(audioTranscoderProvider),
+    systemZhScript: systemZhScript,
+  ),
+);
 
 /// §6.4: WAV capture → archival AAC (MediaCodec/AVAssetWriter on mobile,
 /// ffmpeg CLI on desktop).
-final audioTranscoderProvider =
-    Provider<AudioTranscoder>((ref) => defaultAudioTranscoder());
+final audioTranscoderProvider = Provider<AudioTranscoder>(
+  (ref) => defaultAudioTranscoder(),
+);
 
 /// D13: the Android microphone foreground service under a live capture.
 /// A class-shaped seam so controller tests can fake the platform answer.
@@ -130,8 +169,9 @@ class RecordingForegroundGlue {
   Future<void> stop() => stopRecordingForegroundService();
 }
 
-final recordingForegroundGlueProvider =
-    Provider<RecordingForegroundGlue>((ref) => RecordingForegroundGlue());
+final recordingForegroundGlueProvider = Provider<RecordingForegroundGlue>(
+  (ref) => RecordingForegroundGlue(),
+);
 
 /// §14: killed captures come back as memos at launch — wired like the
 /// importer, through the queue's own entry points.
@@ -154,12 +194,16 @@ String systemZhScript() {
   for (final locale in locales) {
     if (locale.languageCode == 'zh' || locale.languageCode == 'yue') {
       return zhScriptFor(
-          scriptCode: locale.scriptCode, countryCode: locale.countryCode);
+        scriptCode: locale.scriptCode,
+        countryCode: locale.countryCode,
+      );
     }
   }
   final primary = ui.PlatformDispatcher.instance.locale;
   return zhScriptFor(
-      scriptCode: primary.scriptCode, countryCode: primary.countryCode);
+    scriptCode: primary.scriptCode,
+    countryCode: primary.countryCode,
+  );
 }
 
 /// Archive import (§8): restored memos that lack a transcript or gist
@@ -176,9 +220,23 @@ final cassetteImporterProvider = Provider<CassetteImporter>((ref) {
   );
 });
 
+/// Local audio imports are copied into app storage, then use the same
+/// transcription queue as newly recorded memos.
+final localAudioImporterProvider = Provider<LocalAudioImporter>((ref) {
+  final jobs = ref.watch(jobQueueProvider);
+  return LocalAudioImporter(
+    files: ref.watch(audioFileStoreProvider),
+    cassettes: ref.watch(cassetteRepositoryProvider),
+    memos: ref.watch(memoRepositoryProvider),
+    probeDurationMs: probeAudioDurationMs,
+    enqueueTranscription: jobs.enqueueTranscription,
+  );
+});
+
 /// Per-tier model install/download state for the Settings pickers (§5.5).
-final whisperModelStatesProvider =
-    StreamProvider<List<WhisperModelState>>((ref) async* {
+final whisperModelStatesProvider = StreamProvider<List<WhisperModelState>>((
+  ref,
+) async* {
   final manager = ref.watch(whisperModelManagerProvider);
   yield manager.snapshot();
   await for (final _ in manager.changes) {
@@ -186,8 +244,9 @@ final whisperModelStatesProvider =
   }
 });
 
-final llmModelStatesProvider =
-    StreamProvider<List<LlmModelState>>((ref) async* {
+final llmModelStatesProvider = StreamProvider<List<LlmModelState>>((
+  ref,
+) async* {
   final manager = ref.watch(llmModelManagerProvider);
   yield manager.snapshot();
   await for (final _ in manager.changes) {
@@ -207,8 +266,7 @@ final chimeFileProvider = Provider<String?>((ref) => null);
 
 /// One tape player app-wide — only one cassette is open at a time.
 final tapePlayerProvider = Provider<TapePlayerService>((ref) {
-  final player =
-      TapePlayerService(chimeFilePath: ref.watch(chimeFileProvider));
+  final player = TapePlayerService(chimeFilePath: ref.watch(chimeFileProvider));
   ref.onDispose(player.dispose);
   // D5: the chime toggle follows settings live, without rebuilding the
   // player (a rebuild would drop the loaded tape mid-session).
@@ -220,22 +278,31 @@ final tapePlayerProvider = Provider<TapePlayerService>((ref) {
 });
 
 final settingsProvider = StreamProvider<AppSettings>(
-    (ref) => ref.watch(settingsRepositoryProvider).watch());
+  (ref) => ref.watch(settingsRepositoryProvider).watch(),
+);
 
 final cassetteOverviewsProvider = StreamProvider<List<CassetteOverview>>(
-    (ref) => ref.watch(cassetteRepositoryProvider).watchOverviews());
+  (ref) => ref.watch(cassetteRepositoryProvider).watchOverviews(),
+);
 
 final cassetteProvider = StreamProvider.family<Cassette?, String>(
-    (ref, id) => ref.watch(cassetteRepositoryProvider).watchCassette(id));
+  (ref, id) => ref.watch(cassetteRepositoryProvider).watchCassette(id),
+);
 
 final memosProvider = StreamProvider.family<List<Memo>, String>(
-    (ref, cassetteId) =>
-        ref.watch(memoRepositoryProvider).watchMemosOf(cassetteId));
+  (ref, cassetteId) =>
+      ref.watch(memoRepositoryProvider).watchMemosOf(cassetteId),
+);
+
+final memoTitlesProvider = StreamProvider<Map<String, String>>(
+  (ref) => ref.watch(memoRepositoryProvider).watchTitles(),
+);
 
 /// The computed tape view (§4.1) for an open cassette.
 final tapeProvider = Provider.family<Tape, String>((ref, cassetteId) {
   final memos = ref.watch(memosProvider(cassetteId)).value ?? const [];
-  return Tape(memos);
+  final titles = ref.watch(memoTitlesProvider).value ?? const {};
+  return Tape([for (final memo in memos) memo.withTitle(titles[memo.id])]);
 });
 
 /// Playback state of the currently loaded tape, for the LCD counter,
@@ -248,4 +315,5 @@ final playbackProvider = StreamProvider<TapePlaybackState>((ref) {
 /// Player trouble surfaced to the open cassette screen (§14): a dead
 /// source mid-tape, memos with no audio after a metadata-only restore.
 final playerIssuesProvider = StreamProvider<(TapePlayerIssue, int)>(
-    (ref) => ref.watch(tapePlayerProvider).issues);
+  (ref) => ref.watch(tapePlayerProvider).issues,
+);

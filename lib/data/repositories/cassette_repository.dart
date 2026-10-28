@@ -22,8 +22,7 @@ class CassetteOverview {
 }
 
 class CassetteRepository {
-  CassetteRepository(this._db, {Random? random})
-      : _random = random ?? Random();
+  CassetteRepository(this._db, {Random? random}) : _random = random ?? Random();
 
   final AppDatabase _db;
   final Random _random;
@@ -33,28 +32,37 @@ class CassetteRepository {
   Stream<List<CassetteOverview>> watchOverviews() {
     final count = _db.memos.id.count();
     final total = _db.memos.durationMs.sum();
-    final query = _db.select(_db.cassettes).join([
-      leftOuterJoin(_db.memos, _db.memos.cassetteId.equalsExp(_db.cassettes.id)),
-    ])
-      ..addColumns([count, total])
-      ..groupBy([_db.cassettes.id])
-      ..orderBy([
-        OrderingTerm.desc(_db.cassettes.updatedAt),
-        OrderingTerm.desc(_db.cassettes.createdAt),
-      ]);
-    return query.watch().map((rows) => rows
-        .map((row) => CassetteOverview(
+    final query =
+        _db.select(_db.cassettes).join([
+            leftOuterJoin(
+              _db.memos,
+              _db.memos.cassetteId.equalsExp(_db.cassettes.id),
+            ),
+          ])
+          ..addColumns([count, total])
+          ..groupBy([_db.cassettes.id])
+          ..orderBy([
+            OrderingTerm.desc(_db.cassettes.updatedAt),
+            OrderingTerm.desc(_db.cassettes.createdAt),
+          ]);
+    return query.watch().map(
+      (rows) => rows
+          .map(
+            (row) => CassetteOverview(
               cassette: cassetteFromRow(row.readTable(_db.cassettes)),
               memoCount: row.read(count) ?? 0,
               totalDurationMs: row.read(total) ?? 0,
-            ))
-        .toList());
+            ),
+          )
+          .toList(),
+    );
   }
 
   Stream<Cassette?> watchCassette(String id) {
     final query = _db.select(_db.cassettes)..where((c) => c.id.equals(id));
     return query.watchSingleOrNull().map(
-        (row) => row == null ? null : cassetteFromRow(row));
+      (row) => row == null ? null : cassetteFromRow(row),
+    );
   }
 
   /// New cassettes open immediately with a placeholder label (§5.2, D10).
@@ -107,18 +115,20 @@ class CassetteRepository {
         CassettesCompanion(
           summary: Value(summary),
           summaryUpdatedAt: Value(
-              summary == null ? null : DateTime.now().millisecondsSinceEpoch),
+            summary == null ? null : DateTime.now().millisecondsSinceEpoch,
+          ),
         ),
       );
 
   /// Auto-suggested title (D10 revised): only ever fills a *blank* label —
   /// the WHERE guard also keeps a rename that lands mid-suggestion safe.
   Future<void> setSuggestedLabel(String id, String label) =>
-      (_db.update(_db.cassettes)
-            ..where((c) =>
+      (_db.update(_db.cassettes)..where(
+            (c) =>
                 c.id.equals(id) &
                 c.titleIsUserSet.equals(false) &
-                c.label.isNull()))
+                c.label.isNull(),
+          ))
           .write(CassettesCompanion(label: Value(label)));
 
   /// User rename: sets the D10 override flag so auto-suggestions stop.
@@ -135,24 +145,37 @@ class CassetteRepository {
   /// lands exactly on the chosen hue; the memo palette rotates with it
   /// (§10.2). Cosmetic — recency is deliberately not bumped.
   Future<void> setColorSeed(String id, int seed) =>
-      (_db.update(_db.cassettes)..where((c) => c.id.equals(id)))
-          .write(CassettesCompanion(colorSeed: Value(seed)));
+      (_db.update(_db.cassettes)..where((c) => c.id.equals(id))).write(
+        CassettesCompanion(colorSeed: Value(seed)),
+      );
 
   /// Bumps recency so the cassette floats to the top of the grid (§5.2).
   Future<void> touch(String id) =>
       (_db.update(_db.cassettes)..where((c) => c.id.equals(id))).write(
-        CassettesCompanion(updatedAt: Value(DateTime.now().millisecondsSinceEpoch)),
+        CassettesCompanion(
+          updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+        ),
       );
 
   /// Whether the cassette row still exists — capture recovery (§14) must
   /// not resurrect a memo onto a deleted tape.
   Future<bool> exists(String id) async =>
-      await (_db.select(_db.cassettes)..where((c) => c.id.equals(id)))
-          .getSingleOrNull() !=
+      await (_db.select(
+        _db.cassettes,
+      )..where((c) => c.id.equals(id))).getSingleOrNull() !=
       null;
 
   /// Memos cascade-delete via foreign key; audio files are the caller's
   /// responsibility (see AudioFileStore.deleteCassetteDir).
-  Future<void> delete(String id) =>
-      (_db.delete(_db.cassettes)..where((c) => c.id.equals(id))).go();
+  Future<void> delete(String id) async {
+    final rows = await (_db.select(
+      _db.memos,
+    )..where((m) => m.cassetteId.equals(id))).get();
+    for (final memo in rows) {
+      await (_db.delete(
+        _db.settingsEntries,
+      )..where((s) => s.key.equals('memo-title:${memo.id}'))).go();
+    }
+    await (_db.delete(_db.cassettes)..where((c) => c.id.equals(id))).go();
+  }
 }

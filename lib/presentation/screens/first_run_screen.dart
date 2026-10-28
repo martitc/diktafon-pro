@@ -242,7 +242,8 @@ class _FirstRunScreenState extends ConsumerState<FirstRunScreen> {
     final tape = context.tape;
     final state = states?.where((s) => s.model.tier == model.tier).firstOrNull;
     final ready = state?.status == ModelStatus.ready;
-    final partial = state?.status == ModelStatus.downloading ||
+    final partial =
+        state?.status == ModelStatus.downloading ||
         state?.status == ModelStatus.paused;
     void openPicker() =>
         showDialog<void>(context: context, builder: (_) => picker);
@@ -339,7 +340,11 @@ class _SetupRow extends StatelessWidget {
                 onTap: onChevron,
                 child: Padding(
                   padding: const EdgeInsetsDirectional.only(start: 8, top: 2),
-                  child: Icon(forwardChevron(context), size: 18, color: tape.ink2),
+                  child: Icon(
+                    forwardChevron(context),
+                    size: 18,
+                    color: tape.ink2,
+                  ),
                 ),
               ),
           ],

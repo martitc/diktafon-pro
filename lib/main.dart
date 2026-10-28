@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:background_downloader/background_downloader.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,6 +16,8 @@ import 'l10n/gen/app_localizations.dart';
 import 'l10n/locale_resolution.dart';
 import 'services/notifications/download_notifier.dart';
 import 'services/notifications/local_notifications_sink.dart';
+import 'services/notifications/processing_completion_notifier.dart';
+import 'services/processing/job_queue.dart';
 import 'services/providers/llm/llm_model_manager.dart';
 import 'services/providers/model_manager.dart';
 import 'services/providers/whisper/whisper_model_manager.dart';
@@ -22,6 +25,23 @@ import 'services/system/system_settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final downloader = FileDownloader();
+  downloader.configureNotification(
+    running: const TaskNotification('Diktafon Pro', 'Descargando {filename}'),
+    complete: const TaskNotification(
+      'Diktafon Pro',
+      'Modelo descargado: {filename}',
+    ),
+    error: const TaskNotification(
+      'Diktafon Pro',
+      'Error al descargar {filename}',
+    ),
+    paused: const TaskNotification(
+      'Diktafon Pro',
+      'Descarga pausada: {filename}',
+    ),
+    progressBar: true,
+  );
   if (Platform.isLinux) {
     // Desktop dev target: just_audio has no Linux backend of its own.
     // LIBMPV_PATH lets dev machines point at a locally extracted libmpv.
@@ -38,18 +58,30 @@ Future<void> main() async {
   final modelsDir = Directory('${supportDir.path}/models')
     ..createSync(recursive: true);
   unawaited(excludeFromIosBackup(modelsDir.path));
-  final whisperModels =
-      WhisperModelManager(Directory('${modelsDir.path}/whisper'));
+  final whisperModels = WhisperModelManager(
+    Directory('${modelsDir.path}/whisper'),
+  );
   final llmModels = LlmModelManager(Directory('${modelsDir.path}/llm'));
-  final container = ProviderContainer(overrides: [
-    audioFileStoreProvider.overrideWithValue(fileStore),
-    whisperModelManagerProvider.overrideWithValue(whisperModels),
-    llmModelManagerProvider.overrideWithValue(llmModels),
-    chimeFileProvider.overrideWithValue(
-        await _materializeAsset('assets/audio/chime.wav', supportDir.path)),
-    vadModelFileProvider.overrideWithValue(await _materializeAsset(
-        'assets/models/ggml-silero-v5.1.2.bin', modelsDir.path)),
-  ]);
+  whisperModels.attachBackgroundTasks();
+  llmModels.attachBackgroundTasks();
+  await downloader.start(autoCleanDatabase: false);
+  await downloader.resumeFromBackground();
+  final container = ProviderContainer(
+    overrides: [
+      audioFileStoreProvider.overrideWithValue(fileStore),
+      whisperModelManagerProvider.overrideWithValue(whisperModels),
+      llmModelManagerProvider.overrideWithValue(llmModels),
+      chimeFileProvider.overrideWithValue(
+        await _materializeAsset('assets/audio/chime.wav', supportDir.path),
+      ),
+      vadModelFileProvider.overrideWithValue(
+        await _materializeAsset(
+          'assets/models/ggml-silero-v5.1.2.bin',
+          modelsDir.path,
+        ),
+      ),
+    ],
+  );
 
   // iOS moves the data container on app updates/reinstalls — repoint stored
   // audio paths at the current root before jobs or playback read them
@@ -67,6 +99,17 @@ Future<void> main() async {
     await container.read(captureRecoveryProvider).recover();
   } catch (_) {}
 
+  for (final models in <ModelManager<ModelSpec>>[whisperModels, llmModels]) {
+    models.installed.listen((_) {
+      unawaited(() async {
+        try {
+          await container.read(settingsProvider.future);
+          await container.read(jobQueueProvider).drain();
+        } catch (_) {}
+      }());
+    });
+  }
+
   // Launch hygiene, off the critical path: audio files no memo references
   // (a capture killed before its stop() ever inserted a row, §7.1) and
   // stale temp dirs stranded by a mid-job kill (decoded PCM, import/export
@@ -81,7 +124,11 @@ Future<void> main() async {
   }());
 
   // Model downloads mirror into the notification area while they run.
-  _attachDownloadNotifications(whisperModels, llmModels);
+  _attachDownloadNotifications(
+    whisperModels,
+    llmModels,
+    container.read(jobQueueProvider),
+  );
 
   // Resume any jobs persisted before the last shutdown (§6.5 durability) —
   // once settings have actually loaded: the providers fall back to default
@@ -98,15 +145,16 @@ Future<void> main() async {
   // wire without waiting for a tap (§6.6; user-paused `.paused` stashes stay
   // put). When a model lands, jobs parked on it get released.
   for (final models in <ModelManager<ModelSpec>>[whisperModels, llmModels]) {
-    unawaited(models.resumeInterrupted().then((landed) async {
-      if (landed) await container.read(jobQueueProvider).drain();
-    }));
+    unawaited(
+      models.resumeInterrupted().then((landed) async {
+        if (landed) await container.read(jobQueueProvider).drain();
+      }),
+    );
   }
 
-  runApp(UncontrolledProviderScope(
-    container: container,
-    child: const DiktafonApp(),
-  ));
+  runApp(
+    UncontrolledProviderScope(container: container, child: const DiktafonApp()),
+  );
 }
 
 /// Best-effort, off the critical startup path: no notification backend →
@@ -116,25 +164,36 @@ Future<void> main() async {
 Future<void> _attachDownloadNotifications(
   WhisperModelManager whisperModels,
   LlmModelManager llmModels,
+  JobQueue jobQueue,
 ) async {
   final sink = await LocalNotificationsSink.init();
   if (sink == null) return;
   AppLocalizations l10n;
   try {
     l10n = lookupAppLocalizations(
-        padZhLocale(ui.PlatformDispatcher.instance.locale));
+      padZhLocale(ui.PlatformDispatcher.instance.locale),
+    );
   } catch (_) {
     l10n = lookupAppLocalizations(const Locale('en'));
   }
   ModelDownloadNotifier(
-    sink,
-    DownloadNotificationTexts(
-      downloading: l10n.notifDownloading,
-      installed: l10n.notifModelInstalled,
-    ),
-  )
+      sink,
+      DownloadNotificationTexts(
+        downloading: l10n.notifDownloading,
+        installed: l10n.notifModelInstalled,
+      ),
+    )
     ..attach(whisperModels, idBase: 100)
     ..attach(llmModels, idBase: 200);
+  ProcessingCompletionNotifier(
+    sink,
+    ProcessingNotificationTexts(
+      transcriptionTitle: l10n.notifTranscriptionCompleted,
+      transcriptionBody: l10n.notifTranscriptionCompletedBody,
+      summaryTitle: l10n.notifSummaryCompleted,
+      summaryBody: l10n.notifSummaryCompletedBody,
+    ),
+  ).attach(jobQueue.completions);
 }
 
 /// Neither just_audio's media_kit backend nor the native engines read

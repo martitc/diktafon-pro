@@ -1,6 +1,5 @@
 {
   "@@locale": "ko",
-
   "untitledCassette": "제목 없는 카세트",
   "rename": "이름 변경",
   "delete": "삭제",
@@ -9,7 +8,6 @@
   "deleteAction": "삭제",
   "ok": "확인",
   "back": "뒤로",
-
   "settingsTooltip": "설정",
   "homeEmpty": "아직 카세트가 없습니다.\n+를 눌러 새 테이프를 시작하세요.",
   "newCassette": "새 카세트",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "카세트 이름",
   "deleteCassetteTitle": "카세트를 삭제할까요?",
   "deleteCassetteBody": "“{label}” 및 {count, plural, other{메모 {count}개}}가 삭제됩니다. 되돌릴 수 없습니다.",
-
   "memoCount": "{count, plural, other{메모 {count}개}}",
   "cardEmptyMeta": "비어 있음 · 눌러서 열기",
   "cardMetaNaming": "{memos} · 이름 짓는 중…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "오늘 {time}",
   "yesterday": "어제",
-
   "deleteCassette": "카세트 삭제",
   "blankTape": "빈 테이프입니다.\n빨간 키를 눌러 녹음하세요.",
   "emptyTape": "빈 테이프",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "메모 {n}이(가) 삭제되고 테이프의 빈자리는 이어집니다. 되돌릴 수 없습니다.",
   "timelineLabel": "테이프 타임라인",
   "timelinePosition": "{total} 중 {position}",
-
   "noSpeech": "(음성 없음)",
   "transcriptionFailedRetry": "텍스트 변환 실패 — 눌러서 다시 시도 (오디오는 계속 재생됩니다)",
   "queuedForTranscription": "텍스트 변환 대기 중…",
@@ -55,7 +50,6 @@
   "summarizing": "요약 중…",
   "summaryFailedRetry": "요약 실패 — 눌러서 다시 시도",
   "transcribing": "텍스트로 변환 중…",
-
   "settingsTitle": "설정",
   "groupLanguage": "언어",
   "transcriptionLanguage": "텍스트 변환 언어",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "더 가볍고 빠르지만 정확도가 낮습니다. 특히 시끄러운 녹음에서 그렇습니다.",
   "whisperLargeDesc": "더 높은 정확도. 고성능 기기가 필요합니다(전사 중 약 2.5 GB RAM).",
   "whisperLargeDescCapable": "추천 — 훨씬 더 정확합니다. 특히 소음이 있을 때 그렇습니다(전사 중 약 2.5 GB RAM).",
+  "whisperFullLargeDesc": "최고 정확도 — 2.9 GiB 다운로드, RAM 8 GB 권장.",
+  "whisperFullLargeDescBlocked": "2.9 GiB 다운로드 — 이 기기에서 실행하려면 RAM이 약 8 GB 필요합니다.",
   "llmDefaultDesc": "추천 — 간결한 다국어 요약.",
   "llm4bDesc": "더 높은 품질의 요약과 제목. 고성능 기기가 필요합니다(요약 중 약 3 GB RAM).",
   "summariesOffValue": "요약 없음 · 눌러서 설정",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "정보 및 개인정보",
   "aboutPrivacyDesc": "오디오는 이 기기를 절대 벗어나지 않습니다",
   "aboutTitle": "정보 및 개인정보",
-  "aboutBody": "Diktafon은 휴대폰 안에서 바로 듣고, 적고, 요약합니다.\n\n녹음, 변환 텍스트, 요약은 기기를 절대 벗어나지 않습니다. 계정도, 클라우드도, 분석 도구도 없습니다. 데이터가 나가는 유일한 길은 직접 시작한 백업이나 내보내기뿐입니다.",
-  "aboutOpenSource": "Diktafon은 무료 오픈 소스입니다:",
+  "aboutBody": "Diktafon Pro은 휴대폰 안에서 바로 듣고, 적고, 요약합니다.\n\n녹음, 변환 텍스트, 요약은 기기를 절대 벗어나지 않습니다. 계정도, 클라우드도, 분석 도구도 없습니다. 데이터가 나가는 유일한 길은 직접 시작한 백업이나 내보내기뿐입니다.",
+  "aboutOpenSource": "Diktafon Pro은 무료 오픈 소스입니다:",
   "aboutPrivacyPolicy": "개인정보 처리방침",
-
   "modelPickerTranscriptionTitle": "텍스트 변환 모델",
   "modelPickerSummaryTitle": "요약 모델",
   "pickerInstalled": "설치됨 · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} 준비 완료 — 대기 중인 메모를 변환합니다.",
   "modelReadySummarize": "{label} 준비 완료 — 대기 중인 메모를 요약합니다.",
   "downloadFailed": "{label} 다운로드 실패 — 연결을 확인하고 다시 시도하세요.",
-
-  "firstRunWelcome": "Diktafon에 오신 것을 환영합니다",
+  "firstRunWelcome": "Diktafon Pro에 오신 것을 환영합니다",
   "firstRunIntro": "휴대폰 안에서 바로 듣고, 적고, 요약합니다. 녹음, 변환 텍스트, 요약은 **이 기기를 절대 벗어나지 않습니다**. 계정도 클라우드도 없습니다.",
   "firstRunSetupHeader": "처음 설정",
   "allowMicRow": "마이크 허용",
@@ -126,9 +120,8 @@
   "provisionChoose": "눌러서 다운로드할 모델 선택",
   "downloadsFinishInBackground": "다운로드는 백그라운드에서 계속됩니다.",
   "startRecordingKey": "녹음 시작",
-
   "backupTitle": "내보내기 및 가져오기",
-  "backupIntro": "기기 자체 백업이 카세트 목록, 변환 텍스트, 요약을 자동으로 보관합니다. 녹음 파일은 용량이 큽니다 — 직접 챙기세요: 내보내기는 카세트의 오디오, 변환 텍스트, 요약을 .zip 아카이브 하나로 묶고, 아카이브를 가져오면 다시 복원됩니다. Diktafon은 아무것도 업로드하지 않습니다.",
+  "backupIntro": "기기 자체 백업이 카세트 목록, 변환 텍스트, 요약을 자동으로 보관합니다. 녹음 파일은 용량이 큽니다 — 직접 챙기세요: 내보내기는 카세트의 오디오, 변환 텍스트, 요약을 .zip 아카이브 하나로 묶고, 아카이브를 가져오면 다시 복원됩니다. Diktafon Pro은 아무것도 업로드하지 않습니다.",
   "groupExport": "내보내기",
   "exportAll": "모든 카세트 내보내기",
   "exportAllDesc": "전부 아카이브 파일 하나로",
@@ -147,11 +140,9 @@
   "importFailures": "카세트 {count}개를 가져오지 못했습니다.",
   "importNothingFound": "이 아카이브에는 카세트가 없습니다.",
   "importFailed": "가져오기 실패: {error}",
-
-  "exportNote": "{date}에 Diktafon에서 내보냄.",
+  "exportNote": "{date}에 Diktafon Pro에서 내보냄.",
   "exportSummaryHeading": "요약",
   "exportNotTranscribed": "(변환되지 않음)",
-
   "openSystemSettings": "설정",
   "changeColor": "색상 변경",
   "retranscribe": "다시 변환",
@@ -168,6 +159,69 @@
   "memoActions": "메모 동작",
   "notifDownloading": "{label} 다운로드 중",
   "notifModelInstalled": "{label} 설치됨",
+  "notifTranscriptionCompleted": "받아쓰기가 완료되었습니다",
+  "notifTranscriptionCompletedBody": "오디오 받아쓰기를 Diktafon Pro에서 확인할 수 있습니다.",
+  "notifSummaryCompleted": "요약이 완료되었습니다",
+  "notifSummaryCompletedBody": "오디오 요약을 Diktafon Pro에서 확인할 수 있습니다.",
   "notifRecording": "녹음 중",
-  "notifRecordingChannel": "녹음"
+  "notifRecordingChannel": "녹음",
+  "importAudio": "오디오 가져오기",
+  "importingAudio": "오디오 가져오는 중…",
+  "importedAudioFiles": "{count, plural, other{오디오 메모 {count}개를 추가했습니다. 텍스트 변환이 자동으로 시작됩니다.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{오디오 파일 {count}개를 가져오지 못했습니다.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{오디오 메모 {count}개를 가져왔지만 텍스트 변환을 대기열에 추가하지 못했습니다.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "이 모델을 다운로드할 저장 공간이 부족합니다. 공간을 확보한 뒤 다시 시도하세요.",
+  "downloadNotificationsPermissionRequired": "모델 다운로드를 백그라운드에서 계속하려면 알림을 허용하세요.",
+  "importAudioTooltip": "이 카세트로 오디오 가져오기",
+  "localSummaryInstructionsGroup": "로컬 요약 지침",
+  "localSummaryInstructionsHint": "예: 결정 사항, 작업 및 기한에 집중하세요.",
+  "localSummaryInstructionsPrivacy": "이 지침은 이 기기에 저장되며 Gemini나 ChatGPT로 전송되지 않습니다.",
+  "localSummarySaveFailed": "로컬 요약 지침을 저장하지 못했습니다.",
+  "localSummaryInstructionsTitle": "요약 지침",
+  "llmModelDetails": "{quantization} · {license} · 예상 최소 RAM: {ram}GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "다운로드 {size} · 예상 최소 RAM: {ram}GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

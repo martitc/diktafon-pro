@@ -28,7 +28,7 @@ void main() {
     },
     skip: config == null
         ? 'set DIKTAFON_QUALITY_VARIANT / DIKTAFON_QUALITY_DIR (and engine '
-            'paths) to run the quality bench'
+              'paths) to run the quality bench'
         : false,
     timeout: const Timeout(Duration(minutes: 120)),
   );

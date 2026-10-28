@@ -1,6 +1,5 @@
 {
   "@@locale": "pl",
-
   "untitledCassette": "Kaseta bez nazwy",
   "rename": "Zmień nazwę",
   "delete": "Usuń",
@@ -9,7 +8,6 @@
   "deleteAction": "USUŃ",
   "ok": "OK",
   "back": "Wstecz",
-
   "settingsTooltip": "Ustawienia",
   "homeEmpty": "Nie ma jeszcze kaset.\nNaciśnij +, aby zacząć nową taśmę.",
   "newCassette": "Nowa kaseta",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Nazwa kasety",
   "deleteCassetteTitle": "USUNĄĆ KASETĘ?",
   "deleteCassetteBody": "„{label}” i {count, plural, one{1 nagranie} few{{count} nagrania} many{{count} nagrań} other{{count} nagrania}} zostaną usunięte. Tego nie da się cofnąć.",
-
   "memoCount": "{count, plural, one{1 nagranie} few{{count} nagrania} many{{count} nagrań} other{{count} nagrania}}",
   "cardEmptyMeta": "pusta · naciśnij, aby otworzyć",
   "cardMetaNaming": "{memos} · sama się nazywa…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "dziś {time}",
   "yesterday": "wczoraj",
-
   "deleteCassette": "Usuń kasetę",
   "blankTape": "Czysta taśma.\nNaciśnij czerwony klawisz, aby nagrywać.",
   "emptyTape": "PUSTA TAŚMA",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Nagranie {n} zostanie usunięte, a taśma się domknie. Tego nie da się cofnąć.",
   "timelineLabel": "Oś taśmy",
   "timelinePosition": "{position} z {total}",
-
   "noSpeech": "(brak mowy)",
   "transcriptionFailedRetry": "transkrypcja nie powiodła się — dotknij, aby ponowić (dźwięk nadal gra)",
   "queuedForTranscription": "w kolejce do transkrypcji…",
@@ -55,7 +50,6 @@
   "summarizing": "powstaje podsumowanie…",
   "summaryFailedRetry": "podsumowanie nie powiodło się — dotknij, aby ponowić",
   "transcribing": "trwa transkrypcja…",
-
   "settingsTitle": "USTAWIENIA",
   "groupLanguage": "Język",
   "transcriptionLanguage": "Język transkrypcji",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Mniejszy i szybszy — mniej dokładny, zwłaszcza przy hałaśliwych nagraniach.",
   "whisperLargeDesc": "Wyższa dokładność; wymaga wydajnego urządzenia (~2,5 GB RAM podczas transkrypcji).",
   "whisperLargeDescCapable": "Zalecany — znacznie dokładniejszy, zwłaszcza w hałasie (~2,5 GB RAM podczas transkrypcji).",
+  "whisperFullLargeDesc": "Najwyższa dokładność — pobieranie 2,9 GiB; zalecane 8 GB RAM.",
+  "whisperFullLargeDescBlocked": "Pobieranie 2,9 GiB — urządzenie potrzebuje około 8 GB RAM.",
   "llmDefaultDesc": "Zalecany — zwięzłe wielojęzyczne podsumowania.",
   "llm4bDesc": "Lepsze podsumowania i tytuły; wymaga wydajnego urządzenia (~3 GB RAM podczas podsumowywania).",
   "summariesOffValue": "Bez podsumowań · dotknij, aby skonfigurować",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "O aplikacji i prywatność",
   "aboutPrivacyDesc": "Dźwięk nigdy nie opuszcza tego urządzenia",
   "aboutTitle": "O APLIKACJI I PRYWATNOŚĆ",
-  "aboutBody": "Diktafon słucha, zapisuje i podsumowuje prosto w Twoim telefonie.\n\nNagrania, transkrypcje i podsumowania nigdy nie opuszczają urządzenia. Nie ma konta, chmury ani analityki. Dane wychodzą tylko przez kopię lub eksport, które uruchamiasz samodzielnie.",
-  "aboutOpenSource": "Diktafon jest darmowy i ma otwarty kod źródłowy:",
+  "aboutBody": "Diktafon Pro słucha, zapisuje i podsumowuje prosto w Twoim telefonie.\n\nNagrania, transkrypcje i podsumowania nigdy nie opuszczają urządzenia. Nie ma konta, chmury ani analityki. Dane wychodzą tylko przez kopię lub eksport, które uruchamiasz samodzielnie.",
+  "aboutOpenSource": "Diktafon Pro jest darmowy i ma otwarty kod źródłowy:",
   "aboutPrivacyPolicy": "Polityka prywatności",
-
   "modelPickerTranscriptionTitle": "MODEL TRANSKRYPCJI",
   "modelPickerSummaryTitle": "MODEL PODSUMOWAŃ",
   "pickerInstalled": "zainstalowano · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} gotowy — transkrybuję czekające nagrania.",
   "modelReadySummarize": "{label} gotowy — podsumowuję czekające nagrania.",
   "downloadFailed": "Pobieranie modelu {label} nie powiodło się — sprawdź połączenie i spróbuj ponownie.",
-
-  "firstRunWelcome": "Witaj w Diktafonie",
+  "firstRunWelcome": "Witaj w Diktafon Proie",
   "firstRunIntro": "Słucha, zapisuje i podsumowuje prosto w Twoim telefonie. Nagrania, transkrypcje i podsumowania **nigdy nie opuszczają tego urządzenia**. Nie ma konta ani chmury.",
   "firstRunSetupHeader": "Konfiguracja początkowa",
   "allowMicRow": "Zezwól na mikrofon",
@@ -126,9 +120,8 @@
   "provisionChoose": "dotknij, aby wybrać model do pobrania",
   "downloadsFinishInBackground": "Pobieranie dokończy się w tle.",
   "startRecordingKey": "ZACZNIJ NAGRYWAĆ",
-
   "backupTitle": "EKSPORT I IMPORT",
-  "backupIntro": "Kopia zapasowa urządzenia sama obejmuje listę kaset, transkrypcje i podsumowania. Nagrania audio są duże — zabierz je jawnie: eksport pakuje dźwięk, transkrypcje i podsumowania kasety do jednego archiwum .zip, a import archiwum przywraca je z powrotem. Diktafon niczego nie wysyła.",
+  "backupIntro": "Kopia zapasowa urządzenia sama obejmuje listę kaset, transkrypcje i podsumowania. Nagrania audio są duże — zabierz je jawnie: eksport pakuje dźwięk, transkrypcje i podsumowania kasety do jednego archiwum .zip, a import archiwum przywraca je z powrotem. Diktafon Pro niczego nie wysyła.",
   "groupExport": "Eksport",
   "exportAll": "Eksportuj wszystkie kasety",
   "exportAllDesc": "Wszystko do jednego archiwum",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{Nie udało się zaimportować 1 kasety.} few{Nie udało się zaimportować {count} kaset.} many{Nie udało się zaimportować {count} kaset.} other{Nie udało się zaimportować {count} kasety.}}",
   "importNothingFound": "W tym archiwum nie ma żadnych kaset.",
   "importFailed": "Import nie powiódł się: {error}",
-
-  "exportNote": "Wyeksportowano z Diktafonu {date}.",
+  "exportNote": "Wyeksportowano z Diktafon Prou {date}.",
   "exportSummaryHeading": "Podsumowanie",
   "exportNotTranscribed": "(bez transkrypcji)",
-
   "openSystemSettings": "USTAWIENIA",
   "changeColor": "Zmień kolor",
   "retranscribe": "Transkrybuj ponownie",
@@ -168,6 +159,69 @@
   "memoActions": "Działania nagrania",
   "notifDownloading": "Pobieranie: {label}",
   "notifModelInstalled": "Zainstalowano {label}",
+  "notifTranscriptionCompleted": "Transkrypcja ukończona",
+  "notifTranscriptionCompletedBody": "Transkrypcja audio jest gotowa w Diktafon Pro.",
+  "notifSummaryCompleted": "Podsumowanie ukończone",
+  "notifSummaryCompletedBody": "Podsumowanie audio jest gotowe w Diktafon Pro.",
   "notifRecording": "Trwa nagrywanie",
-  "notifRecordingChannel": "Nagrywanie"
+  "notifRecordingChannel": "Nagrywanie",
+  "importAudio": "Importuj dźwięk",
+  "importingAudio": "Importowanie dźwięku…",
+  "importedAudioFiles": "{count, plural, =1{Dodano 1 notatkę głosową. Transkrypcja rozpocznie się automatycznie.} few{Dodano {count} notatki głosowe. Transkrypcja rozpocznie się automatycznie.} many{Dodano {count} notatek głosowych. Transkrypcja rozpocznie się automatycznie.} other{Dodano {count} notatki głosowej. Transkrypcja rozpocznie się automatycznie.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{Nie udało się zaimportować 1 pliku audio.} other{Nie udało się zaimportować {count} plików audio.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{Zaimportowano 1 notatkę głosową, ale nie udało się dodać jej transkrypcji do kolejki.} few{Zaimportowano {count} notatki głosowe, ale nie udało się dodać ich transkrypcji do kolejki.} many{Zaimportowano {count} notatek głosowych, ale nie udało się dodać ich transkrypcji do kolejki.} other{Zaimportowano {count} notatki głosowej, ale nie udało się dodać jej transkrypcji do kolejki.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Za mało wolnego miejsca, aby pobrać ten model. Zwolnij miejsce i spróbuj ponownie.",
+  "downloadNotificationsPermissionRequired": "Zezwól na powiadomienia, aby pobieranie modeli mogło być kontynuowane w tle.",
+  "importAudioTooltip": "Importuj audio do tej kasety",
+  "localSummaryInstructionsGroup": "Instrukcje lokalnych podsumowań",
+  "localSummaryInstructionsHint": "Na przykład: skup się na decyzjach, zadaniach i terminach.",
+  "localSummaryInstructionsPrivacy": "Te instrukcje pozostają na tym urządzeniu i nigdy nie są wysyłane do Gemini ani ChatGPT.",
+  "localSummarySaveFailed": "Nie udało się zapisać instrukcji lokalnego podsumowania.",
+  "localSummaryInstructionsTitle": "Twoje instrukcje podsumowań",
+  "llmModelDetails": "{quantization} · {license} · szacowana minimalna pamięć RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "pobieranie {size} · szacowana minimalna pamięć RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,4 +1,4 @@
-Diktafon is a voice recorder built around one idea: capturing a thought and finding it again later should feel effortless.
+Diktafon Pro is an independent fork of the open-source Diktafon voice recorder. It keeps the cassette-tape workflow and adds local audio import, editable note names, optional Gemini transcription and summaries, and ChatGPT OAuth summaries.
 
 Your memos live on cassettes — one tape per topic, like "shopping", "kitchen renovation" or "book ideas". Each cassette plays as one continuous tape of your recordings, in order, just like the real thing.
 
@@ -8,20 +8,20 @@ Controls you already know, inspired by real tape recorders. Open a cassette, pre
 <b>MODERN</b>
 Automatic transcriptions and summaries: every memo is transcribed, every cassette summarised and titled. Tap any word in a transcript and the tape jumps right there.
 
-<b>COMPLETELY PRIVATE</b>
-Everything is computed on your device. No accounts, no cloud, no ads, no analytics — your voice never leaves your phone. The only network use is a one-time download of the on-device models (Wi-Fi recommended; about 2 GB for the default models, up to 3 GB for the largest — or just 0.2 GB if you skip summaries).
+<b>CHOOSE HOW TO PROCESS YOUR AUDIO</b>
+Run Whisper transcription and Qwen or Gemma summaries on your device. Or choose Gemini with your own API key: Gemini receives audio for transcription and transcript text for summaries. ChatGPT OAuth is available for summaries only and receives transcript text, never the audio. Cloud providers do not activate unless selected, and failures do not silently switch providers. Google may use content sent through its Free Tier to improve its products; paid-tier terms differ. Check current Google terms and pricing before sending private material.
 
 <b>SPEAKS YOUR LANGUAGE</b>
 Twenty languages: Arabic, Chinese (Simplified and Traditional), Czech, English, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Persian, Polish, Portuguese, Russian, Spanish, Turkish, Ukrainian and Vietnamese — in recordings, summaries and the app itself. The spoken language is detected for each memo, so one tape can freely mix languages.
 
 <b>FREE &amp; OPEN SOURCE</b>
-No cost, no ads, no lock-in. MIT-licensed — read the code, build it yourself, make it yours: https://github.com/jaromiru/diktafon
+No ads or lock-in. This independent fork is MIT-licensed: https://github.com/martitc/diktafon-pro
 
 <b>AND THE LITTLE THINGS</b>
 • Gapless playback with a colour-coded tape bar and an optional soft chime between memos.
 • Export any cassette — or all of them — as a single archive with the audio and readable text inside; import only adds, never overwrites.
 • Light &amp; dark themes, cassette colours, per-memo copy and delete.
 
-A note on quality: transcription and summaries come from small models running entirely on your phone. Their quality is being actively worked on and will improve in future updates.
+A note on quality: available local models depend on your device's memory and storage. Cloud use requires your own Gemini API key or an authorized ChatGPT subscription.
 
 Diktafon works best on 64-bit phones with 4 GB of RAM or more.

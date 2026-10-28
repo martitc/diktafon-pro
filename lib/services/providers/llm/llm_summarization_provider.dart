@@ -19,11 +19,13 @@ class LocalLlmSummarizationProvider implements SummarizationProvider {
     required this._models,
     required this._worker,
     required String tier,
+    this.instructions = '',
   }) : _model = LlmModel.byTier(tier);
 
   final LlmModelManager _models;
   final LlamaWorker _worker;
   final LlmModel _model;
+  final String instructions;
 
   /// Low but non-zero: greedy decoding loops on repetitive dictation;
   /// the seeded sampler keeps output deterministic per transcript.
@@ -43,9 +45,17 @@ class LocalLlmSummarizationProvider implements SummarizationProvider {
       _models.download(_model, onProgress: onProgress);
 
   @override
-  Future<String> summarizeMemo(Transcript t,
-      {required String languageCode}) async {
-    final out = await _run(memoSummaryPrompt(t, languageCode: languageCode));
+  Future<String> summarizeMemo(
+    Transcript t, {
+    required String languageCode,
+  }) async {
+    final out = await _run(
+      memoSummaryPrompt(
+        t,
+        languageCode: languageCode,
+        instructions: instructions,
+      ),
+    );
     return cleanLlmOutput(out);
   }
 
@@ -55,19 +65,25 @@ class LocalLlmSummarizationProvider implements SummarizationProvider {
     required List<MemoDigest> newMemos,
     required String languageCode,
   }) async {
-    final out = await _run(cassetteSummaryPrompt(
-      previousSummary: previousSummary,
-      newMemos: newMemos,
-      languageCode: languageCode,
-    ));
+    final out = await _run(
+      cassetteSummaryPrompt(
+        previousSummary: previousSummary,
+        newMemos: newMemos,
+        languageCode: languageCode,
+        instructions: instructions,
+      ),
+    );
     return cleanLlmOutput(out);
   }
 
   @override
-  Future<String> suggestTitle(String cassetteSummary,
-      {required String languageCode}) async {
-    final out =
-        await _run(titlePrompt(cassetteSummary, languageCode: languageCode));
+  Future<String> suggestTitle(
+    String cassetteSummary, {
+    required String languageCode,
+  }) async {
+    final out = await _run(
+      titlePrompt(cassetteSummary, languageCode: languageCode),
+    );
     return cleanTitle(out);
   }
 

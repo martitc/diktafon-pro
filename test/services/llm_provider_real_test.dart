@@ -22,7 +22,8 @@ void main() {
   final lib = Platform.environment['DIKTAFON_LIBLLAMA'];
   final model = Platform.environment['DIKTAFON_LLM_MODEL'];
   final available = lib != null && model != null;
-  const skipNote = 'set DIKTAFON_LIBLLAMA / DIKTAFON_LLM_MODEL to run the '
+  const skipNote =
+      'set DIKTAFON_LIBLLAMA / DIKTAFON_LLM_MODEL to run the '
       'real engine test';
 
   test(
@@ -43,21 +44,31 @@ void main() {
 
       expect(await provider.modelStatus(), ModelStatus.ready);
 
-      final transcript = Transcript(languageCode: 'cs', segments: [
-        Segment(startMs: 0, endMs: 6000, words: [
-          for (final (i, w) in 'koupit mléko chleba a máslo nezapomenout '
-                  'na granule pro psa a zavolat mámě kvůli víkendu'
-              .split(' ')
-              .indexed)
-            Word(text: w, startMs: i * 400, endMs: i * 400 + 350),
-        ]),
-      ]);
+      final transcript = Transcript(
+        languageCode: 'cs',
+        segments: [
+          Segment(
+            startMs: 0,
+            endMs: 6000,
+            words: [
+              for (final (i, w)
+                  in 'koupit mléko chleba a máslo nezapomenout '
+                          'na granule pro psa a zavolat mámě kvůli víkendu'
+                      .split(' ')
+                      .indexed)
+                Word(text: w, startMs: i * 400, endMs: i * 400 + 350),
+            ],
+          ),
+        ],
+      );
 
-      final gist = await provider.summarizeMemo(transcript,
-          languageCode: 'cs');
+      final gist = await provider.summarizeMemo(transcript, languageCode: 'cs');
       expect(gist, isNotEmpty);
-      expect(gist, isNot(contains('<think>')),
-          reason: 'think blocks must be stripped');
+      expect(
+        gist,
+        isNot(contains('<think>')),
+        reason: 'think blocks must be stripped',
+      );
 
       final overview = await provider.updateCassetteSummary(
         previousSummary: null,
@@ -66,8 +77,7 @@ void main() {
       );
       expect(overview, isNotEmpty);
 
-      final title =
-          await provider.suggestTitle(overview, languageCode: 'cs');
+      final title = await provider.suggestTitle(overview, languageCode: 'cs');
       expect(title, isNotEmpty);
       expect(title.length, lessThanOrEqualTo(60));
       expect(title, isNot(contains('\n')));
@@ -84,31 +94,44 @@ void main() {
   // not Hant specifically — the Hans→Hant belt-and-braces conversion is the
   // job queue's, unit-tested in chinese_script/job_queue tests.
   const memoTexts = {
-    'tr': 'yarın markete gidip süt ekmek ve peynir almam lazım ayrıca '
+    'tr':
+        'yarın markete gidip süt ekmek ve peynir almam lazım ayrıca '
         'annemi arayıp hafta sonu planını sormalıyım',
-    'ru': 'надо купить молоко хлеб и корм для собаки а ещё позвонить '
+    'ru':
+        'надо купить молоко хлеб и корм для собаки а ещё позвонить '
         'маме насчёт планов на выходные',
-    'ko': '내일 마트에 가서 우유랑 빵을 사야 하고 주말 계획에 대해 엄마에게 '
+    'ko':
+        '내일 마트에 가서 우유랑 빵을 사야 하고 주말 계획에 대해 엄마에게 '
         '전화해야 한다',
-    'it': 'domani devo comprare latte pane e formaggio e poi chiamare la '
+    'it':
+        'domani devo comprare latte pane e formaggio e poi chiamare la '
         'mamma per i piani del fine settimana',
-    'id': 'besok saya harus beli susu roti dan keju lalu menelepon ibu '
+    'id':
+        'besok saya harus beli susu roti dan keju lalu menelepon ibu '
         'soal rencana akhir pekan',
-    'uk': 'треба купити молоко хліб і корм для собаки а ще подзвонити '
+    'uk':
+        'треба купити молоко хліб і корм для собаки а ще подзвонити '
         'мамі щодо планів на вихідні',
-    'vi': 'ngày mai phải mua sữa bánh mì và phô mai rồi gọi cho mẹ về kế '
+    'vi':
+        'ngày mai phải mua sữa bánh mì và phô mai rồi gọi cho mẹ về kế '
         'hoạch cuối tuần',
-    'ja': '明日 スーパー で 牛乳 と パン を 買って 母 に 週末 の 予定 を '
+    'ja':
+        '明日 スーパー で 牛乳 と パン を 買って 母 に 週末 の 予定 を '
         '電話 する',
-    'zh-Hans': '明天 要 去 超市 买 牛奶 和 面包 还要 给 妈妈 打 电话 说 '
+    'zh-Hans':
+        '明天 要 去 超市 买 牛奶 和 面包 还要 给 妈妈 打 电话 说 '
         '周末 的 计划',
-    'zh-Hant': '明天 要 去 超市 買 牛奶 和 麵包 還要 給 媽媽 打 電話 說 '
+    'zh-Hant':
+        '明天 要 去 超市 買 牛奶 和 麵包 還要 給 媽媽 打 電話 說 '
         '週末 的 計劃',
-    'ar': 'غدا يجب أن أشتري الحليب والخبز والجبن وأتصل بأمي بخصوص خطة '
+    'ar':
+        'غدا يجب أن أشتري الحليب والخبز والجبن وأتصل بأمي بخصوص خطة '
         'نهاية الأسبوع',
-    'fa': 'فردا باید شیر و نان و پنیر بخرم و به مادرم درباره برنامه آخر '
+    'fa':
+        'فردا باید شیر و نان و پنیر بخرم و به مادرم درباره برنامه آخر '
         'هفته زنگ بزنم',
-    'hi': 'कल मुझे दूध रोटी और पनीर खरीदना है और सप्ताहांत की योजना के बारे '
+    'hi':
+        'कल मुझे दूध रोटी और पनीर खरीदना है और सप्ताहांत की योजना के बारे '
         'में माँ को फोन करना है',
   };
   final scriptOf = {
@@ -139,21 +162,33 @@ void main() {
           tier: LlmModel.qwen3_0_6b.tier,
         );
 
-        final transcript = Transcript(languageCode: code, segments: [
-          Segment(startMs: 0, endMs: 8000, words: [
-            for (final (i, w) in text.split(' ').indexed)
-              Word(text: w, startMs: i * 400, endMs: i * 400 + 350),
-          ]),
-        ]);
+        final transcript = Transcript(
+          languageCode: code,
+          segments: [
+            Segment(
+              startMs: 0,
+              endMs: 8000,
+              words: [
+                for (final (i, w) in text.split(' ').indexed)
+                  Word(text: w, startMs: i * 400, endMs: i * 400 + 350),
+              ],
+            ),
+          ],
+        );
 
-        final gist =
-            await provider.summarizeMemo(transcript, languageCode: code);
+        final gist = await provider.summarizeMemo(
+          transcript,
+          languageCode: code,
+        );
         expect(gist, isNotEmpty);
         expect(gist, isNot(contains('<think>')));
         final script = scriptOf[code];
         if (script != null) {
-          expect(gist, matches(script),
-              reason: 'the summary must stay in the $code script');
+          expect(
+            gist,
+            matches(script),
+            reason: 'the summary must stay in the $code script',
+          );
         }
       },
       skip: available ? false : skipNote,

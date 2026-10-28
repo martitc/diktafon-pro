@@ -89,18 +89,19 @@ class _TimelineBarState extends State<TimelineBar>
 
   int? _memoIndexAt(double fraction) {
     if (widget.tape.isEmpty) return null;
-    final tapeFraction =
-        widget.tape.totalDurationMs / _totalWithTailMs();
+    final tapeFraction = widget.tape.totalDurationMs / _totalWithTailMs();
     if (fraction >= tapeFraction && _tailMs > 0) return null; // in the tail
     final globalMs =
-        (fraction / (tapeFraction == 0 ? 1 : tapeFraction).clamp(1e-9, 1.0) *
+        (fraction /
+                (tapeFraction == 0 ? 1 : tapeFraction).clamp(1e-9, 1.0) *
                 widget.tape.totalDurationMs)
             .round();
     return widget.tape.locate(globalMs).memoIndex;
   }
 
-  int _globalMsAt(double fraction) =>
-      (fraction * _totalWithTailMs()).round().clamp(0, widget.tape.totalDurationMs);
+  int _globalMsAt(double fraction) => (fraction * _totalWithTailMs())
+      .round()
+      .clamp(0, widget.tape.totalDurationMs);
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +109,9 @@ class _TimelineBarState extends State<TimelineBar>
     // §13: to a screen reader the timeline is a slider — a position value
     // with increase/decrease stepping ±5 s on the global timeline.
     String positionValue(int ms) => context.l10n.timelinePosition(
-        formatMs(ms), formatMs(widget.tape.totalDurationMs));
+      formatMs(ms),
+      formatMs(widget.tape.totalDurationMs),
+    );
     int stepped(int delta) =>
         (widget.globalMs + delta).clamp(0, widget.tape.totalDurationMs);
     return Semantics(
@@ -117,62 +120,70 @@ class _TimelineBarState extends State<TimelineBar>
       value: positionValue(widget.globalMs),
       increasedValue: interactive ? positionValue(stepped(5000)) : null,
       decreasedValue: interactive ? positionValue(stepped(-5000)) : null,
-      onIncrease:
-          interactive ? () => widget.onScrub?.call(stepped(5000)) : null,
-      onDecrease:
-          interactive ? () => widget.onScrub?.call(stepped(-5000)) : null,
+      onIncrease: interactive
+          ? () => widget.onScrub?.call(stepped(5000))
+          : null,
+      onDecrease: interactive
+          ? () => widget.onScrub?.call(stepped(-5000))
+          : null,
       child: _gestures(context, interactive),
     );
   }
 
   Widget _gestures(BuildContext context, bool interactive) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final width = constraints.maxWidth;
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapUp: interactive
-            ? (d) {
-                final index = _memoIndexAt(_fractionAt(d.localPosition, width));
-                if (index != null) widget.onJumpToMemo?.call(index);
-              }
-            : null,
-        onHorizontalDragUpdate: interactive
-            ? (d) => widget.onScrub
-                ?.call(_globalMsAt(_fractionAt(d.localPosition, width)))
-            : null,
-        onLongPressStart: interactive
-            ? (d) {
-                final index = _memoIndexAt(_fractionAt(d.localPosition, width));
-                if (index != null) widget.onDeleteMemo?.call(index);
-              }
-            : null,
-        child: Padding(
-          // Breathing room so the playhead cap and hit target fit.
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: SizedBox(
-            height: 26,
-            child: AnimatedBuilder(
-              animation: _pulse,
-              builder: (context, _) => CustomPaint(
-                painter: _TimelinePainter(
-                  colors: context.tape,
-                  tape: widget.tape,
-                  colorSeed: widget.colorSeed,
-                  globalMs: widget.globalMs,
-                  tailMs: _tailMs,
-                  // CSS pulse: opacity dips to .45 mid-cycle.
-                  tailOpacity: 1 - 0.55 * _pulseWave(_pulse.value),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapUp: interactive
+              ? (d) {
+                  final index = _memoIndexAt(
+                    _fractionAt(d.localPosition, width),
+                  );
+                  if (index != null) widget.onJumpToMemo?.call(index);
+                }
+              : null,
+          onHorizontalDragUpdate: interactive
+              ? (d) => widget.onScrub?.call(
+                  _globalMsAt(_fractionAt(d.localPosition, width)),
+                )
+              : null,
+          onLongPressStart: interactive
+              ? (d) {
+                  final index = _memoIndexAt(
+                    _fractionAt(d.localPosition, width),
+                  );
+                  if (index != null) widget.onDeleteMemo?.call(index);
+                }
+              : null,
+          child: Padding(
+            // Breathing room so the playhead cap and hit target fit.
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SizedBox(
+              height: 26,
+              child: AnimatedBuilder(
+                animation: _pulse,
+                builder: (context, _) => CustomPaint(
+                  painter: _TimelinePainter(
+                    colors: context.tape,
+                    tape: widget.tape,
+                    colorSeed: widget.colorSeed,
+                    globalMs: widget.globalMs,
+                    tailMs: _tailMs,
+                    // CSS pulse: opacity dips to .45 mid-cycle.
+                    tailOpacity: 1 - 0.55 * _pulseWave(_pulse.value),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
-  static double _pulseWave(double t) =>
-      t < 0.5 ? t * 2 : (1 - t) * 2;
+  static double _pulseWave(double t) => t < 0.5 ? t * 2 : (1 - t) * 2;
 }
 
 class _TimelinePainter extends CustomPainter {
@@ -205,15 +216,17 @@ class _TimelinePainter extends CustomPainter {
     if (totalMs == 0) {
       // Empty tape: a quiet line-colored slot.
       paint.color = colors.line;
-      canvas.drawRect(
-          Rect.fromLTWH(0, barTop, size.width, _barHeight), paint);
+      canvas.drawRect(Rect.fromLTWH(0, barTop, size.width, _barHeight), paint);
       return;
     }
 
     final segmentCount = tape.memoCount + (tailMs > 0 ? 1 : 0);
     final gaps = (segmentCount - 1).clamp(0, 1 << 30) * _gap;
     var tailPx = tailMs > 0
-        ? (tailMs / totalMs * (size.width - gaps)).clamp(_minTailPx, size.width - gaps)
+        ? (tailMs / totalMs * (size.width - gaps)).clamp(
+            _minTailPx,
+            size.width - gaps,
+          )
         : 0.0;
     final tapePx = size.width - gaps - tailPx;
 
@@ -232,13 +245,13 @@ class _TimelinePainter extends CustomPainter {
       canvas.drawRect(Rect.fromLTWH(x, barTop, tailPx, _barHeight), paint);
     } else if (!tape.isEmpty) {
       // Playhead: 2 px ink line overshooting the bar, square cap on top.
-      final fraction =
-          (globalMs / tape.totalDurationMs).clamp(0.0, 1.0);
-      final px = fraction * tapePx +
-          tape.locate(globalMs).memoIndex * _gap;
+      final fraction = (globalMs / tape.totalDurationMs).clamp(0.0, 1.0);
+      final px = fraction * tapePx + tape.locate(globalMs).memoIndex * _gap;
       paint.color = colors.ink;
       canvas.drawRect(
-          Rect.fromLTWH(px - 1, barTop - 6, 2, _barHeight + 12), paint);
+        Rect.fromLTWH(px - 1, barTop - 6, 2, _barHeight + 12),
+        paint,
+      );
       canvas.drawRect(Rect.fromLTWH(px - 4.5, barTop - 12, 9, 9), paint);
     }
   }

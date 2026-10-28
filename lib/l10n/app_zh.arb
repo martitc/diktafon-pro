@@ -1,6 +1,5 @@
 {
   "@@locale": "zh",
-
   "untitledCassette": "未命名卡带",
   "rename": "重命名",
   "delete": "删除",
@@ -9,7 +8,6 @@
   "deleteAction": "删除",
   "ok": "确定",
   "back": "返回",
-
   "settingsTooltip": "设置",
   "homeEmpty": "还没有卡带。\n按 + 开始一盘新磁带。",
   "newCassette": "新卡带",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "卡带名称",
   "deleteCassetteTitle": "删除卡带？",
   "deleteCassetteBody": "“{label}”和其中的 {count, plural, other{{count} 条备忘}}将被删除。此操作无法撤销。",
-
   "memoCount": "{count, plural, other{{count} 条备忘}}",
   "cardEmptyMeta": "空白 · 点按打开",
   "cardMetaNaming": "{memos} · 正在命名…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}，{memos}",
   "todayAt": "今天 {time}",
   "yesterday": "昨天",
-
   "deleteCassette": "删除卡带",
   "blankTape": "一盘空白磁带。\n按下红色按键开始录音。",
   "emptyTape": "空白磁带",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "备忘 {n} 将被移除，磁带会自动衔接。此操作无法撤销。",
   "timelineLabel": "磁带时间轴",
   "timelinePosition": "{position}，共 {total}",
-
   "noSpeech": "（无语音）",
   "transcriptionFailedRetry": "转写失败，点按重试（音频仍可播放）",
   "queuedForTranscription": "排队等待转写…",
@@ -55,7 +50,6 @@
   "summarizing": "正在生成摘要…",
   "summaryFailedRetry": "摘要失败，点按重试",
   "transcribing": "正在转写…",
-
   "settingsTitle": "设置",
   "groupLanguage": "语言",
   "transcriptionLanguage": "转写语言",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "更轻更快，但准确度较低，嘈杂录音中尤其明显。",
   "whisperLargeDesc": "准确度更高；需要性能较强的设备（转写时约占用 2.5 GB 内存）。",
   "whisperLargeDescCapable": "推荐：准确度高得多，嘈杂环境中尤其明显（转写时约占用 2.5 GB 内存）。",
+  "whisperFullLargeDesc": "最高精度 — 下载 2.9 GiB；建议配备 8 GB RAM。",
+  "whisperFullLargeDescBlocked": "下载 2.9 GiB — 此设备需要约 8 GB RAM 才能运行。",
   "llmDefaultDesc": "推荐：精简的多语言摘要。",
   "llm4bDesc": "摘要与标题质量更高；需要性能较强的设备（生成摘要时约占用 3 GB 内存）。",
   "summariesOffValue": "无摘要 · 点按即可设置",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "关于与隐私",
   "aboutPrivacyDesc": "音频绝不离开此设备",
   "aboutTitle": "关于与隐私",
-  "aboutBody": "Diktafon 的聆听、转写和摘要全都在你的手机上完成。\n\n录音、转写文本和摘要绝不离开设备。没有账户，没有云端，也没有任何分析追踪。数据离开的唯一途径，是你自己发起的备份或导出。",
-  "aboutOpenSource": "Diktafon 是自由开源软件：",
+  "aboutBody": "Diktafon Pro 的聆听、转写和摘要全都在你的手机上完成。\n\n录音、转写文本和摘要绝不离开设备。没有账户，没有云端，也没有任何分析追踪。数据离开的唯一途径，是你自己发起的备份或导出。",
+  "aboutOpenSource": "Diktafon Pro 是自由开源软件：",
   "aboutPrivacyPolicy": "隐私政策",
-
   "modelPickerTranscriptionTitle": "转写模型",
   "modelPickerSummaryTitle": "摘要模型",
   "pickerInstalled": "已安装 · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} 已就绪，正在转写等待中的备忘。",
   "modelReadySummarize": "{label} 已就绪，正在为等待中的备忘生成摘要。",
   "downloadFailed": "{label} 下载失败，请检查网络连接后重试。",
-
-  "firstRunWelcome": "欢迎使用 Diktafon",
+  "firstRunWelcome": "欢迎使用 Diktafon Pro",
   "firstRunIntro": "聆听、转写和摘要全都在你的手机上完成。录音、转写文本和摘要**绝不离开此设备**。没有账户，也没有云端。",
   "firstRunSetupHeader": "首次设置",
   "allowMicRow": "允许麦克风",
@@ -126,9 +120,8 @@
   "provisionChoose": "点按选择要下载的模型",
   "downloadsFinishInBackground": "下载会在后台继续完成。",
   "startRecordingKey": "开始录音",
-
   "backupTitle": "导出与导入",
-  "backupIntro": "设备自身的备份会自动包含卡带列表、转写文本和摘要。录音文件较大，需要你主动带走：导出会把一盘卡带的音频、转写文本和摘要打包成一个 .zip 压缩包，导入压缩包即可恢复。Diktafon 不会上传任何内容。",
+  "backupIntro": "设备自身的备份会自动包含卡带列表、转写文本和摘要。录音文件较大，需要你主动带走：导出会把一盘卡带的音频、转写文本和摘要打包成一个 .zip 压缩包，导入压缩包即可恢复。Diktafon Pro 不会上传任何内容。",
   "groupExport": "导出",
   "exportAll": "导出全部卡带",
   "exportAllDesc": "全部内容，打包成一个压缩文件",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, other{有 {count} 盘卡带无法导入。}}",
   "importNothingFound": "该压缩包中没有找到卡带。",
   "importFailed": "导入失败：{error}",
-
-  "exportNote": "由 Diktafon 导出于 {date}。",
+  "exportNote": "由 Diktafon Pro 导出于 {date}。",
   "exportSummaryHeading": "摘要",
   "exportNotTranscribed": "（未转写）",
-
   "openSystemSettings": "设置",
   "changeColor": "更改颜色",
   "retranscribe": "重新转写",
@@ -168,6 +159,69 @@
   "memoActions": "备忘操作",
   "notifDownloading": "正在下载 {label}",
   "notifModelInstalled": "{label} 已安装",
+  "notifTranscriptionCompleted": "转录已完成",
+  "notifTranscriptionCompletedBody": "音频转录已在 Diktafon Pro 中准备就绪。",
+  "notifSummaryCompleted": "摘要已完成",
+  "notifSummaryCompletedBody": "音频摘要已在 Diktafon Pro 中准备就绪。",
   "notifRecording": "正在录音",
-  "notifRecordingChannel": "录音"
+  "notifRecordingChannel": "录音",
+  "importAudio": "导入音频",
+  "importingAudio": "正在导入音频…",
+  "importedAudioFiles": "{count, plural, other{已添加{count}条语音备忘。转写将自动开始。}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{无法导入{count}个音频文件。}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{已导入{count}条语音备忘，但无法将转写任务加入队列。}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "可用存储空间不足，无法下载此模型。请清理空间后重试。",
+  "downloadNotificationsPermissionRequired": "允许通知，以便在后台继续下载模型。",
+  "importAudioTooltip": "将音频导入此磁带",
+  "localSummaryInstructionsGroup": "本地摘要指令",
+  "localSummaryInstructionsHint": "例如：重点整理决定、任务和截止日期。",
+  "localSummaryInstructionsPrivacy": "这些指令仅保留在此设备上，不会发送给 Gemini 或 ChatGPT。",
+  "localSummarySaveFailed": "无法保存本地摘要指令。",
+  "localSummaryInstructionsTitle": "你的摘要指令",
+  "llmModelDetails": "{quantization} · {license} · 预计最低内存：{ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "下载 {size} · 预计最低内存：{ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

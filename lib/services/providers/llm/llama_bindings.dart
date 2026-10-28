@@ -24,32 +24,61 @@ String resolveLlamaLibraryPath() {
     return '$executableDir/lib/libdiktafon_llama.so';
   }
   throw UnsupportedError(
-      'no llama engine build for ${Platform.operatingSystem} yet');
+    'no llama engine build for ${Platform.operatingSystem} yet',
+  );
 }
 
 class LlamaBindings {
   LlamaBindings(DynamicLibrary lib)
-      : init = lib.lookupFunction<
+    : init = lib
+          .lookupFunction<
             Pointer<Void> Function(Pointer<Utf8>, Int32, Int32),
-            Pointer<Void> Function(
-                Pointer<Utf8>, int, int)>('dk_llama_init'),
-        free = lib.lookupFunction<Void Function(Pointer<Void>),
-            void Function(Pointer<Void>)>('dk_llama_free'),
-        generate = lib.lookupFunction<
-            Int32 Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>,
-                Int32, Float, Pointer<Int32>),
-            int Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>, int,
-                double, Pointer<Int32>)>('dk_llama_generate'),
-        result = lib.lookupFunction<Pointer<Utf8> Function(Pointer<Void>),
-            Pointer<Utf8> Function(Pointer<Void>)>('dk_llama_result');
+            Pointer<Void> Function(Pointer<Utf8>, int, int)
+          >('dk_llama_init'),
+      free = lib
+          .lookupFunction<
+            Void Function(Pointer<Void>),
+            void Function(Pointer<Void>)
+          >('dk_llama_free'),
+      generate = lib
+          .lookupFunction<
+            Int32 Function(
+              Pointer<Void>,
+              Pointer<Utf8>,
+              Pointer<Utf8>,
+              Int32,
+              Float,
+              Pointer<Int32>,
+            ),
+            int Function(
+              Pointer<Void>,
+              Pointer<Utf8>,
+              Pointer<Utf8>,
+              int,
+              double,
+              Pointer<Int32>,
+            )
+          >('dk_llama_generate'),
+      result = lib
+          .lookupFunction<
+            Pointer<Utf8> Function(Pointer<Void>),
+            Pointer<Utf8> Function(Pointer<Void>)
+          >('dk_llama_result');
 
   factory LlamaBindings.open(String libraryPath) =>
       LlamaBindings(DynamicLibrary.open(libraryPath));
 
-  final Pointer<Void> Function(
-      Pointer<Utf8> modelPath, int nCtx, int nThreads) init;
+  final Pointer<Void> Function(Pointer<Utf8> modelPath, int nCtx, int nThreads)
+  init;
   final void Function(Pointer<Void>) free;
-  final int Function(Pointer<Void>, Pointer<Utf8> system, Pointer<Utf8> user,
-      int maxTokens, double temperature, Pointer<Int32> cancel) generate;
+  final int Function(
+    Pointer<Void>,
+    Pointer<Utf8> system,
+    Pointer<Utf8> user,
+    int maxTokens,
+    double temperature,
+    Pointer<Int32> cancel,
+  )
+  generate;
   final Pointer<Utf8> Function(Pointer<Void>) result;
 }

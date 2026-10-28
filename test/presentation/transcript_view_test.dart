@@ -17,63 +17,72 @@ void main() {
   const memoCount = 20;
 
   Memo makeMemo(int i) => Memo(
-        id: 'memo$i',
-        cassetteId: 'c1',
-        filePath: '/dev/null',
-        durationMs: memoDurationMs,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(1000000 + i * 60000),
-        status: MemoStatus.ready,
-        transcript: Transcript(
-          languageCode: 'en',
-          segments: [
-            Segment(
-              startMs: 0,
-              endMs: memoDurationMs,
-              words: [
-                for (var j = 0; j < wordsPerMemo; j++)
-                  Word(
-                      text: 'm${i}w$j',
-                      startMs: j * wordMs,
-                      endMs: (j + 1) * wordMs),
-              ],
-            ),
+    id: 'memo$i',
+    cassetteId: 'c1',
+    filePath: '/dev/null',
+    durationMs: memoDurationMs,
+    createdAt: DateTime.fromMillisecondsSinceEpoch(1000000 + i * 60000),
+    status: MemoStatus.ready,
+    transcript: Transcript(
+      languageCode: 'en',
+      segments: [
+        Segment(
+          startMs: 0,
+          endMs: memoDurationMs,
+          words: [
+            for (var j = 0; j < wordsPerMemo; j++)
+              Word(
+                text: 'm${i}w$j',
+                startMs: j * wordMs,
+                endMs: (j + 1) * wordMs,
+              ),
           ],
         ),
-      );
+      ],
+    ),
+  );
 
   final tape = Tape([for (var i = 0; i < memoCount; i++) makeMemo(i)]);
 
   Widget app(int globalMs, int seekCount) => MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        theme: buildTheme(Brightness.light),
-        home: Scaffold(
-          body: TranscriptView(
-            tape: tape,
-            colorSeed: 0,
-            globalMs: globalMs,
-            currentMemoIndex: tape.locate(globalMs).memoIndex,
-            playing: false,
-            seekCount: seekCount,
-          ),
-        ),
-      );
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    locale: const Locale('en'),
+    theme: buildTheme(Brightness.light),
+    home: Scaffold(
+      body: TranscriptView(
+        tape: tape,
+        colorSeed: 0,
+        globalMs: globalMs,
+        currentMemoIndex: tape.locate(globalMs).memoIndex,
+        playing: false,
+        seekCount: seekCount,
+      ),
+    ),
+  );
 
   int globalMsOf(int memo, int word) =>
       memo * memoDurationMs + word * wordMs + wordMs ~/ 2;
 
+  Finder transcriptParagraph(String memoId) => find.descendant(
+    of: find.byKey(ValueKey('transcript-paragraph-$memoId')),
+    matching: find.byType(RichText),
+  );
+
   /// The on-screen rect of `m<memo>w<word>` — null while its paragraph
   /// isn't built (virtualized away).
   Rect? wordRect(WidgetTester tester, int memo, int word) {
-    final paragraphs = find.byWidgetPredicate((w) =>
-        w is RichText && w.text.toPlainText().startsWith('m${memo}w0 '));
+    final paragraphs = transcriptParagraph('memo$memo');
     if (paragraphs.evaluate().isEmpty) return null;
     final render = tester.renderObject<RenderParagraph>(paragraphs);
     final plain = (tester.widget(paragraphs) as RichText).text.toPlainText();
     final start = plain.indexOf('m${memo}w$word ');
-    final boxes = render.getBoxesForSelection(TextSelection(
-        baseOffset: start, extentOffset: start + 'm${memo}w$word'.length));
+    final boxes = render.getBoxesForSelection(
+      TextSelection(
+        baseOffset: start,
+        extentOffset: start + 'm${memo}w$word'.length,
+      ),
+    );
     if (boxes.isEmpty) return null;
     return boxes.first.toRect().shift(render.localToGlobal(Offset.zero));
   }
@@ -88,8 +97,9 @@ void main() {
   double scrollOffset(WidgetTester tester) =>
       tester.state<ScrollableState>(find.byType(Scrollable)).position.pixels;
 
-  testWidgets('seek far ahead scrolls an unbuilt memo\'s word into view',
-      (tester) async {
+  testWidgets('seek far ahead scrolls an unbuilt memo\'s word into view', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(0, 0));
     await tester.pump();
     expect(wordRect(tester, 15, 30), isNull); // memo 15 starts virtualized
@@ -106,8 +116,9 @@ void main() {
     expect(rect.bottom, lessThan(viewport.bottom - 60));
   });
 
-  testWidgets('seek within the comfortable window does not move the view',
-      (tester) async {
+  testWidgets('seek within the comfortable window does not move the view', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(0, 0));
     await tester.pump();
     await tester.pumpWidget(app(globalMsOf(15, 30), 1));
@@ -159,9 +170,10 @@ void main() {
             words: [
               for (var j = 0; j < cjkWords.length; j++)
                 Word(
-                    text: cjkWords[j],
-                    startMs: j * wordMs,
-                    endMs: (j + 1) * wordMs),
+                  text: cjkWords[j],
+                  startMs: j * wordMs,
+                  endMs: (j + 1) * wordMs,
+                ),
             ],
           ),
         ],
@@ -171,34 +183,59 @@ void main() {
     final seeks = <int>[];
 
     Widget cjkApp() => MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          theme: buildTheme(Brightness.light),
-          home: Scaffold(
-            body: TranscriptView(
-              tape: cjkTape,
-              colorSeed: 0,
-              globalMs: 0,
-              currentMemoIndex: 0,
-              playing: false,
-              onSeekGlobalMs: seeks.add,
-            ),
-          ),
-        );
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
+      theme: buildTheme(Brightness.light),
+      home: Scaffold(
+        body: TranscriptView(
+          tape: cjkTape,
+          colorSeed: 0,
+          globalMs: 0,
+          currentMemoIndex: 0,
+          playing: false,
+          onSeekGlobalMs: seeks.add,
+        ),
+      ),
+    );
 
-    testWidgets('spans join flush — no spaces inside CJK, one space at the '
-        'code-switch boundary; the style carries the memo locale',
-        (tester) async {
+    testWidgets('automatic title can share the transcript prefix while the '
+        'paragraph remains uniquely identifiable', (tester) async {
       await tester.pumpWidget(cjkApp());
       await tester.pump();
-      final paragraph = find.byWidgetPredicate(
-          (w) => w is RichText && w.text.toPlainText().startsWith('今天'));
+
+      expect(cjkMemo.title, isNull);
+      expect(cjkMemo.displayTitle, startsWith(cjkWords.first));
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is RichText && w.text.toPlainText().startsWith(cjkWords.first),
+        ),
+        findsNWidgets(2),
+        reason: 'both the automatic header and transcript retain the prefix',
+      );
+      final paragraph = transcriptParagraph(cjkMemo.id);
+      expect(paragraph, findsOneWidget);
+      expect(
+        tester.widget<RichText>(paragraph).text.toPlainText(),
+        '今天天气很好。 Flutter 写的',
+      );
+    });
+
+    testWidgets('spans join flush — no spaces inside CJK, one space at the '
+        'code-switch boundary; the style carries the memo locale', (
+      tester,
+    ) async {
+      await tester.pumpWidget(cjkApp());
+      await tester.pump();
+      final paragraph = transcriptParagraph(cjkMemo.id);
       expect(paragraph, findsOneWidget);
       final rich = tester.widget<RichText>(paragraph);
       expect(rich.text.toPlainText(), '今天天气很好。 Flutter 写的');
-      expect(rich.text.style?.locale,
-          const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'));
+      expect(
+        rich.text.style?.locale,
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+      );
     });
 
     testWidgets('tapping a narrow CJK word seeks to its start '
@@ -206,21 +243,22 @@ void main() {
       seeks.clear();
       await tester.pumpWidget(cjkApp());
       await tester.pump();
-      final paragraph = find.byWidgetPredicate(
-          (w) => w is RichText && w.text.toPlainText().startsWith('今天'));
+      final paragraph = transcriptParagraph(cjkMemo.id);
       final render = tester.renderObject<RenderParagraph>(paragraph);
       // '天气' sits at plain-text offset 2..4 — flush against its
       // neighbours, exactly as wordGeometryAt computes it.
       final boxes = render.getBoxesForSelection(
-          const TextSelection(baseOffset: 2, extentOffset: 4));
+        const TextSelection(baseOffset: 2, extentOffset: 4),
+      );
       expect(boxes, isNotEmpty);
       final target = boxes.first
           .toRect()
           .shift(render.localToGlobal(Offset.zero))
           .center;
       await tester.tapAt(target);
-      expect(seeks, [wordMs],
-          reason: '天气 starts at 500 ms into the (only) memo');
+      expect(seeks, [
+        wordMs,
+      ], reason: '天气 starts at 500 ms into the (only) memo');
     });
   });
 
@@ -244,9 +282,10 @@ void main() {
             words: [
               for (var j = 0; j < arWords.length; j++)
                 Word(
-                    text: arWords[j],
-                    startMs: j * wordMs,
-                    endMs: (j + 1) * wordMs),
+                  text: arWords[j],
+                  startMs: j * wordMs,
+                  endMs: (j + 1) * wordMs,
+                ),
             ],
           ),
         ],
@@ -256,108 +295,125 @@ void main() {
     final seeks = <int>[];
 
     Widget arApp() => MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('ar'),
-          theme: buildTheme(Brightness.light),
-          home: Scaffold(
-            body: TranscriptView(
-              tape: arTape,
-              colorSeed: 0,
-              globalMs: 0,
-              currentMemoIndex: 0,
-              playing: false,
-              onSeekGlobalMs: seeks.add,
-            ),
-          ),
-        );
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('ar'),
+      theme: buildTheme(Brightness.light),
+      home: Scaffold(
+        body: TranscriptView(
+          tape: arTape,
+          colorSeed: 0,
+          globalMs: 0,
+          currentMemoIndex: 0,
+          playing: false,
+          onSeekGlobalMs: seeks.add,
+        ),
+      ),
+    );
 
     testWidgets('bidi word-tap geometry: an embedded LTR number inside RTL '
         'text still seeks to its own word', (tester) async {
       seeks.clear();
       await tester.pumpWidget(arApp());
       await tester.pump();
-      final paragraph = find.byWidgetPredicate(
-          (w) => w is RichText && w.text.toPlainText().startsWith('اشترِ'));
+      final paragraph = transcriptParagraph(arMemo.id);
       expect(paragraph, findsOneWidget);
       final render = tester.renderObject<RenderParagraph>(paragraph);
-      final plain =
-          (tester.widget(paragraph) as RichText).text.toPlainText();
+      final plain = (tester.widget(paragraph) as RichText).text.toPlainText();
 
       // The digits word, via the same char-offset convention the view uses.
       final start = plain.indexOf('15:30');
-      final boxes = render.getBoxesForSelection(TextSelection(
-          baseOffset: start, extentOffset: start + '15:30'.length));
+      final boxes = render.getBoxesForSelection(
+        TextSelection(baseOffset: start, extentOffset: start + '15:30'.length),
+      );
       expect(boxes, isNotEmpty);
       final target = boxes.first
           .toRect()
           .shift(render.localToGlobal(Offset.zero))
           .center;
       await tester.tapAt(target);
-      expect(seeks, [3 * wordMs],
-          reason: 'the 15:30 word is the fourth on the tape');
+      expect(seeks, [
+        3 * wordMs,
+      ], reason: 'the 15:30 word is the fourth on the tape');
 
       // And a plain Arabic word after it — bidi reordering must not leak
       // between the two.
       seeks.clear();
       final start2 = plain.indexOf('غدًا');
-      final boxes2 = render.getBoxesForSelection(TextSelection(
-          baseOffset: start2, extentOffset: start2 + 'غدًا'.length));
-      await tester.tapAt(boxes2.first
-          .toRect()
-          .shift(render.localToGlobal(Offset.zero))
-          .center);
+      final boxes2 = render.getBoxesForSelection(
+        TextSelection(baseOffset: start2, extentOffset: start2 + 'غدًا'.length),
+      );
+      await tester.tapAt(
+        boxes2.first.toRect().shift(render.localToGlobal(Offset.zero)).center,
+      );
       expect(seeks, [4 * wordMs]);
     });
   });
 
   group('§6.9 edit from the memo menu', () {
-    Memo bareMemo(int i, {Transcript? transcript, required MemoStatus status}) =>
-        Memo(
-          id: 'bare$i',
-          cassetteId: 'c1',
-          filePath: '/dev/null',
-          durationMs: 1000,
-          createdAt: DateTime.fromMillisecondsSinceEpoch(2000000 + i * 60000),
-          status: status,
-          transcript: transcript,
-        );
+    Memo bareMemo(
+      int i, {
+      Transcript? transcript,
+      required MemoStatus status,
+    }) => Memo(
+      id: 'bare$i',
+      cassetteId: 'c1',
+      filePath: '/dev/null',
+      durationMs: 1000,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(2000000 + i * 60000),
+      status: status,
+      transcript: transcript,
+    );
 
     Widget menuApp(Tape tape, {ValueChanged<int>? onEdit}) => MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          theme: buildTheme(Brightness.light),
-          home: Scaffold(
-            body: TranscriptView(
-              tape: tape,
-              colorSeed: 0,
-              globalMs: 0,
-              currentMemoIndex: 0,
-              playing: false,
-              onEditMemo: onEdit,
-              onDeleteMemo: (_) {},
-            ),
-          ),
-        );
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
+      theme: buildTheme(Brightness.light),
+      home: Scaffold(
+        body: TranscriptView(
+          tape: tape,
+          colorSeed: 0,
+          globalMs: 0,
+          currentMemoIndex: 0,
+          playing: false,
+          onEditMemo: onEdit,
+          onDeleteMemo: (_) {},
+        ),
+      ),
+    );
 
     testWidgets('a transcribed memo offers Edit; the callback carries the '
         'ordinal', (tester) async {
       final small = Tape([
-        bareMemo(0,
-            status: MemoStatus.ready,
-            transcript: const Transcript(languageCode: 'en', segments: [
-              Segment(startMs: 0, endMs: 500, words: [
-                Word(text: 'first', startMs: 0, endMs: 500),
-              ]),
-            ])),
-        bareMemo(1,
-            status: MemoStatus.ready,
-            transcript: const Transcript(languageCode: 'en', segments: [
-              Segment(startMs: 0, endMs: 500, words: [
-                Word(text: 'second', startMs: 0, endMs: 500),
-              ]),
-            ])),
+        bareMemo(
+          0,
+          status: MemoStatus.ready,
+          transcript: const Transcript(
+            languageCode: 'en',
+            segments: [
+              Segment(
+                startMs: 0,
+                endMs: 500,
+                words: [Word(text: 'first', startMs: 0, endMs: 500)],
+              ),
+            ],
+          ),
+        ),
+        bareMemo(
+          1,
+          status: MemoStatus.ready,
+          transcript: const Transcript(
+            languageCode: 'en',
+            segments: [
+              Segment(
+                startMs: 0,
+                endMs: 500,
+                words: [Word(text: 'second', startMs: 0, endMs: 500)],
+              ),
+            ],
+          ),
+        ),
       ]);
       int? edited;
       await tester.pumpWidget(menuApp(small, onEdit: (i) => edited = i));
@@ -371,9 +427,11 @@ void main() {
     testWidgets('an empty "no speech" transcript still offers Edit; a memo '
         'with none does not', (tester) async {
       final small = Tape([
-        bareMemo(0,
-            status: MemoStatus.ready,
-            transcript: const Transcript(languageCode: '', segments: [])),
+        bareMemo(
+          0,
+          status: MemoStatus.ready,
+          transcript: const Transcript(languageCode: '', segments: []),
+        ),
         bareMemo(1, status: MemoStatus.stored),
       ]);
       await tester.pumpWidget(menuApp(small, onEdit: (_) {}));

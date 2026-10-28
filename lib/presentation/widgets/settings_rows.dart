@@ -78,13 +78,22 @@ class SettingsRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 12.5, fontWeight: FontWeight.w700)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(value,
-                      style: TextStyle(
-                          fontSize: 10.5, height: 1.45, color: tape.ink2)),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      height: 1.45,
+                      color: tape.ink2,
+                    ),
+                  ),
                 ],
               ),
             ),

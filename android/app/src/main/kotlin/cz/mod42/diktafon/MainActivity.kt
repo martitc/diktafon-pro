@@ -94,6 +94,23 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "diktafon/model_storage")
+            .setMethodCallHandler { call, result ->
+                if (call.method != "availableBytes") {
+                    result.notImplemented()
+                    return@setMethodCallHandler
+                }
+                val path = call.argument<String>("path")
+                if (path == null) {
+                    result.error("bad_args", "storage path required", null)
+                    return@setMethodCallHandler
+                }
+                try {
+                    result.success(android.os.StatFs(path).availableBytes)
+                } catch (e: Exception) {
+                    result.error("storage_unavailable", "Could not read free storage", null)
+                }
+            }
         // Counterpart of HostCodecAudioTranscoder (lib/services/audio/
         // audio_transcoder.dart): WAV capture → archival AAC-LC m4a (§6.4).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "diktafon/transcoder")

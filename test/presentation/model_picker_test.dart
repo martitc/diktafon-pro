@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/picker_job_queue.dart';
+
 /// The model picker against a real (local) HTTP download: select a tier →
 /// progress → installed → tier persisted; delete → back to downloadable.
 void main() {
@@ -55,8 +57,9 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  testWidgets('select → download with progress → installed → delete',
-      (tester) async {
+  testWidgets('select → download with progress → installed → delete', (
+    tester,
+  ) async {
     // Phone-narrow viewport: the long "paused at … — tap to resume" status
     // must flow under the label here, not crush it into a one-letter column.
     tester.view.physicalSize = const Size(400, 800);
@@ -72,35 +75,36 @@ void main() {
       urlOverride: Uri.parse('http://127.0.0.1:${server.port}/model.bin'),
     );
     final manager = WhisperModelManager(dir, catalog: [spec]);
+    final queue = PickerJobQueue();
 
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        appDatabaseProvider.overrideWithValue(db),
-        whisperModelManagerProvider.overrideWithValue(manager),
-        // Selecting a tier drains the job queue, which consults the
-        // summarization seam — give it a real (empty) store.
-        llmModelManagerProvider.overrideWithValue(LlmModelManager(dir)),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        theme: buildTheme(Brightness.light),
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () => showDialog<void>(
-                  context: context,
-                  builder: (_) => const ModelPickerDialog(),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          whisperModelManagerProvider.overrideWithValue(manager),
+          jobQueueProvider.overrideWithValue(queue),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          theme: buildTheme(Brightness.light),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const ModelPickerDialog(),
+                  ),
+                  child: const Text('open picker'),
                 ),
-                child: const Text('open picker'),
               ),
             ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open picker'));
     await tester.pump();
     await tester.pump();
@@ -117,8 +121,11 @@ void main() {
     });
     await tester.pump();
     await tester.pump();
-    expect(find.textContaining('downloading'), findsOneWidget,
-        reason: 'first chunk landed, second is gated — mid-download UI');
+    expect(
+      find.textContaining('downloading'),
+      findsOneWidget,
+      reason: 'first chunk landed, second is gated — mid-download UI',
+    );
 
     // Tapping the tier on the wire pauses it: the transfer aborts quietly,
     // the partial is stashed and the row offers resume + discard.
@@ -129,25 +136,37 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.textContaining('paused at'), findsOneWidget);
-    expect(tester.getSize(find.text('Whisper small')).height, lessThan(20),
-        reason: 'the label must stay on one line next to the long status');
-    expect(find.byTooltip('Delete model file'), findsOneWidget,
-        reason: 'a paused partial can be discarded');
+    expect(
+      tester.getSize(find.text('Whisper small')).height,
+      lessThan(20),
+      reason: 'the label must stay on one line next to the long status',
+    );
+    expect(
+      find.byTooltip('Delete model file'),
+      findsOneWidget,
+      reason: 'a paused partial can be discarded',
+    );
     expect(File('${manager.fileOf(spec).path}.paused').existsSync(), isTrue);
+    expect(queue.drainCalls, 0, reason: 'pausing must not release queued work');
 
     // Tapping again routes the paused tier back into a download.
     await tester.tap(find.text('Whisper small'));
     await tester.pump();
     await tester.pump();
-    expect(manager.statusOf(spec), ModelStatus.downloading,
-        reason: 'tap on a paused tier resumes');
+    expect(
+      manager.statusOf(spec),
+      ModelStatus.downloading,
+      reason: 'tap on a paused tier resumes',
+    );
 
     // The tap-started transfer awaits in the widget zone: alternate real-IO
     // windows (runAsync) with microtask flushes (pump) until the dialog
     // shows it installed, releasing the server's held chunk each round.
-    for (var i = 0;
-        i < 100 && find.textContaining('installed').evaluate().isEmpty;
-        i++) {
+    for (
+      var i = 0;
+      i < 100 && find.textContaining('installed').evaluate().isEmpty;
+      i++
+    ) {
       await tester.runAsync(() async {
         chunkGate.add(null);
         await Future<void>.delayed(const Duration(milliseconds: 20));
@@ -156,6 +175,11 @@ void main() {
     }
     expect(find.textContaining('installed'), findsOneWidget);
     expect(manager.fileOf(spec).existsSync(), isTrue);
+    expect(
+      queue.drainCalls,
+      1,
+      reason: 'the resumed download releases queued work when installed',
+    );
 
     // Selecting an installed tier persists the choice (§5.5), no download.
     await tester.tap(find.text('Whisper small'));
@@ -166,6 +190,11 @@ void main() {
       settings.any((s) => s.key == 'whisperTier' && s.value == 'small'),
       isTrue,
       reason: 'selecting a tier persists it (§5.5)',
+    );
+    expect(
+      queue.drainCalls,
+      2,
+      reason: 'selecting an installed tier also releases queued work',
     );
 
     // Manage: delete returns the tier to a downloadable state.
@@ -187,45 +216,76 @@ void main() {
 
     test('capable device: large-v3-turbo carries the recommendation', () {
       expect(
-        ModelPickerDialog.describe(l10n, WhisperModel.largeV3Turbo,
-            largeCapable: true),
+        ModelPickerDialog.describe(
+          l10n,
+          WhisperModel.largeV3Turbo,
+          largeCapable: true,
+        ),
         allOf(l10n.whisperLargeDescCapable, startsWith('Recommended')),
       );
       expect(
-        ModelPickerDialog.describe(l10n, WhisperModel.small,
-            largeCapable: true),
+        ModelPickerDialog.describe(
+          l10n,
+          WhisperModel.small,
+          largeCapable: true,
+        ),
         allOf(l10n.whisperSmallDescCapable, isNot(startsWith('Recommended'))),
       );
     });
 
     test('below the RAM gate small keeps the recommendation', () {
       expect(
-        ModelPickerDialog.describe(l10n, WhisperModel.small,
-            largeCapable: false),
+        ModelPickerDialog.describe(
+          l10n,
+          WhisperModel.small,
+          largeCapable: false,
+        ),
         allOf(l10n.whisperSmallDesc, startsWith('Recommended')),
       );
       expect(
-        ModelPickerDialog.describe(l10n, WhisperModel.largeV3Turbo,
-            largeCapable: false),
+        ModelPickerDialog.describe(
+          l10n,
+          WhisperModel.largeV3Turbo,
+          largeCapable: false,
+        ),
         allOf(l10n.whisperLargeDesc, isNot(startsWith('Recommended'))),
       );
     });
 
     test('unlisted tiers fall through to their dev-only catalog copy', () {
       expect(
-        ModelPickerDialog.describe(l10n, WhisperModel.tiny,
-            largeCapable: true),
+        ModelPickerDialog.describe(l10n, WhisperModel.tiny, largeCapable: true),
         WhisperModel.tiny.description,
       );
-      expect(LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_0_6b),
-          LlmModel.qwen3_0_6b.description);
+      expect(
+        LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_0_6b),
+        LlmModel.qwen3_0_6b.description,
+      );
     });
 
     test('LLM tiers are localized too', () {
-      expect(LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_1_7b),
-          l10n.llmDefaultDesc);
-      expect(LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_4b),
-          l10n.llm4bDesc);
+      expect(
+        LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_1_7b),
+        l10n.llmDefaultDesc,
+      );
+      expect(
+        LlmModelPickerDialog.describe(l10n, LlmModel.qwen3_4b),
+        l10n.llm4bDesc,
+      );
+      for (final model in [
+        LlmModel.gemma4E2b,
+        LlmModel.gemma4E4b,
+        LlmModel.qwen3_5_2b,
+      ]) {
+        expect(
+          LlmModelPickerDialog.describe(l10n, model),
+          l10n.llmModelDetails(
+            model.quantization,
+            model.license,
+            model.minRamGb,
+          ),
+        );
+      }
     });
   });
 }

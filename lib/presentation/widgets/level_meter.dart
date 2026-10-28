@@ -21,8 +21,11 @@ class LevelMeter extends StatelessWidget {
   Widget build(BuildContext context) {
     final tape = context.tape;
     final bars = List<double>.filled(barCount, -60)
-      ..setRange(max(0, barCount - levelsDb.length), barCount,
-          levelsDb.sublist(max(0, levelsDb.length - barCount)));
+      ..setRange(
+        max(0, barCount - levelsDb.length),
+        barCount,
+        levelsDb.sublist(max(0, levelsDb.length - barCount)),
+      );
     return SizedBox(
       height: _height,
       child: Row(

@@ -24,14 +24,14 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DIKTAFON'),
+        title: const Text('DIKTAFON PRO'),
         actions: [
           IconButton(
             tooltip: l10n.settingsTooltip,
             icon: const Icon(Icons.settings_outlined, size: 22),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
         ],
       ),
@@ -46,9 +46,10 @@ class HomeScreen extends ConsumerWidget {
                     l10n.homeEmpty,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 13,
-                        fontStyle: FontStyle.italic,
-                        color: tape.ink2),
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      color: tape.ink2,
+                    ),
                   ),
                 ),
               )
@@ -81,8 +82,7 @@ class HomeScreen extends ConsumerWidget {
         semanticLabel: l10n.newCassette,
         onPressed: () async {
           // A new cassette opens immediately with a placeholder label (§5.2).
-          final cassette =
-              await ref.read(cassetteRepositoryProvider).create();
+          final cassette = await ref.read(cassetteRepositoryProvider).create();
           if (context.mounted) _open(context, cassette.id);
         },
       ),
@@ -90,12 +90,16 @@ class HomeScreen extends ConsumerWidget {
   }
 
   void _open(BuildContext context, String cassetteId) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => CassetteScreen(cassetteId: cassetteId)));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CassetteScreen(cassetteId: cassetteId)),
+    );
   }
 
   Future<void> _contextMenu(
-      BuildContext context, WidgetRef ref, CassetteOverview overview) async {
+    BuildContext context,
+    WidgetRef ref,
+    CassetteOverview overview,
+  ) async {
     final action = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: context.tape.surface,
@@ -123,18 +127,27 @@ class HomeScreen extends ConsumerWidget {
     if (!context.mounted) return;
     switch (action) {
       case 'rename':
-        await showRenameCassetteDialog(context, ref,
-            cassetteId: overview.cassette.id,
-            currentLabel: overview.cassette.label);
+        await showRenameCassetteDialog(
+          context,
+          ref,
+          cassetteId: overview.cassette.id,
+          currentLabel: overview.cassette.label,
+        );
       case 'color':
-        await showCassetteColorDialog(context, ref,
-            cassetteId: overview.cassette.id,
-            currentSeed: overview.cassette.colorSeed);
+        await showCassetteColorDialog(
+          context,
+          ref,
+          cassetteId: overview.cassette.id,
+          currentSeed: overview.cassette.colorSeed,
+        );
       case 'delete':
-        await confirmDeleteCassette(context, ref,
-            cassetteId: overview.cassette.id,
-            label: overview.cassette.label,
-            memoCount: overview.memoCount);
+        await confirmDeleteCassette(
+          context,
+          ref,
+          cassetteId: overview.cassette.id,
+          label: overview.cassette.label,
+          memoCount: overview.memoCount,
+        );
     }
   }
 }
@@ -236,12 +249,14 @@ Future<bool> confirmDeleteCassette(
   required int memoCount,
 }) async {
   final l10n = context.l10n;
-  final confirmed = await showDialog<bool>(
+  final confirmed =
+      await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: Text(l10n.deleteCassetteTitle),
-          content: Text(l10n.deleteCassetteBody(
-              label ?? l10n.untitledCassette, memoCount)),
+          content: Text(
+            l10n.deleteCassetteBody(label ?? l10n.untitledCassette, memoCount),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
@@ -250,7 +265,8 @@ Future<bool> confirmDeleteCassette(
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               style: TextButton.styleFrom(
-                  foregroundColor: dialogContext.tape.rec),
+                foregroundColor: dialogContext.tape.rec,
+              ),
               child: Text(l10n.deleteAction),
             ),
           ],

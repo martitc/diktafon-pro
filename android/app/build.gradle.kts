@@ -7,6 +7,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// The connection probe installs alongside Diktafon so existing recordings stay
+// under the original application ID. Enable with ORG_GRADLE_PROJECT_cloudProbe=true.
+val isCloudConnectionProbe = providers.gradleProperty("cloudProbe").orNull == "true"
+
 // Release signing: android/key.properties (gitignored) with keyAlias,
 // keyPassword, storeFile (relative to android/app/), storePassword.
 // Absent → release falls back to debug signing so local builds keep working.
@@ -32,7 +36,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "cz.mod42.diktafon"
+        applicationId = if (isCloudConnectionProbe) {
+            "io.github.martitc.diktafonpro.connections"
+        } else {
+            "io.github.martitc.diktafonpro"
+        }
+        manifestPlaceholders["appLabel"] =
+            if (isCloudConnectionProbe) "Diktafon Pro · Conexiones" else "Diktafon Pro"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

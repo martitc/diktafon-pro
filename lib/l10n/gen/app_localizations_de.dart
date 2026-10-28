@@ -271,6 +271,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Empfohlen — deutlich genauer, besonders bei Lärm (~2,5 GB RAM beim Transkribieren).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Höchste Genauigkeit — 2,9 GiB Download; 8 GB RAM empfohlen.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '2,9 GiB Download — dieses Gerät benötigt etwa 8 GB RAM.';
+
+  @override
   String get llmDefaultDesc =>
       'Empfohlen — kompakte mehrsprachige Zusammenfassungen.';
 
@@ -341,10 +349,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon hört zu, schreibt mit und fasst zusammen — direkt auf deinem Telefon.\n\nAufnahmen, Transkripte und Zusammenfassungen verlassen das Gerät nie. Es gibt kein Konto, keine Cloud und keine Analyse. Daten verlassen das Gerät nur über eine Sicherung oder einen Export, den du selbst startest.';
+      'Diktafon Pro hört zu, schreibt mit und fasst zusammen — direkt auf deinem Telefon.\n\nAufnahmen, Transkripte und Zusammenfassungen verlassen das Gerät nie. Es gibt kein Konto, keine Cloud und keine Analyse. Daten verlassen das Gerät nur über eine Sicherung oder einen Export, den du selbst startest.';
 
   @override
-  String get aboutOpenSource => 'Diktafon ist kostenlos und quelloffen:';
+  String get aboutOpenSource => 'Diktafon Pro ist kostenlos und quelloffen:';
 
   @override
   String get aboutPrivacyPolicy => 'Datenschutzerklärung';
@@ -404,7 +412,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Willkommen bei Diktafon';
+  String get firstRunWelcome => 'Willkommen bei Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -466,7 +474,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Die Sicherung deines Geräts erfasst Kassettenliste, Transkripte und Zusammenfassungen automatisch. Audioaufnahmen sind groß — nimm sie ausdrücklich mit: ein Export packt Audio, Transkripte und Zusammenfassungen einer Kassette in ein .zip-Archiv, und ein Import bringt sie zurück. Diktafon lädt nichts hoch.';
+      'Die Sicherung deines Geräts erfasst Kassettenliste, Transkripte und Zusammenfassungen automatisch. Audioaufnahmen sind groß — nimm sie ausdrücklich mit: ein Export packt Audio, Transkripte und Zusammenfassungen einer Kassette in ein .zip-Archiv, und ein Import bringt sie zurück. Diktafon Pro lädt nichts hoch.';
 
   @override
   String get groupExport => 'Export';
@@ -513,6 +521,48 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get importing => 'Importiere…';
+
+  @override
+  String get importAudio => 'Audio importieren';
+
+  @override
+  String get importingAudio => 'Audio wird importiert…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Audionotizen hinzugefügt. Die Transkription startet automatisch.',
+      one: '1 Audionotiz hinzugefügt. Die Transkription startet automatisch.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Audiodateien konnten nicht importiert werden.',
+      one: '1 Audiodatei konnte nicht importiert werden.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Audionotizen wurden importiert, ihre Transkriptionen konnten jedoch nicht in die Warteschlange eingereiht werden.',
+      one:
+          '1 Audionotiz wurde importiert, ihre Transkription konnte jedoch nicht in die Warteschlange eingereiht werden.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'KASSETTEN IMPORTIEREN?';
@@ -568,7 +618,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Exportiert aus Diktafon am $date.';
+    return 'Exportiert aus Diktafon Pro am $date.';
   }
 
   @override
@@ -640,8 +690,63 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Transkription abgeschlossen';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'Die Audiotranskription ist in Diktafon Pro verfügbar.';
+
+  @override
+  String get notifSummaryCompleted => 'Zusammenfassung abgeschlossen';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Die Audiozusammenfassung ist in Diktafon Pro verfügbar.';
+
+  @override
   String get notifRecording => 'Aufnahme läuft';
 
   @override
   String get notifRecordingChannel => 'Aufnahme';
+
+  @override
+  String get insufficientModelStorage =>
+      'Nicht genügend Speicherplatz für dieses Modell. Machen Sie Speicher frei und versuchen Sie es erneut.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Erlaube Mitteilungen, damit Modelldownloads im Hintergrund fortgesetzt werden können.';
+
+  @override
+  String get importAudioTooltip => 'Audio in diese Kassette importieren';
+
+  @override
+  String get localSummaryInstructionsGroup =>
+      'Anweisungen für lokale Zusammenfassungen';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Zum Beispiel: Entscheidungen, Aufgaben und Fristen hervorheben.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Diese Anweisungen bleiben auf diesem Gerät und werden nie an Gemini oder ChatGPT gesendet.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'Anweisungen für die lokale Zusammenfassung konnten nicht gespeichert werden.';
+
+  @override
+  String get localSummaryInstructionsTitle =>
+      'Deine Anweisungen für Zusammenfassungen';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · geschätzter Mindest-RAM: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'Download $size · geschätzter Mindest-RAM: $ram GB';
+  }
 }

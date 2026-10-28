@@ -1,0 +1,53 @@
+version: 1
+project:
+  root: diktafon
+  stacks: [Flutter, Dart, Android]
+  package_managers: [pub]
+  monorepo: false
+  signals: [diktafon/pubspec.yaml, diktafon/android, diktafon/test]
+sdd:
+  artifact_store: 02-DOCS/wiki/sdd
+  execution_mode: interactive
+  registry_path: .rsc/skill-registry.json
+  review_budget:
+    line_budget: 400
+    file_budget: 12
+  delivery_strategy:
+    default: ask-on-risk
+testing:
+  strict_tdd: true
+  runners: [flutter_test]
+  commands:
+    apply: [flutter pub get]
+    verify: [dart format --set-exit-if-changed, flutter analyze, flutter test]
+phase_rules:
+  proposal: optional-on-ambiguity
+  specify: requires intent or proposal
+  plan: requires spec
+  tasks: requires plan and spec
+  analyze: requires spec plan tasks
+  implement: requires analyze pass, strict_tdd when testing.strict_tdd is true
+  verify: requires spec tasks evidence
+  archive: requires verify record and review/ship outcome
+models:
+  enabled: false
+  provider: openai
+  tiers:
+    heavy: gpt-5.1
+    balanced: gpt-5.1-mini
+    light: gpt-5.1-nano
+  phases:
+    constitution: heavy
+    specify: balanced
+    clarify: balanced
+    plan: heavy
+    tasks: balanced
+    analyze: heavy
+    implement: balanced
+    verify: balanced
+    review: heavy
+    ship: light
+    debug: heavy
+    worktrees: light
+    sdd-init: light
+  overrides: {}

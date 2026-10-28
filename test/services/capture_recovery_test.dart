@@ -55,57 +55,61 @@ void main() {
     bool withWav = true,
     String? markerJson,
   }) async {
-    final wavPath =
-        await files.pathFor(cassetteId, memoId, extension: 'wav');
+    final wavPath = await files.pathFor(cassetteId, memoId, extension: 'wav');
     if (withWav) {
-      await File(wavPath).writeAsBytes(
-          buildWav(dataBytes, riffSize: 0, dataSize: 0));
+      await File(
+        wavPath,
+      ).writeAsBytes(buildWav(dataBytes, riffSize: 0, dataSize: 0));
     }
-    await File(captureMarkerPath(wavPath)).writeAsString(markerJson ??
-        jsonEncode({
-          'memoId': memoId,
-          'cassetteId': cassetteId,
-          'startedAt': startedAt.millisecondsSinceEpoch,
-        }));
+    await File(captureMarkerPath(wavPath)).writeAsString(
+      markerJson ??
+          jsonEncode({
+            'memoId': memoId,
+            'cassetteId': cassetteId,
+            'startedAt': startedAt.millisecondsSinceEpoch,
+          }),
+    );
     return wavPath;
   }
 
-  test('salvageable capture becomes a memo and re-enters the pipeline',
-      () async {
-    final cassette = await cassettes.create();
-    final wavPath = await plantCapture(cassette.id, 'm-lost');
+  test(
+    'salvageable capture becomes a memo and re-enters the pipeline',
+    () async {
+      final cassette = await cassettes.create();
+      final wavPath = await plantCapture(cassette.id, 'm-lost');
 
-    expect(await recovery.recover(), 1);
+      expect(await recovery.recover(), 1);
 
-    final row = (await memos.memosOf(cassette.id)).single;
-    expect(row.id, 'm-lost');
-    expect(row.filePath, wavPath);
-    expect(row.status, MemoStatus.stored);
-    expect(row.durationMs, 1000); // 32 KB at 16 kHz mono s16
-    // createdAt mirrors a normal stop: start + captured audio.
-    expect(row.createdAt,
-        startedAt.add(const Duration(milliseconds: 1000)));
-    expect(transcriptionQueue, ['m-lost']);
-    expect(transcodeQueue, ['m-lost']);
-    expect(File(captureMarkerPath(wavPath)).existsSync(), isFalse);
+      final row = (await memos.memosOf(cassette.id)).single;
+      expect(row.id, 'm-lost');
+      expect(row.filePath, wavPath);
+      expect(row.status, MemoStatus.stored);
+      expect(row.durationMs, 1000); // 32 KB at 16 kHz mono s16
+      // createdAt mirrors a normal stop: start + captured audio.
+      expect(row.createdAt, startedAt.add(const Duration(milliseconds: 1000)));
+      expect(transcriptionQueue, ['m-lost']);
+      expect(transcodeQueue, ['m-lost']);
+      expect(File(captureMarkerPath(wavPath)).existsSync(), isFalse);
 
-    // The WAV header was repaired in place — sizes match the file now.
-    final bytes = await File(wavPath).readAsBytes();
-    expect(
-        ByteData.sublistView(bytes).getUint32(40, Endian.little), 32000);
-  });
+      // The WAV header was repaired in place — sizes match the file now.
+      final bytes = await File(wavPath).readAsBytes();
+      expect(ByteData.sublistView(bytes).getUint32(40, Endian.little), 32000);
+    },
+  );
 
   test('marker whose memo row already exists is just cleaned up', () async {
     final cassette = await cassettes.create();
     final wavPath = await plantCapture(cassette.id, 'm-done');
-    await memos.insert(Memo(
-      id: 'm-done',
-      cassetteId: cassette.id,
-      filePath: wavPath,
-      durationMs: 1000,
-      createdAt: startedAt,
-      status: MemoStatus.stored,
-    ));
+    await memos.insert(
+      Memo(
+        id: 'm-done',
+        cassetteId: cassette.id,
+        filePath: wavPath,
+        durationMs: 1000,
+        createdAt: startedAt,
+        status: MemoStatus.stored,
+      ),
+    );
 
     expect(await recovery.recover(), 0);
     expect((await memos.memosOf(cassette.id)).length, 1);
@@ -116,8 +120,7 @@ void main() {
 
   test('marker without a WAV is dropped', () async {
     final cassette = await cassettes.create();
-    final wavPath =
-        await plantCapture(cassette.id, 'm-gone', withWav: false);
+    final wavPath = await plantCapture(cassette.id, 'm-gone', withWav: false);
 
     expect(await recovery.recover(), 0);
     expect(await memos.allIds(), isEmpty);
@@ -126,8 +129,7 @@ void main() {
 
   test('a blink of a capture (under ~100 ms) is discarded', () async {
     final cassette = await cassettes.create();
-    final wavPath =
-        await plantCapture(cassette.id, 'm-blip', dataBytes: 640);
+    final wavPath = await plantCapture(cassette.id, 'm-blip', dataBytes: 640);
 
     expect(await recovery.recover(), 0);
     expect(await memos.allIds(), isEmpty);
@@ -137,8 +139,11 @@ void main() {
 
   test('unreadable marker is dropped without touching the audio', () async {
     final cassette = await cassettes.create();
-    final wavPath = await plantCapture(cassette.id, 'm-noise',
-        markerJson: 'not json at all');
+    final wavPath = await plantCapture(
+      cassette.id,
+      'm-noise',
+      markerJson: 'not json at all',
+    );
 
     expect(await recovery.recover(), 0);
     expect(await memos.allIds(), isEmpty);

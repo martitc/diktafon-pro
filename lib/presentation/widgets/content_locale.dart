@@ -12,10 +12,12 @@ import 'dart:ui';
 Locale? contentLocale(String? languageCode) {
   if (languageCode == null || languageCode.isEmpty) return null;
   return switch (languageCode) {
-    'zh-Hans' =>
-      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
-    'zh-Hant' || 'yue' =>
-      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    'zh-Hans' => const Locale.fromSubtags(
+      languageCode: 'zh',
+      scriptCode: 'Hans',
+    ),
+    'zh-Hant' ||
+    'yue' => const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
     _ => Locale(languageCode),
   };
 }

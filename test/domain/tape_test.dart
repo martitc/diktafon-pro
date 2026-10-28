@@ -4,13 +4,13 @@ import 'package:diktafon/domain/tape.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Memo memo(String id, int durationMs, {int t = 0}) => Memo(
-      id: id,
-      cassetteId: 'c1',
-      filePath: '$id.m4a',
-      durationMs: durationMs,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(t),
-      status: MemoStatus.stored,
-    );
+  id: id,
+  cassetteId: 'c1',
+  filePath: '$id.m4a',
+  durationMs: durationMs,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(t),
+  status: MemoStatus.stored,
+);
 
 void main() {
   group('Tape offsets (§4.2)', () {
@@ -102,12 +102,19 @@ void main() {
 
   group('Transcript JSON round-trip', () {
     test('serializes and parses', () {
-      const t = Transcript(languageCode: 'cs', segments: [
-        Segment(startMs: 0, endMs: 1200, words: [
-          Word(text: 'Napadá', startMs: 0, endMs: 400),
-          Word(text: 'mě', startMs: 410, endMs: 600),
-        ]),
-      ]);
+      const t = Transcript(
+        languageCode: 'cs',
+        segments: [
+          Segment(
+            startMs: 0,
+            endMs: 1200,
+            words: [
+              Word(text: 'Napadá', startMs: 0, endMs: 400),
+              Word(text: 'mě', startMs: 410, endMs: 600),
+            ],
+          ),
+        ],
+      );
       final parsed = Transcript.fromJson(t.toJson());
       expect(parsed.languageCode, 'cs');
       expect(parsed.segments.single.words.first.text, 'Napadá');

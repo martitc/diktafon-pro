@@ -1,6 +1,5 @@
 {
   "@@locale": "vi",
-
   "untitledCassette": "Băng cassette chưa đặt tên",
   "rename": "Đổi tên",
   "delete": "Xóa",
@@ -9,7 +8,6 @@
   "deleteAction": "XÓA",
   "ok": "OK",
   "back": "Quay lại",
-
   "settingsTooltip": "Cài đặt",
   "homeEmpty": "Chưa có băng cassette nào.\nNhấn + để bắt đầu một cuộn băng mới.",
   "newCassette": "Băng cassette mới",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Tên băng cassette",
   "deleteCassetteTitle": "XÓA BĂNG CASSETTE?",
   "deleteCassetteBody": "\"{label}\" và {count, plural, other{{count} bản ghi}} trong đó sẽ bị xóa. Không thể hoàn tác.",
-
   "memoCount": "{count, plural, other{{count} bản ghi}}",
   "cardEmptyMeta": "trống · nhấn để mở",
   "cardMetaNaming": "{memos} · đang tự đặt tên…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "hôm nay {time}",
   "yesterday": "hôm qua",
-
   "deleteCassette": "Xóa băng cassette",
   "blankTape": "Một cuộn băng trắng.\nNhấn phím đỏ để thu âm.",
   "emptyTape": "BĂNG TRẮNG",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Bản ghi {n} sẽ bị xóa và cuộn băng sẽ tự nối liền. Không thể hoàn tác.",
   "timelineLabel": "Dòng thời gian cuộn băng",
   "timelinePosition": "{position} trên {total}",
-
   "noSpeech": "(không có giọng nói)",
   "transcriptionFailedRetry": "chép lời thất bại — nhấn để thử lại (âm thanh vẫn phát được)",
   "queuedForTranscription": "đang chờ chép lời…",
@@ -55,7 +50,6 @@
   "summarizing": "đang tóm tắt…",
   "summaryFailedRetry": "tóm tắt thất bại — nhấn để thử lại",
   "transcribing": "đang chép lời…",
-
   "settingsTitle": "CÀI ĐẶT",
   "groupLanguage": "Ngôn ngữ",
   "transcriptionLanguage": "Ngôn ngữ chép lời",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Nhẹ và nhanh hơn — kém chính xác hơn, nhất là với bản thu ồn.",
   "whisperLargeDesc": "Chính xác hơn; cần thiết bị mạnh (~2,5 GB RAM khi chép lời).",
   "whisperLargeDescCapable": "Khuyên dùng — chính xác hơn nhiều, nhất là khi ồn (~2,5 GB RAM khi chép lời).",
+  "whisperFullLargeDesc": "Độ chính xác cao nhất — tải xuống 2,9 GiB; khuyến nghị RAM 8 GB.",
+  "whisperFullLargeDescBlocked": "Tải xuống 2,9 GiB — thiết bị cần khoảng 8 GB RAM để chạy.",
   "llmDefaultDesc": "Khuyên dùng — tóm tắt đa ngôn ngữ, gọn nhẹ.",
   "llm4bDesc": "Tóm tắt và tiêu đề chất lượng cao hơn; cần thiết bị mạnh (~3 GB RAM khi tóm tắt).",
   "summariesOffValue": "Không tóm tắt · nhấn để thiết lập",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Giới thiệu & quyền riêng tư",
   "aboutPrivacyDesc": "Âm thanh không bao giờ rời khỏi thiết bị này",
   "aboutTitle": "GIỚI THIỆU & QUYỀN RIÊNG TƯ",
-  "aboutBody": "Diktafon nghe, ghi chép và tóm tắt ngay trên điện thoại của bạn.\n\nBản thu, bản chép lời và tóm tắt không bao giờ rời khỏi thiết bị. Không có tài khoản, không đám mây và không phân tích dữ liệu. Dữ liệu chỉ rời khỏi thiết bị khi chính bạn sao lưu hoặc xuất.",
-  "aboutOpenSource": "Diktafon miễn phí và mã nguồn mở:",
+  "aboutBody": "Diktafon Pro nghe, ghi chép và tóm tắt ngay trên điện thoại của bạn.\n\nBản thu, bản chép lời và tóm tắt không bao giờ rời khỏi thiết bị. Không có tài khoản, không đám mây và không phân tích dữ liệu. Dữ liệu chỉ rời khỏi thiết bị khi chính bạn sao lưu hoặc xuất.",
+  "aboutOpenSource": "Diktafon Pro miễn phí và mã nguồn mở:",
   "aboutPrivacyPolicy": "Chính sách quyền riêng tư",
-
   "modelPickerTranscriptionTitle": "MÔ HÌNH CHÉP LỜI",
   "modelPickerSummaryTitle": "MÔ HÌNH TÓM TẮT",
   "pickerInstalled": "đã cài · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} đã sẵn sàng — đang chép lời các bản ghi đang chờ.",
   "modelReadySummarize": "{label} đã sẵn sàng — đang tóm tắt các bản ghi đang chờ.",
   "downloadFailed": "Tải {label} thất bại — kiểm tra kết nối rồi thử lại.",
-
-  "firstRunWelcome": "Chào mừng đến với Diktafon",
+  "firstRunWelcome": "Chào mừng đến với Diktafon Pro",
   "firstRunIntro": "Ứng dụng nghe, ghi chép và tóm tắt ngay trên điện thoại của bạn. Bản thu, bản chép lời và tóm tắt **không bao giờ rời khỏi thiết bị này**. Không có tài khoản và không có đám mây.",
   "firstRunSetupHeader": "Thiết lập lần đầu",
   "allowMicRow": "Cho phép micrô",
@@ -126,9 +120,8 @@
   "provisionChoose": "nhấn để chọn mô hình cần tải",
   "downloadsFinishInBackground": "Quá trình tải sẽ hoàn tất trong nền.",
   "startRecordingKey": "BẮT ĐẦU THU ÂM",
-
   "backupTitle": "XUẤT & NHẬP",
-  "backupIntro": "Sao lưu của chính thiết bị đã tự động bao gồm danh sách băng cassette, bản chép lời và tóm tắt. Bản thu âm thanh khá nặng — hãy chủ động mang theo: thao tác xuất đóng gói âm thanh, bản chép lời và tóm tắt của một băng cassette vào một tệp .zip, và nhập tệp đó sẽ đưa chúng trở lại. Diktafon không tải gì lên mạng.",
+  "backupIntro": "Sao lưu của chính thiết bị đã tự động bao gồm danh sách băng cassette, bản chép lời và tóm tắt. Bản thu âm thanh khá nặng — hãy chủ động mang theo: thao tác xuất đóng gói âm thanh, bản chép lời và tóm tắt của một băng cassette vào một tệp .zip, và nhập tệp đó sẽ đưa chúng trở lại. Diktafon Pro không tải gì lên mạng.",
   "groupExport": "Xuất",
   "exportAll": "Xuất tất cả băng cassette",
   "exportAllDesc": "Mọi thứ, trong một tệp lưu trữ",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, other{Không thể nhập {count} băng cassette.}}",
   "importNothingFound": "Không tìm thấy băng cassette nào trong tệp đó.",
   "importFailed": "Nhập thất bại: {error}",
-
-  "exportNote": "Đã xuất từ Diktafon ngày {date}.",
+  "exportNote": "Đã xuất từ Diktafon Pro ngày {date}.",
   "exportSummaryHeading": "Tóm tắt",
   "exportNotTranscribed": "(chưa chép lời)",
-
   "openSystemSettings": "CÀI ĐẶT",
   "changeColor": "Đổi màu",
   "retranscribe": "Chép lời lại",
@@ -168,6 +159,69 @@
   "memoActions": "Thao tác với bản ghi",
   "notifDownloading": "Đang tải {label}",
   "notifModelInstalled": "Đã cài {label}",
+  "notifTranscriptionCompleted": "Đã chép lời xong",
+  "notifTranscriptionCompletedBody": "Bản chép lời âm thanh đã sẵn sàng trong Diktafon Pro.",
+  "notifSummaryCompleted": "Đã tóm tắt xong",
+  "notifSummaryCompletedBody": "Bản tóm tắt âm thanh đã sẵn sàng trong Diktafon Pro.",
   "notifRecording": "Đang thu âm",
-  "notifRecordingChannel": "Thu âm"
+  "notifRecordingChannel": "Thu âm",
+  "importAudio": "Nhập âm thanh",
+  "importingAudio": "Đang nhập âm thanh…",
+  "importedAudioFiles": "{count, plural, other{Đã thêm {count} ghi chú âm thanh. Quá trình chép lời sẽ tự động bắt đầu.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{Không thể nhập {count} tệp âm thanh.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{Đã nhập {count} ghi chú âm thanh nhưng không thể thêm tác vụ chép lời vào hàng đợi.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Không đủ dung lượng trống để tải mô hình này. Hãy giải phóng dung lượng rồi thử lại.",
+  "downloadNotificationsPermissionRequired": "Cho phép thông báo để tiếp tục tải mô hình trong nền.",
+  "importAudioTooltip": "Nhập âm thanh vào băng này",
+  "localSummaryInstructionsGroup": "Hướng dẫn tóm tắt cục bộ",
+  "localSummaryInstructionsHint": "Ví dụ: tập trung vào quyết định, công việc và thời hạn.",
+  "localSummaryInstructionsPrivacy": "Các hướng dẫn này chỉ lưu trên thiết bị và không gửi đến Gemini hoặc ChatGPT.",
+  "localSummarySaveFailed": "Không thể lưu hướng dẫn tóm tắt cục bộ.",
+  "localSummaryInstructionsTitle": "Hướng dẫn tóm tắt của bạn",
+  "llmModelDetails": "{quantization} · {license} · RAM tối thiểu ước tính: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "tải xuống {size} · RAM tối thiểu ước tính: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

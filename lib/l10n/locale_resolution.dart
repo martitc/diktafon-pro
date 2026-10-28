@@ -17,14 +17,13 @@ import '../domain/script.dart';
 /// everything else passes through.
 Locale padZhLocale(Locale locale) =>
     locale.languageCode == 'zh' && locale.scriptCode == null
-        ? Locale.fromSubtags(
-            languageCode: 'zh',
-            scriptCode: zhScriptFor(countryCode: locale.countryCode),
-            countryCode: locale.countryCode,
-          )
-        : locale;
+    ? Locale.fromSubtags(
+        languageCode: 'zh',
+        scriptCode: zhScriptFor(countryCode: locale.countryCode),
+        countryCode: locale.countryCode,
+      )
+    : locale;
 
 /// Drop-in `localeListResolutionCallback`.
 Locale resolveAppLocale(List<Locale>? preferred, Iterable<Locale> supported) =>
-    basicLocaleListResolution(
-        preferred?.map(padZhLocale).toList(), supported);
+    basicLocaleListResolution(preferred?.map(padZhLocale).toList(), supported);

@@ -24,16 +24,25 @@ class FfmpegPcmDecoder implements PcmDecoder {
   Future<void> decodeToF32(String audioPath, String pcmPath) async {
     final result = await Process.run('ffmpeg', [
       '-y',
-      '-v', 'error',
-      '-i', audioPath,
-      '-f', 'f32le',
-      '-ac', '1',
-      '-ar', '16000',
+      '-v',
+      'error',
+      '-i',
+      audioPath,
+      '-f',
+      'f32le',
+      '-ac',
+      '1',
+      '-ar',
+      '16000',
       pcmPath,
     ]);
     if (result.exitCode != 0) {
       throw ProcessException(
-          'ffmpeg', const [], result.stderr.toString(), result.exitCode);
+        'ffmpeg',
+        const [],
+        result.stderr.toString(),
+        result.exitCode,
+      );
     }
   }
 }

@@ -57,11 +57,10 @@ class WhisperWorker {
         final response = message as Map<dynamic, dynamic>;
         _inFlight.remove(response['id'])?.complete(response);
       });
-      _isolate = await Isolate.spawn(
-        _workerMain,
-        [replies.sendPort, _libraryPath],
-        debugName: 'whisper-worker',
-      );
+      _isolate = await Isolate.spawn(_workerMain, [
+        replies.sendPort,
+        _libraryPath,
+      ], debugName: 'whisper-worker');
       _commands = await ready.future;
     }();
   }
@@ -99,11 +98,11 @@ class WhisperWorker {
     if (error != null) throw WhisperWorkerException(error as String);
     lastSegmentConfidence = [
       for (final pair in (response['confidence'] as List? ?? const []))
-        SegmentConfidence(
-            (pair as List)[0] as double, pair[1] as double),
+        SegmentConfidence((pair as List)[0] as double, pair[1] as double),
     ];
     return Transcript.fromJson(
-        (response['transcript'] as Map).cast<String, dynamic>());
+      (response['transcript'] as Map).cast<String, dynamic>(),
+    );
   }
 
   /// Gate-only VAD (design.md §6.3a): does the PCM file contain any speech?
@@ -324,19 +323,23 @@ List<RawSegment> _readSegments(WhisperBindings bindings, Pointer<Void> ctx) {
     final tokenCount = bindings.nTokens(ctx, i);
     for (var j = 0; j < tokenCount; j++) {
       if (bindings.tokenIsText(ctx, i, j) == 0) continue;
-      tokens.add(RawToken(
-        copyCStringBytes(bindings.tokenText(ctx, i, j)),
-        bindings.tokenT0Ms(ctx, i, j),
-        bindings.tokenT1Ms(ctx, i, j),
-      ));
+      tokens.add(
+        RawToken(
+          copyCStringBytes(bindings.tokenText(ctx, i, j)),
+          bindings.tokenT0Ms(ctx, i, j),
+          bindings.tokenT1Ms(ctx, i, j),
+        ),
+      );
     }
-    segments.add(RawSegment(
-      bindings.segmentT0Ms(ctx, i),
-      bindings.segmentT1Ms(ctx, i),
-      tokens,
-      noSpeechProb: bindings.segmentNoSpeechProb(ctx, i),
-      avgTokenP: bindings.segmentAvgTokenP(ctx, i),
-    ));
+    segments.add(
+      RawSegment(
+        bindings.segmentT0Ms(ctx, i),
+        bindings.segmentT1Ms(ctx, i),
+        tokens,
+        noSpeechProb: bindings.segmentNoSpeechProb(ctx, i),
+        avgTokenP: bindings.segmentAvgTokenP(ctx, i),
+      ),
+    );
   }
   return segments;
 }

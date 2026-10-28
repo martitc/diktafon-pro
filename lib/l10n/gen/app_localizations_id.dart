@@ -264,6 +264,14 @@ class AppLocalizationsId extends AppLocalizations {
       'Disarankan — jauh lebih akurat, terutama di tempat bising (~2,5 GB RAM saat transkripsi).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Akurasi tertinggi — unduhan 2,9 GiB; disarankan RAM 8 GB.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'Unduhan 2,9 GiB — perangkat ini memerlukan RAM sekitar 8 GB untuk menjalankannya.';
+
+  @override
   String get llmDefaultDesc => 'Disarankan — ringkasan multibahasa yang padat.';
 
   @override
@@ -333,10 +341,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon mendengarkan, menulis, dan meringkas langsung di ponsel Anda.\n\nRekaman, transkrip, dan ringkasan tidak pernah meninggalkan perangkat. Tidak ada akun, tidak ada cloud, dan tidak ada analitik. Data hanya keluar lewat pencadangan atau ekspor yang Anda lakukan sendiri.';
+      'Diktafon Pro mendengarkan, menulis, dan meringkas langsung di ponsel Anda.\n\nRekaman, transkrip, dan ringkasan tidak pernah meninggalkan perangkat. Tidak ada akun, tidak ada cloud, dan tidak ada analitik. Data hanya keluar lewat pencadangan atau ekspor yang Anda lakukan sendiri.';
 
   @override
-  String get aboutOpenSource => 'Diktafon gratis dan bersumber terbuka:';
+  String get aboutOpenSource => 'Diktafon Pro gratis dan bersumber terbuka:';
 
   @override
   String get aboutPrivacyPolicy => 'Kebijakan privasi';
@@ -396,7 +404,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Selamat datang di Diktafon';
+  String get firstRunWelcome => 'Selamat datang di Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -457,7 +465,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Pencadangan bawaan perangkat sudah otomatis mencakup daftar kaset, transkrip, dan ringkasan. Rekaman audio berukuran besar — bawalah secara eksplisit: ekspor mengemas audio, transkrip, dan ringkasan sebuah kaset ke dalam satu arsip .zip, dan mengimpor arsip akan mengembalikannya. Diktafon tidak mengunggah apa pun.';
+      'Pencadangan bawaan perangkat sudah otomatis mencakup daftar kaset, transkrip, dan ringkasan. Rekaman audio berukuran besar — bawalah secara eksplisit: ekspor mengemas audio, transkrip, dan ringkasan sebuah kaset ke dalam satu arsip .zip, dan mengimpor arsip akan mengembalikannya. Diktafon Pro tidak mengunggah apa pun.';
 
   @override
   String get groupExport => 'Ekspor';
@@ -504,6 +512,44 @@ class AppLocalizationsId extends AppLocalizations {
   String get importing => 'Mengimpor…';
 
   @override
+  String get importAudio => 'Impor audio';
+
+  @override
+  String get importingAudio => 'Mengimpor audio…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count memo audio ditambahkan. Transkripsi dimulai secara otomatis.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count file audio tidak dapat diimpor.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count memo audio diimpor, tetapi transkripsinya tidak dapat dimasukkan ke antrean.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get importDialogTitle => 'IMPOR KASET?';
 
   @override
@@ -548,7 +594,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Diekspor dari Diktafon pada $date.';
+    return 'Diekspor dari Diktafon Pro pada $date.';
   }
 
   @override
@@ -619,8 +665,61 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Transkripsi selesai';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'Transkripsi audio Anda siap di Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'Ringkasan selesai';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Ringkasan audio Anda siap di Diktafon Pro.';
+
+  @override
   String get notifRecording => 'Sedang merekam';
 
   @override
   String get notifRecordingChannel => 'Perekaman';
+
+  @override
+  String get insufficientModelStorage =>
+      'Ruang penyimpanan tidak cukup untuk mengunduh model ini. Kosongkan ruang lalu coba lagi.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Izinkan notifikasi agar unduhan model dapat berlanjut di latar belakang.';
+
+  @override
+  String get importAudioTooltip => 'Impor audio ke kaset ini';
+
+  @override
+  String get localSummaryInstructionsGroup => 'Instruksi ringkasan lokal';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Contoh: fokus pada keputusan, tugas, dan tenggat waktu.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Instruksi ini tetap di perangkat ini dan tidak dikirim ke Gemini atau ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'Instruksi ringkasan lokal tidak dapat disimpan.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'Instruksi ringkasan Anda';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · perkiraan RAM minimum: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'unduhan $size · perkiraan RAM minimum: $ram GB';
+  }
 }

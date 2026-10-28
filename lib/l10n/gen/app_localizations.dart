@@ -541,6 +541,18 @@ abstract class AppLocalizations {
   /// **'Recommended — much more accurate, especially in noise (~2.5 GB RAM while transcribing).'**
   String get whisperLargeDescCapable;
 
+  /// No description provided for @whisperFullLargeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum accuracy — 2.9 GiB download; 8 GB RAM recommended.'**
+  String get whisperFullLargeDesc;
+
+  /// No description provided for @whisperFullLargeDescBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'2.9 GiB download — this device needs about 8 GB RAM to run it.'**
+  String get whisperFullLargeDescBlocked;
+
   /// No description provided for @llmDefaultDesc.
   ///
   /// In en, this message translates to:
@@ -658,13 +670,13 @@ abstract class AppLocalizations {
   /// No description provided for @aboutBody.
   ///
   /// In en, this message translates to:
-  /// **'Diktafon listens, writes and summarises right here on your phone.\n\nRecordings, transcripts and summaries never leave the device. There is no account, no cloud and no analytics. The only way data leaves is a backup or export you start yourself.'**
+  /// **'Diktafon Pro listens, writes and summarises right here on your phone.\n\nRecordings, transcripts and summaries never leave the device. There is no account, no cloud and no analytics. The only way data leaves is a backup or export you start yourself.'**
   String get aboutBody;
 
   /// No description provided for @aboutOpenSource.
   ///
   /// In en, this message translates to:
-  /// **'Diktafon is free and open source:'**
+  /// **'Diktafon Pro is free and open source:'**
   String get aboutOpenSource;
 
   /// No description provided for @aboutPrivacyPolicy.
@@ -748,7 +760,7 @@ abstract class AppLocalizations {
   /// No description provided for @firstRunWelcome.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Diktafon'**
+  /// **'Welcome to Diktafon Pro'**
   String get firstRunWelcome;
 
   /// The **…** span is rendered bold; keep exactly one such span.
@@ -850,7 +862,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupIntro.
   ///
   /// In en, this message translates to:
-  /// **'Your device\'s own backup covers the cassette list, transcripts and summaries automatically. Audio recordings are large — take them with you explicitly: an export packs the audio, transcripts and summaries of a cassette into one .zip archive, and importing an archive brings them back. Nothing is uploaded by Diktafon.'**
+  /// **'Your device\'s own backup covers the cassette list, transcripts and summaries automatically. Audio recordings are large — take them with you explicitly: an export packs the audio, transcripts and summaries of a cassette into one .zip archive, and importing an archive brings them back. Nothing is uploaded by Diktafon Pro.'**
   String get backupIntro;
 
   /// No description provided for @groupExport.
@@ -919,6 +931,36 @@ abstract class AppLocalizations {
   /// **'Importing…'**
   String get importing;
 
+  /// No description provided for @importAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Import audio'**
+  String get importAudio;
+
+  /// No description provided for @importingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing audio…'**
+  String get importingAudio;
+
+  /// No description provided for @importedAudioFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Added 1 audio memo. Transcription starts automatically.} other{Added {count} audio memos. Transcription starts automatically.}}'**
+  String importedAudioFiles(int count);
+
+  /// No description provided for @localAudioImportFailures.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 audio file could not be imported.} other{{count} audio files could not be imported.}}'**
+  String localAudioImportFailures(int count);
+
+  /// No description provided for @localAudioTranscriptionFailures.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 audio memo was imported, but its transcription could not be queued.} other{{count} audio memos were imported, but their transcriptions could not be queued.}}'**
+  String localAudioTranscriptionFailures(int count);
+
   /// No description provided for @importDialogTitle.
   ///
   /// In en, this message translates to:
@@ -964,7 +1006,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportNote.
   ///
   /// In en, this message translates to:
-  /// **'Exported from Diktafon on {date}.'**
+  /// **'Exported from Diktafon Pro on {date}.'**
   String exportNote(String date);
 
   /// No description provided for @exportSummaryHeading.
@@ -1075,6 +1117,30 @@ abstract class AppLocalizations {
   /// **'{label} installed'**
   String notifModelInstalled(String label);
 
+  /// No description provided for @notifTranscriptionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription finished'**
+  String get notifTranscriptionCompleted;
+
+  /// No description provided for @notifTranscriptionCompletedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your audio transcription is ready in Diktafon Pro.'**
+  String get notifTranscriptionCompletedBody;
+
+  /// No description provided for @notifSummaryCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary finished'**
+  String get notifSummaryCompleted;
+
+  /// No description provided for @notifSummaryCompletedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your audio summary is ready in Diktafon Pro.'**
+  String get notifSummaryCompletedBody;
+
   /// No description provided for @notifRecording.
   ///
   /// In en, this message translates to:
@@ -1086,6 +1152,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recording'**
   String get notifRecordingChannel;
+
+  /// No description provided for @insufficientModelStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough free storage to download this model. Free space and try again.'**
+  String get insufficientModelStorage;
+
+  /// No description provided for @downloadNotificationsPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications so model downloads can continue in the background.'**
+  String get downloadNotificationsPermissionRequired;
+
+  /// No description provided for @importAudioTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Import audio into this cassette'**
+  String get importAudioTooltip;
+
+  /// No description provided for @localSummaryInstructionsGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Local summary instructions'**
+  String get localSummaryInstructionsGroup;
+
+  /// No description provided for @localSummaryInstructionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: focus on decisions, tasks and deadlines.'**
+  String get localSummaryInstructionsHint;
+
+  /// No description provided for @localSummaryInstructionsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'These instructions stay on this device and are never sent to Gemini or ChatGPT.'**
+  String get localSummaryInstructionsPrivacy;
+
+  /// No description provided for @localSummarySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save local summary instructions.'**
+  String get localSummarySaveFailed;
+
+  /// No description provided for @localSummaryInstructionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your summary instructions'**
+  String get localSummaryInstructionsTitle;
+
+  /// No description provided for @llmModelDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'{quantization} · {license} · estimated minimum RAM: {ram} GB'**
+  String llmModelDetails(String quantization, String license, int ram);
+
+  /// No description provided for @llmModelNeedsRam.
+  ///
+  /// In en, this message translates to:
+  /// **'download {size} · estimated minimum RAM: {ram} GB'**
+  String llmModelNeedsRam(String size, int ram);
 }
 
 class _AppLocalizationsDelegate

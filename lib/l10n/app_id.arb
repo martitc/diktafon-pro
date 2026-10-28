@@ -1,6 +1,5 @@
 {
   "@@locale": "id",
-
   "untitledCassette": "Kaset tanpa judul",
   "rename": "Ganti nama",
   "delete": "Hapus",
@@ -9,7 +8,6 @@
   "deleteAction": "HAPUS",
   "ok": "OK",
   "back": "Kembali",
-
   "settingsTooltip": "Pengaturan",
   "homeEmpty": "Belum ada kaset.\nTekan + untuk memulai pita baru.",
   "newCassette": "Kaset baru",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Nama kaset",
   "deleteCassetteTitle": "HAPUS KASET?",
   "deleteCassetteBody": "\"{label}\" dan {count, plural, other{{count} memo}} di dalamnya akan dihapus. Tindakan ini tidak dapat dibatalkan.",
-
   "memoCount": "{count, plural, other{{count} memo}}",
   "cardEmptyMeta": "kosong · tekan untuk membuka",
   "cardMetaNaming": "{memos} · menamai dirinya…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "hari ini {time}",
   "yesterday": "kemarin",
-
   "deleteCassette": "Hapus kaset",
   "blankTape": "Pita kosong.\nTekan tombol merah untuk merekam.",
   "emptyTape": "PITA KOSONG",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Memo {n} akan dihapus dan pita menutup celahnya. Tindakan ini tidak dapat dibatalkan.",
   "timelineLabel": "Linimasa pita",
   "timelinePosition": "{position} dari {total}",
-
   "noSpeech": "(tidak ada ucapan)",
   "transcriptionFailedRetry": "transkripsi gagal — ketuk untuk mencoba lagi (audio tetap bisa diputar)",
   "queuedForTranscription": "dalam antrean transkripsi…",
@@ -55,7 +50,6 @@
   "summarizing": "meringkas…",
   "summaryFailedRetry": "ringkasan gagal — ketuk untuk mencoba lagi",
   "transcribing": "mentranskripsi…",
-
   "settingsTitle": "PENGATURAN",
   "groupLanguage": "Bahasa",
   "transcriptionLanguage": "Bahasa transkripsi",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Lebih ringan dan cepat — kurang akurat, terutama pada rekaman bising.",
   "whisperLargeDesc": "Akurasi lebih tinggi; butuh perangkat mumpuni (~2,5 GB RAM saat transkripsi).",
   "whisperLargeDescCapable": "Disarankan — jauh lebih akurat, terutama di tempat bising (~2,5 GB RAM saat transkripsi).",
+  "whisperFullLargeDesc": "Akurasi tertinggi — unduhan 2,9 GiB; disarankan RAM 8 GB.",
+  "whisperFullLargeDescBlocked": "Unduhan 2,9 GiB — perangkat ini memerlukan RAM sekitar 8 GB untuk menjalankannya.",
   "llmDefaultDesc": "Disarankan — ringkasan multibahasa yang padat.",
   "llm4bDesc": "Ringkasan & judul berkualitas lebih tinggi; butuh perangkat mumpuni (~3 GB RAM saat meringkas).",
   "summariesOffValue": "Tanpa ringkasan · ketuk untuk menyiapkan",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Tentang & privasi",
   "aboutPrivacyDesc": "Audio tidak pernah meninggalkan perangkat ini",
   "aboutTitle": "TENTANG & PRIVASI",
-  "aboutBody": "Diktafon mendengarkan, menulis, dan meringkas langsung di ponsel Anda.\n\nRekaman, transkrip, dan ringkasan tidak pernah meninggalkan perangkat. Tidak ada akun, tidak ada cloud, dan tidak ada analitik. Data hanya keluar lewat pencadangan atau ekspor yang Anda lakukan sendiri.",
-  "aboutOpenSource": "Diktafon gratis dan bersumber terbuka:",
+  "aboutBody": "Diktafon Pro mendengarkan, menulis, dan meringkas langsung di ponsel Anda.\n\nRekaman, transkrip, dan ringkasan tidak pernah meninggalkan perangkat. Tidak ada akun, tidak ada cloud, dan tidak ada analitik. Data hanya keluar lewat pencadangan atau ekspor yang Anda lakukan sendiri.",
+  "aboutOpenSource": "Diktafon Pro gratis dan bersumber terbuka:",
   "aboutPrivacyPolicy": "Kebijakan privasi",
-
   "modelPickerTranscriptionTitle": "MODEL TRANSKRIPSI",
   "modelPickerSummaryTitle": "MODEL RINGKASAN",
   "pickerInstalled": "terpasang · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} siap — mentranskripsi memo yang menunggu.",
   "modelReadySummarize": "{label} siap — meringkas memo yang menunggu.",
   "downloadFailed": "Unduhan {label} gagal — periksa koneksi Anda dan coba lagi.",
-
-  "firstRunWelcome": "Selamat datang di Diktafon",
+  "firstRunWelcome": "Selamat datang di Diktafon Pro",
   "firstRunIntro": "Aplikasi ini mendengarkan, menulis, dan meringkas langsung di ponsel Anda. Rekaman, transkrip, dan ringkasan **tidak pernah meninggalkan perangkat ini**. Tidak ada akun dan tidak ada cloud.",
   "firstRunSetupHeader": "Penyiapan awal",
   "allowMicRow": "Izinkan mikrofon",
@@ -126,9 +120,8 @@
   "provisionChoose": "ketuk untuk memilih model yang akan diunduh",
   "downloadsFinishInBackground": "Unduhan selesai di latar belakang.",
   "startRecordingKey": "MULAI MEREKAM",
-
   "backupTitle": "EKSPOR & IMPOR",
-  "backupIntro": "Pencadangan bawaan perangkat sudah otomatis mencakup daftar kaset, transkrip, dan ringkasan. Rekaman audio berukuran besar — bawalah secara eksplisit: ekspor mengemas audio, transkrip, dan ringkasan sebuah kaset ke dalam satu arsip .zip, dan mengimpor arsip akan mengembalikannya. Diktafon tidak mengunggah apa pun.",
+  "backupIntro": "Pencadangan bawaan perangkat sudah otomatis mencakup daftar kaset, transkrip, dan ringkasan. Rekaman audio berukuran besar — bawalah secara eksplisit: ekspor mengemas audio, transkrip, dan ringkasan sebuah kaset ke dalam satu arsip .zip, dan mengimpor arsip akan mengembalikannya. Diktafon Pro tidak mengunggah apa pun.",
   "groupExport": "Ekspor",
   "exportAll": "Ekspor semua kaset",
   "exportAllDesc": "Semuanya, ke dalam satu file arsip",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, other{{count} kaset tidak dapat diimpor.}}",
   "importNothingFound": "Tidak ada kaset ditemukan dalam arsip itu.",
   "importFailed": "Impor gagal: {error}",
-
-  "exportNote": "Diekspor dari Diktafon pada {date}.",
+  "exportNote": "Diekspor dari Diktafon Pro pada {date}.",
   "exportSummaryHeading": "Ringkasan",
   "exportNotTranscribed": "(belum ditranskripsi)",
-
   "openSystemSettings": "PENGATURAN",
   "changeColor": "Ubah warna",
   "retranscribe": "Transkripsi ulang",
@@ -168,6 +159,69 @@
   "memoActions": "Tindakan memo",
   "notifDownloading": "Mengunduh {label}",
   "notifModelInstalled": "{label} terpasang",
+  "notifTranscriptionCompleted": "Transkripsi selesai",
+  "notifTranscriptionCompletedBody": "Transkripsi audio Anda siap di Diktafon Pro.",
+  "notifSummaryCompleted": "Ringkasan selesai",
+  "notifSummaryCompletedBody": "Ringkasan audio Anda siap di Diktafon Pro.",
   "notifRecording": "Sedang merekam",
-  "notifRecordingChannel": "Perekaman"
+  "notifRecordingChannel": "Perekaman",
+  "importAudio": "Impor audio",
+  "importingAudio": "Mengimpor audio…",
+  "importedAudioFiles": "{count, plural, other{{count} memo audio ditambahkan. Transkripsi dimulai secara otomatis.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{{count} file audio tidak dapat diimpor.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{{count} memo audio diimpor, tetapi transkripsinya tidak dapat dimasukkan ke antrean.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Ruang penyimpanan tidak cukup untuk mengunduh model ini. Kosongkan ruang lalu coba lagi.",
+  "downloadNotificationsPermissionRequired": "Izinkan notifikasi agar unduhan model dapat berlanjut di latar belakang.",
+  "importAudioTooltip": "Impor audio ke kaset ini",
+  "localSummaryInstructionsGroup": "Instruksi ringkasan lokal",
+  "localSummaryInstructionsHint": "Contoh: fokus pada keputusan, tugas, dan tenggat waktu.",
+  "localSummaryInstructionsPrivacy": "Instruksi ini tetap di perangkat ini dan tidak dikirim ke Gemini atau ChatGPT.",
+  "localSummarySaveFailed": "Instruksi ringkasan lokal tidak dapat disimpan.",
+  "localSummaryInstructionsTitle": "Instruksi ringkasan Anda",
+  "llmModelDetails": "{quantization} · {license} · perkiraan RAM minimum: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "unduhan {size} · perkiraan RAM minimum: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,6 +9,7 @@ import '../../application/providers.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/providers/llm/llm_model_manager.dart';
+import '../../services/providers/gemini/gemini_model_catalog.dart';
 import '../../services/providers/model_manager.dart';
 import '../../services/providers/transcription_provider.dart';
 import '../../services/providers/whisper/whisper_model_manager.dart';
@@ -19,6 +21,7 @@ import '../widgets/ink_progress_bar.dart';
 import '../widgets/ink_toggle.dart';
 import '../widgets/settings_rows.dart';
 import 'backup_screen.dart';
+import 'cloud_provider_dialog.dart';
 
 /// Settings (§5.5, mockup 05): grouped ink-bordered cards, rectangular
 /// toggles. Model & backup rows are honest about what ships in M1.
@@ -69,71 +72,151 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(l10n.settingsTitle),
       ),
       body: ContentWidth(
-          child: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
-        children: [
-          SettingsGroup(title: l10n.groupLanguage, rows: [
-            SettingsRow(
-              title: l10n.transcriptionLanguage,
-              value: settings.appLanguage == null
-                  ? l10n.autoDetectValue
-                  : languages[settings.appLanguage] ?? settings.appLanguage!,
-              onTap: () => _pickLanguage(context, repo, settings),
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 32),
+          children: [
+            SettingsGroup(
+              title: l10n.groupLanguage,
+              rows: [
+                SettingsRow(
+                  title: l10n.transcriptionLanguage,
+                  value: settings.appLanguage == null
+                      ? l10n.autoDetectValue
+                      : languages[settings.appLanguage] ??
+                            settings.appLanguage!,
+                  onTap: () => _pickLanguage(context, repo, settings),
+                ),
+              ],
             ),
-          ]),
-          SettingsGroup(title: l10n.groupPlayback, rows: [
-            SettingsRow(
-              title: l10n.boundaryChime,
-              value: l10n.boundaryChimeDesc,
-              trailing: InkToggle(
-                value: settings.chimeEnabled,
-                onChanged: repo.setChimeEnabled,
+            SettingsGroup(
+              title: l10n.groupPlayback,
+              rows: [
+                SettingsRow(
+                  title: l10n.boundaryChime,
+                  value: l10n.boundaryChimeDesc,
+                  trailing: InkToggle(
+                    value: settings.chimeEnabled,
+                    onChanged: repo.setChimeEnabled,
+                  ),
+                ),
+              ],
+            ),
+            SettingsGroup(
+              title: l10n.groupIntelligence,
+              rows: [
+                SettingsRow(
+                  title: 'Proveedor de transcripción',
+                  value: settings.transcriptionProvider == 'gemini'
+                      ? 'Gemini nube · ${settings.geminiModel}'
+                      : 'Whisper local · ${settings.whisperTier}',
+                  onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const CloudProviderDialog(
+                      kind: CloudSettingsKind.transcription,
+                    ),
+                  ),
+                ),
+                SettingsRow(
+                  title: l10n.transcriptionModel,
+                  value: _whisperRowValue(context, ref, settings),
+                  onTap: () => _pickModel(context, const ModelPickerDialog()),
+                ),
+                SettingsRow(
+                  title: 'Proveedor de resúmenes',
+                  value: switch (settings.summaryProvider) {
+                    'gemini' =>
+                      'Gemini nube · ${GeminiModelCatalog.byId(settings.geminiSummaryModel).name}',
+                    'chatgpt' =>
+                      'ChatGPT OAuth · ${settings.chatGptModel} (${settings.chatGptReasoning})',
+                    _ =>
+                      'Modelo local · ${LlmModel.byTier(settings.llmTier).label}',
+                  },
+                  onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const CloudProviderDialog(
+                      kind: CloudSettingsKind.summary,
+                    ),
+                  ),
+                ),
+                if (settings.summaryProvider == 'local')
+                  SettingsRow(
+                    title: l10n.summaryModel,
+                    value: _llmRowValue(context, ref, settings),
+                    onTap: () =>
+                        _pickModel(context, const LlmModelPickerDialog()),
+                  ),
+              ],
+            ),
+            if (settings.summaryProvider == 'local')
+              SettingsGroup(
+                title: l10n.localSummaryInstructionsGroup,
+                rows: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 10,
+                    ),
+                    child: LocalSummaryInstructionsField(
+                      value: settings.localSummaryInstructions,
+                      onChanged: (value) async {
+                        try {
+                          await repo.setLocalSummaryInstructions(value);
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.localSummarySaveFailed),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
+            SettingsGroup(
+              title: l10n.groupAppearance,
+              rows: [
+                SettingsRow(
+                  title: l10n.themeRow,
+                  value: switch (settings.theme) {
+                    'light' => l10n.themeLight,
+                    'dark' => l10n.themeDark,
+                    _ => l10n.themeSystem,
+                  },
+                  onTap: () => _pickTheme(context, repo, settings),
+                ),
+              ],
             ),
-          ]),
-          SettingsGroup(title: l10n.groupIntelligence, rows: [
-            SettingsRow(
-              title: l10n.transcriptionModel,
-              value: _whisperRowValue(context, ref, settings),
-              onTap: () => _pickModel(context, const ModelPickerDialog()),
+            SettingsGroup(
+              title: l10n.groupYourData,
+              rows: [
+                SettingsRow(
+                  title: l10n.backupExport,
+                  value: l10n.backupExportDesc,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const BackupScreen()),
+                  ),
+                ),
+                SettingsRow(
+                  title: l10n.aboutPrivacy,
+                  value: l10n.aboutPrivacyDesc,
+                  onTap: () => _about(context),
+                ),
+              ],
             ),
-            SettingsRow(
-              title: l10n.summaryModel,
-              value: _llmRowValue(context, ref, settings),
-              onTap: () => _pickModel(context, const LlmModelPickerDialog()),
-            ),
-          ]),
-          SettingsGroup(title: l10n.groupAppearance, rows: [
-            SettingsRow(
-              title: l10n.themeRow,
-              value: switch (settings.theme) {
-                'light' => l10n.themeLight,
-                'dark' => l10n.themeDark,
-                _ => l10n.themeSystem,
-              },
-              onTap: () => _pickTheme(context, repo, settings),
-            ),
-          ]),
-          SettingsGroup(title: l10n.groupYourData, rows: [
-            SettingsRow(
-              title: l10n.backupExport,
-              value: l10n.backupExportDesc,
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => const BackupScreen())),
-            ),
-            SettingsRow(
-              title: l10n.aboutPrivacy,
-              value: l10n.aboutPrivacyDesc,
-              onTap: () => _about(context),
-            ),
-          ]),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
   Future<void> _pickLanguage(
-      BuildContext context, SettingsRepository repo, AppSettings s) async {
+    BuildContext context,
+    SettingsRepository repo,
+    AppSettings s,
+  ) async {
     final choice = await showDialog<String>(
       context: context,
       builder: (dialogContext) => SimpleDialog(
@@ -161,7 +244,10 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<void> _pickTheme(
-      BuildContext context, SettingsRepository repo, AppSettings s) async {
+    BuildContext context,
+    SettingsRepository repo,
+    AppSettings s,
+  ) async {
     final choice = await showDialog<String>(
       context: context,
       builder: (dialogContext) => SimpleDialog(
@@ -189,62 +275,83 @@ class SettingsScreen extends ConsumerWidget {
     required String label,
     required bool selected,
     required String result,
-  }) =>
-      SimpleDialogOption(
-        onPressed: () => Navigator.pop(context, result),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 22,
-              child: selected
-                  ? Icon(Icons.check, size: 16, color: context.tape.ink)
-                  : null,
-            ),
-            // Expanded so long options ("Auto-detect (per memo)" and its
-            // translations) wrap instead of overflowing the dialog row.
-            Expanded(
-              child: Text(label,
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: selected ? FontWeight.w700 : null,
-                      color: context.tape.ink)),
-            ),
-          ],
+  }) => SimpleDialogOption(
+    onPressed: () => Navigator.pop(context, result),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 22,
+          child: selected
+              ? Icon(Icons.check, size: 16, color: context.tape.ink)
+              : null,
         ),
-      );
+        // Expanded so long options ("Auto-detect (per memo)" and its
+        // translations) wrap instead of overflowing the dialog row.
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: selected ? FontWeight.w700 : null,
+              color: context.tape.ink,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 
   /// "Whisper small · 181 MB — installed", "… downloading 42 %", or a nudge
   /// to set it up (§14 guides the user here while memos wait).
   String _whisperRowValue(
-      BuildContext context, WidgetRef ref, AppSettings settings) {
+    BuildContext context,
+    WidgetRef ref,
+    AppSettings settings,
+  ) {
     final model = WhisperModel.byTier(settings.whisperTier);
-    return _modelRowValue(context, model,
-        ref.watch(whisperModelStatesProvider).value, model.sizeLabel);
+    return _modelRowValue(
+      context,
+      model,
+      ref.watch(whisperModelStatesProvider).value,
+      model.sizeLabel,
+    );
   }
 
   String _llmRowValue(
-      BuildContext context, WidgetRef ref, AppSettings settings) {
+    BuildContext context,
+    WidgetRef ref,
+    AppSettings settings,
+  ) {
     // Summaries are switched off inside the picker (its first option);
     // the row mirrors that choice instead of a model's install state —
     // keeping the "tap to set up" affordance the other states carry.
     if (!settings.summariesEnabled) return context.l10n.summariesOffValue;
     final model = LlmModel.byTier(settings.llmTier);
-    return _modelRowValue(context, model,
-        ref.watch(llmModelStatesProvider).value, model.sizeLabel);
+    return _modelRowValue(
+      context,
+      model,
+      ref.watch(llmModelStatesProvider).value,
+      model.sizeLabel,
+    );
   }
 
-  String _modelRowValue(BuildContext context, ModelSpec model,
-      List<ModelState<ModelSpec>>? states, String sizeLabel) {
-    final state = states
-        ?.where((s) => s.model.tier == model.tier)
-        .firstOrNull;
+  String _modelRowValue(
+    BuildContext context,
+    ModelSpec model,
+    List<ModelState<ModelSpec>>? states,
+    String sizeLabel,
+  ) {
+    final state = states?.where((s) => s.model.tier == model.tier).firstOrNull;
     return switch (state?.status ?? ModelStatus.notInstalled) {
-      ModelStatus.ready =>
-        context.l10n.modelInstalled(model.label, sizeLabel),
-      ModelStatus.downloading => context.l10n
-          .modelDownloading(model.label, (state!.progress * 100).round()),
-      ModelStatus.paused => context.l10n
-          .modelPaused(model.label, (state!.progress * 100).round()),
+      ModelStatus.ready => context.l10n.modelInstalled(model.label, sizeLabel),
+      ModelStatus.downloading => context.l10n.modelDownloading(
+        model.label,
+        (state!.progress * 100).round(),
+      ),
+      ModelStatus.paused => context.l10n.modelPaused(
+        model.label,
+        (state!.progress * 100).round(),
+      ),
       _ => context.l10n.modelNotDownloaded(model.label),
     };
   }
@@ -253,11 +360,12 @@ class SettingsScreen extends ConsumerWidget {
     showDialog<void>(context: context, builder: (_) => dialog);
   }
 
-  static final _repoUrl = Uri.parse('https://github.com/jaromiru/diktafon');
+  static final _repoUrl = Uri.parse('https://github.com/martitc/diktafon-pro');
   // The same document the store listings point at (Play console & App Store
   // Connect privacy policy URL).
   static final _privacyUrl = Uri.parse(
-      'https://github.com/jaromiru/diktafon/blob/main/PRIVACY.md');
+    'https://github.com/martitc/diktafon-pro/blob/main/PRIVACY.md',
+  );
 
   void _about(BuildContext context) {
     showDialog<void>(
@@ -276,7 +384,7 @@ class SettingsScreen extends ConsumerWidget {
               InkWell(
                 onTap: () => launchUrl(_repoUrl),
                 child: Text(
-                  'github.com/jaromiru/diktafon',
+                  'github.com/martitc/diktafon-pro',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     color: dialogContext.tape.ink,
@@ -308,6 +416,78 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+class LocalSummaryInstructionsField extends StatefulWidget {
+  const LocalSummaryInstructionsField({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String value;
+  final Future<void> Function(String value) onChanged;
+
+  @override
+  State<LocalSummaryInstructionsField> createState() =>
+      _LocalSummaryInstructionsFieldState();
+}
+
+class _LocalSummaryInstructionsFieldState
+    extends State<LocalSummaryInstructionsField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant LocalSummaryInstructionsField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value && widget.value != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.value,
+        selection: TextSelection.collapsed(offset: widget.value.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      TextField(
+        controller: _controller,
+        minLines: 3,
+        maxLines: 5,
+        maxLength: 2000,
+        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(
+          labelText: context.l10n.localSummaryInstructionsTitle,
+          hintText: context.l10n.localSummaryInstructionsHint,
+          alignLabelWithHint: true,
+          border: const OutlineInputBorder(),
+        ),
+        onChanged: (value) => unawaited(widget.onChanged(value)),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(
+          context.l10n.localSummaryInstructionsPrivacy,
+          style: TextStyle(fontSize: 10, color: context.tape.ink2),
+        ),
+      ),
+    ],
+  );
+}
+
 /// Soft device gate for heavyweight tiers (§6.6): total RAM where
 /// /proc/meminfo exists (Linux/Android), sysctl on iOS; unknown platforms
 /// don't block. The thresholds transfer to iOS as-is: they were calibrated
@@ -315,18 +495,8 @@ class SettingsScreen extends ConsumerWidget {
 /// physical RAM jetsam lets an iOS app touch — revisit after a device pass.
 bool deviceHasRamGb(int gb) {
   if (gb <= 0) return true;
-  if (Platform.isIOS) {
-    final bytes = applePhysicalRamBytes();
-    return bytes == null || bytes >= gb * 1024 * 1024 * 1024;
-  }
-  try {
-    final meminfo = File('/proc/meminfo').readAsLinesSync();
-    final total = meminfo.firstWhere((l) => l.startsWith('MemTotal:'));
-    final kb = int.parse(RegExp(r'\d+').firstMatch(total)!.group(0)!);
-    return kb >= gb * 1024 * 1024;
-  } catch (_) {
-    return true;
-  }
+  final bytes = devicePhysicalRamBytes();
+  return bytes == null || bytes >= gb * 1024 * 1024 * 1024;
 }
 
 /// The transcription-model picker (§5.5, mockup 05 note 3): choose the tier,
@@ -335,9 +505,12 @@ bool deviceHasRamGb(int gb) {
 class ModelPickerDialog extends ConsumerWidget {
   const ModelPickerDialog({super.key});
 
-  /// large-v3-turbo needs ~2.5 GB free while transcribing (§6.6).
-  static bool deviceCanRun(WhisperModel model) =>
-      model.tier != WhisperModel.largeV3Turbo.tier || deviceHasRamGb(5);
+  /// Turbo is gated at 5 GB total RAM; full Large-v3 is gated at 8 GB.
+  static bool deviceCanRun(WhisperModel model) => switch (model.tier) {
+    'large-v3-turbo' => deviceHasRamGb(5),
+    'large-v3' => deviceHasRamGb(8),
+    _ => true,
+  };
 
   /// Device-aware tier copy (§6.6, revised with the §6.3a quality bench):
   /// where the RAM gate passes, large-v3-turbo is the recommended tier —
@@ -345,8 +518,11 @@ class ModelPickerDialog extends ConsumerWidget {
   /// on noisy recordings. Below the gate small keeps the recommendation and
   /// large carries the RAM note. Listed tiers read localized copy from the
   /// ARBs; unlisted test tiers keep their dev-only catalog text.
-  static String describe(AppLocalizations l10n, WhisperModel model,
-      {required bool largeCapable}) {
+  static String describe(
+    AppLocalizations l10n,
+    WhisperModel model, {
+    required bool largeCapable,
+  }) {
     if (model.tier == WhisperModel.small.tier) {
       return largeCapable
           ? l10n.whisperSmallDescCapable
@@ -357,6 +533,11 @@ class ModelPickerDialog extends ConsumerWidget {
           ? l10n.whisperLargeDescCapable
           : l10n.whisperLargeDesc;
     }
+    if (model.tier == WhisperModel.largeV3.tier) {
+      return largeCapable
+          ? l10n.whisperFullLargeDesc
+          : l10n.whisperFullLargeDescBlocked;
+    }
     return model.description;
   }
 
@@ -365,24 +546,30 @@ class ModelPickerDialog extends ConsumerWidget {
     final settings = ref.watch(settingsProvider).value ?? const AppSettings();
     final states = ref.watch(whisperModelStatesProvider).value ?? const [];
     final manager = ref.read(whisperModelManagerProvider);
-    final largeCapable = deviceCanRun(WhisperModel.largeV3Turbo);
-
     return _EnginePickerDialog(
       title: context.l10n.modelPickerTranscriptionTitle,
       states: states,
       selectedTier: settings.whisperTier,
       enabledOf: (model) => deviceCanRun(model as WhisperModel),
-      disabledReason: context.l10n.needsRam(5),
-      descriptionOf: (model) => describe(context.l10n, model as WhisperModel,
-          largeCapable: largeCapable),
+      disabledReasonOf: (model) => context.l10n.needsRam(
+        (model as WhisperModel).tier == 'large-v3' ? 8 : 5,
+      ),
+      descriptionOf: (model) => describe(
+        context.l10n,
+        model as WhisperModel,
+        largeCapable: deviceCanRun(model),
+      ),
       installedBytes: manager.installedBytes(),
       onSelect: (state) => _select(context, ref, state),
       onDelete: (state) => manager.delete(state.model as WhisperModel),
     );
   }
 
-  Future<void> _select(BuildContext context, WidgetRef ref,
-      ModelState<ModelSpec> state) async {
+  Future<void> _select(
+    BuildContext context,
+    WidgetRef ref,
+    ModelState<ModelSpec> state,
+  ) async {
     final repo = ref.read(settingsRepositoryProvider);
     final manager = ref.read(whisperModelManagerProvider);
     // Tapping the tier already on the wire pauses it (metered-connection
@@ -395,10 +582,14 @@ class ModelPickerDialog extends ConsumerWidget {
     final l10n = context.l10n;
     await repo.setWhisperTier(state.model.tier);
     manager.cancelExcept(state.model.tier);
-    await downloadAndDrain(messenger, ref, state,
-        download: () => manager.download(state.model as WhisperModel),
-        readyMessage: l10n.modelReadyTranscribe(state.model.label),
-        failedMessage: l10n.downloadFailed(state.model.label));
+    await downloadAndDrain(
+      messenger,
+      ref,
+      state,
+      download: () => manager.download(state.model as WhisperModel),
+      readyMessage: l10n.modelReadyTranscribe(state.model.label),
+      failedMessage: l10n.downloadFailed(state.model.label),
+    );
   }
 }
 
@@ -415,6 +606,15 @@ class LlmModelPickerDialog extends ConsumerWidget {
   static String describe(AppLocalizations l10n, LlmModel model) {
     if (model.tier == LlmModel.qwen3_1_7b.tier) return l10n.llmDefaultDesc;
     if (model.tier == LlmModel.qwen3_4b.tier) return l10n.llm4bDesc;
+    if (model.tier == LlmModel.gemma4E2b.tier ||
+        model.tier == LlmModel.gemma4E4b.tier ||
+        model.tier == LlmModel.qwen3_5_2b.tier) {
+      return l10n.llmModelDetails(
+        model.quantization,
+        model.license,
+        model.minRamGb,
+      );
+    }
     return model.description;
   }
 
@@ -430,7 +630,10 @@ class LlmModelPickerDialog extends ConsumerWidget {
       // Off claims the checkmark: no tier reads as selected while disabled.
       selectedTier: settings.summariesEnabled ? settings.llmTier : null,
       enabledOf: (model) => deviceHasRamGb((model as LlmModel).minRamGb),
-      disabledReason: context.l10n.needsRam(LlmModel.qwen3_4b.minRamGb),
+      disabledReasonOf: (model) => context.l10n.llmModelNeedsRam(
+        (model as LlmModel).sizeLabel,
+        model.minRamGb,
+      ),
       descriptionOf: (model) => describe(context.l10n, model as LlmModel),
       installedBytes: manager.installedBytes(),
       offLabel: context.l10n.summariesOffOption,
@@ -443,8 +646,11 @@ class LlmModelPickerDialog extends ConsumerWidget {
     );
   }
 
-  Future<void> _select(BuildContext context, WidgetRef ref,
-      ModelState<ModelSpec> state) async {
+  Future<void> _select(
+    BuildContext context,
+    WidgetRef ref,
+    ModelState<ModelSpec> state,
+  ) async {
     final repo = ref.read(settingsRepositoryProvider);
     final manager = ref.read(llmModelManagerProvider);
     if (state.status == ModelStatus.downloading) {
@@ -458,10 +664,14 @@ class LlmModelPickerDialog extends ConsumerWidget {
     // before the drain so parked summary jobs are released with it.
     await repo.setSummariesEnabled(true);
     manager.cancelExcept(state.model.tier);
-    await downloadAndDrain(messenger, ref, state,
-        download: () => manager.download(state.model as LlmModel),
-        readyMessage: l10n.modelReadySummarize(state.model.label),
-        failedMessage: l10n.downloadFailed(state.model.label));
+    await downloadAndDrain(
+      messenger,
+      ref,
+      state,
+      download: () => manager.download(state.model as LlmModel),
+      readyMessage: l10n.modelReadySummarize(state.model.label),
+      failedMessage: l10n.downloadFailed(state.model.label),
+    );
   }
 }
 
@@ -492,6 +702,18 @@ Future<void> downloadAndDrain(
     // A newer tier choice aborted this one; the new download reports.
   } on ModelDownloadPaused {
     // The user tapped pause; the partial waits on disk for the next tap.
+  } on ModelNotificationPermissionDenied {
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          messenger.context.l10n.downloadNotificationsPermissionRequired,
+        ),
+      ),
+    );
+  } on InsufficientModelStorage {
+    messenger.showSnackBar(
+      SnackBar(content: Text(messenger.context.l10n.insufficientModelStorage)),
+    );
   } catch (_) {
     messenger.showSnackBar(SnackBar(content: Text(failedMessage)));
   }
@@ -503,7 +725,7 @@ class _EnginePickerDialog extends ConsumerWidget {
     required this.states,
     required this.selectedTier,
     required this.enabledOf,
-    required this.disabledReason,
+    required this.disabledReasonOf,
     required this.installedBytes,
     required this.onSelect,
     required this.onDelete,
@@ -520,7 +742,7 @@ class _EnginePickerDialog extends ConsumerWidget {
   /// null → no tier carries the checkmark (summaries switched off).
   final String? selectedTier;
   final bool Function(ModelSpec) enabledOf;
-  final String disabledReason;
+  final String Function(ModelSpec model) disabledReasonOf;
   final int installedBytes;
   final void Function(ModelState<ModelSpec>) onSelect;
   final void Function(ModelState<ModelSpec>) onDelete;
@@ -560,17 +782,18 @@ class _EnginePickerDialog extends ConsumerWidget {
           _PickerOption(
             label: state.model.label,
             status: _statusOf(context, state),
-            description:
-                (descriptionOf ?? (m) => m.description)(state.model),
+            description: (descriptionOf ?? (m) => m.description)(state.model),
             selected: selectedTier == state.model.tier,
             enabled: enabledOf(state.model),
             onSelect: () => onSelect(state),
-            progress: state.status == ModelStatus.downloading ||
+            progress:
+                state.status == ModelStatus.downloading ||
                     state.status == ModelStatus.paused
                 ? state.progress
                 : null,
             // Ready → free the storage; paused → discard the partial.
-            onDelete: state.status == ModelStatus.ready ||
+            onDelete:
+                state.status == ModelStatus.ready ||
                     state.status == ModelStatus.paused
                 ? () => onDelete(state)
                 : null,
@@ -588,15 +811,19 @@ class _EnginePickerDialog extends ConsumerWidget {
 
   String _statusOf(BuildContext context, ModelState<ModelSpec> state) =>
       switch (state.status) {
-        ModelStatus.ready =>
-          context.l10n.pickerInstalled(state.model.sizeLabel),
-        ModelStatus.downloading =>
-          context.l10n.pickerDownloading((state.progress * 100).round()),
-        ModelStatus.paused =>
-          context.l10n.pickerPaused((state.progress * 100).round()),
-        ModelStatus.notInstalled => enabledOf(state.model)
-            ? context.l10n.pickerDownload(state.model.sizeLabel)
-            : disabledReason,
+        ModelStatus.ready => context.l10n.pickerInstalled(
+          state.model.sizeLabel,
+        ),
+        ModelStatus.downloading => context.l10n.pickerDownloading(
+          (state.progress * 100).round(),
+        ),
+        ModelStatus.paused => context.l10n.pickerPaused(
+          (state.progress * 100).round(),
+        ),
+        ModelStatus.notInstalled =>
+          enabledOf(state.model)
+              ? context.l10n.pickerDownload(state.model.sizeLabel)
+              : disabledReasonOf(state.model),
       };
 }
 
@@ -664,9 +891,10 @@ class _PickerOption extends StatelessWidget {
                           ),
                         ),
                         if (status.isNotEmpty)
-                          Text(status,
-                              style:
-                                  TextStyle(fontSize: 10, color: tape.ink2)),
+                          Text(
+                            status,
+                            style: TextStyle(fontSize: 10, color: tape.ink2),
+                          ),
                       ],
                     ),
                   ),
@@ -686,12 +914,19 @@ class _PickerOption extends StatelessWidget {
                   child: Text(
                     description,
                     style: TextStyle(
-                        fontSize: 9.5, height: 1.4, color: tape.ink2),
+                      fontSize: 9.5,
+                      height: 1.4,
+                      color: tape.ink2,
+                    ),
                   ),
                 ),
               if (progress != null)
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 22, top: 6, bottom: 2),
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 22,
+                    top: 6,
+                    bottom: 2,
+                  ),
                   child: InkProgressBar(fraction: progress!),
                 ),
             ],
@@ -701,4 +936,3 @@ class _PickerOption extends StatelessWidget {
     );
   }
 }
-

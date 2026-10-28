@@ -59,6 +59,7 @@ class Memo {
     required this.durationMs,
     required this.createdAt,
     required this.status,
+    this.title,
     this.detectedLang,
     this.transcript,
     this.memoSummary,
@@ -72,6 +73,10 @@ class Memo {
   /// Chronological tape order (D6): tape = memos ORDER BY createdAt.
   final DateTime createdAt;
   final MemoStatus status;
+
+  /// A title the person chose. Null means the UI may use [automaticTitle].
+  final String? title;
+
   final String? detectedLang;
   final Transcript? transcript;
 
@@ -79,6 +84,33 @@ class Memo {
   /// pending — and permanently for short transcripts, which are their own
   /// summary (§6.7).
   final String? memoSummary;
+
+  /// A short name from the first sentence of the transcript. It is computed
+  /// so transcript edits and new transcription results update it automatically.
+  String? get automaticTitle {
+    final text = transcript?.plainText.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (text == null || text.isEmpty) return null;
+    final stop = RegExp(r'[.!?。！？]').firstMatch(text);
+    final sentence = stop == null ? text : text.substring(0, stop.end).trim();
+    final runes = sentence.runes.toList();
+    if (runes.length <= 56) return sentence;
+    return '${String.fromCharCodes(runes.take(55)).trimRight()}…';
+  }
+
+  String? get displayTitle => title ?? automaticTitle;
+
+  Memo withTitle(String? value) => Memo(
+    id: id,
+    cassetteId: cassetteId,
+    filePath: filePath,
+    durationMs: durationMs,
+    createdAt: createdAt,
+    status: status,
+    title: value,
+    detectedLang: detectedLang,
+    transcript: transcript,
+    memoSummary: memoSummary,
+  );
 }
 
 /// Structured transcription output (§6.3) — engine-agnostic.
@@ -89,16 +121,16 @@ class Transcript {
   final List<Segment> segments;
 
   factory Transcript.fromJson(Map<String, dynamic> json) => Transcript(
-        languageCode: json['lang'] as String,
-        segments: (json['segments'] as List)
-            .map((s) => Segment.fromJson(s as Map<String, dynamic>))
-            .toList(),
-      );
+    languageCode: json['lang'] as String,
+    segments: (json['segments'] as List)
+        .map((s) => Segment.fromJson(s as Map<String, dynamic>))
+        .toList(),
+  );
 
   Map<String, dynamic> toJson() => {
-        'lang': languageCode,
-        'segments': segments.map((s) => s.toJson()).toList(),
-      };
+    'lang': languageCode,
+    'segments': segments.map((s) => s.toJson()).toList(),
+  };
 
   bool get isEmpty => segments.every((s) => s.words.isEmpty);
 
@@ -123,18 +155,18 @@ class Segment {
   final List<Word> words;
 
   factory Segment.fromJson(Map<String, dynamic> json) => Segment(
-        startMs: json['s'] as int,
-        endMs: json['e'] as int,
-        words: (json['w'] as List)
-            .map((w) => Word.fromJson(w as Map<String, dynamic>))
-            .toList(),
-      );
+    startMs: json['s'] as int,
+    endMs: json['e'] as int,
+    words: (json['w'] as List)
+        .map((w) => Word.fromJson(w as Map<String, dynamic>))
+        .toList(),
+  );
 
   Map<String, dynamic> toJson() => {
-        's': startMs,
-        'e': endMs,
-        'w': words.map((w) => w.toJson()).toList(),
-      };
+    's': startMs,
+    'e': endMs,
+    'w': words.map((w) => w.toJson()).toList(),
+  };
 }
 
 /// One timed word; offsets are local to the memo (§4.2 maps them globally).
@@ -146,10 +178,10 @@ class Word {
   final int endMs;
 
   factory Word.fromJson(Map<String, dynamic> json) => Word(
-        text: json['t'] as String,
-        startMs: json['s'] as int,
-        endMs: json['e'] as int,
-      );
+    text: json['t'] as String,
+    startMs: json['s'] as int,
+    endMs: json['e'] as int,
+  );
 
   Map<String, dynamic> toJson() => {'t': text, 's': startMs, 'e': endMs};
 }

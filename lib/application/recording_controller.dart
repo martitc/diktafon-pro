@@ -137,7 +137,9 @@ class RecordingController extends Notifier<RecordingState> {
   Future<bool> _pinForegroundService() async {
     if (!_isAndroid) return true; // iOS: audio bg mode; desktop never pauses
     final l10n = _systemL10n();
-    return ref.read(recordingForegroundGlueProvider).start(
+    return ref
+        .read(recordingForegroundGlueProvider)
+        .start(
           title: l10n.notifRecording,
           channelName: l10n.notifRecordingChannel,
         );
@@ -148,7 +150,8 @@ class RecordingController extends Notifier<RecordingState> {
   AppLocalizations _systemL10n() {
     try {
       return lookupAppLocalizations(
-          padZhLocale(ui.PlatformDispatcher.instance.locale));
+        padZhLocale(ui.PlatformDispatcher.instance.locale),
+      );
     } catch (_) {
       return lookupAppLocalizations(const ui.Locale('en'));
     }
@@ -179,9 +182,9 @@ class RecordingController extends Notifier<RecordingState> {
       state = RecordingState.idle;
       await ref.read(recordingForegroundGlueProvider).stop();
 
-      await ref.read(memoRepositoryProvider).insert(
-            recorder.toMemo(result, cassetteId),
-          );
+      await ref
+          .read(memoRepositoryProvider)
+          .insert(recorder.toMemo(result, cassetteId));
       await ref.read(cassetteRepositoryProvider).touch(cassetteId);
       final jobs = ref.read(jobQueueProvider);
       await jobs.enqueueTranscription(result.memoId);
@@ -200,4 +203,5 @@ class RecordingController extends Notifier<RecordingState> {
 
 final recordingControllerProvider =
     NotifierProvider<RecordingController, RecordingState>(
-        RecordingController.new);
+      RecordingController.new,
+    );

@@ -1,6 +1,5 @@
 {
   "@@locale": "es",
-
   "untitledCassette": "Casete sin título",
   "rename": "Renombrar",
   "delete": "Eliminar",
@@ -9,7 +8,6 @@
   "deleteAction": "ELIMINAR",
   "ok": "OK",
   "back": "Atrás",
-
   "settingsTooltip": "Ajustes",
   "homeEmpty": "Aún no hay casetes.\nPulsa + para empezar una cinta nueva.",
   "newCassette": "Nuevo casete",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Nombre del casete",
   "deleteCassetteTitle": "¿ELIMINAR CASETE?",
   "deleteCassetteBody": "«{label}» y {count, plural, =1{su 1 nota} other{sus {count} notas}} se eliminarán. Esto no se puede deshacer.",
-
   "memoCount": "{count, plural, =1{1 nota} other{{count} notas}}",
   "cardEmptyMeta": "vacío · pulsa para abrir",
   "cardMetaNaming": "{memos} · buscando nombre…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "hoy {time}",
   "yesterday": "ayer",
-
   "deleteCassette": "Eliminar casete",
   "blankTape": "Una cinta en blanco.\nPulsa la tecla roja para grabar.",
   "emptyTape": "CINTA VACÍA",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "La nota {n} se eliminará y la cinta cerrará el hueco. Esto no se puede deshacer.",
   "timelineLabel": "Línea de tiempo de la cinta",
   "timelinePosition": "{position} de {total}",
-
   "noSpeech": "(sin voz)",
   "transcriptionFailedRetry": "la transcripción falló — toca para reintentar (el audio sigue sonando)",
   "queuedForTranscription": "en cola para transcribir…",
@@ -55,7 +50,6 @@
   "summarizing": "resumiendo…",
   "summaryFailedRetry": "el resumen falló — toca para reintentar",
   "transcribing": "transcribiendo…",
-
   "settingsTitle": "AJUSTES",
   "groupLanguage": "Idioma",
   "transcriptionLanguage": "Idioma de transcripción",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Más ligero y rápido — menos preciso, sobre todo con grabaciones ruidosas.",
   "whisperLargeDesc": "Mayor precisión; requiere un dispositivo potente (~2,5 GB de RAM al transcribir).",
   "whisperLargeDescCapable": "Recomendado — mucho más preciso, sobre todo con ruido (~2,5 GB de RAM al transcribir).",
+  "whisperFullLargeDesc": "Máxima precisión: descarga de 2,9 GiB; se recomiendan 8 GB de RAM.",
+  "whisperFullLargeDescBlocked": "Descarga de 2,9 GiB: este dispositivo necesita unos 8 GB de RAM para ejecutarlo.",
   "llmDefaultDesc": "Recomendado — resúmenes multilingües compactos.",
   "llm4bDesc": "Resúmenes y títulos de más calidad; requiere un dispositivo potente (~3 GB de RAM al resumir).",
   "summariesOffValue": "Sin resúmenes · toca para configurar",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Acerca de y privacidad",
   "aboutPrivacyDesc": "El audio nunca sale de este dispositivo",
   "aboutTitle": "ACERCA DE Y PRIVACIDAD",
-  "aboutBody": "Diktafon escucha, escribe y resume aquí mismo, en tu teléfono.\n\nLas grabaciones, transcripciones y resúmenes nunca salen del dispositivo. No hay cuenta, ni nube, ni analíticas. Los datos solo salen mediante una copia o exportación que inicias tú.",
-  "aboutOpenSource": "Diktafon es gratuito y de código abierto:",
+  "aboutBody": "Diktafon Pro escucha, escribe y resume aquí mismo, en tu teléfono.\n\nLas grabaciones, transcripciones y resúmenes nunca salen del dispositivo. No hay cuenta, ni nube, ni analíticas. Los datos solo salen mediante una copia o exportación que inicias tú.",
+  "aboutOpenSource": "Diktafon Pro es gratuito y de código abierto:",
   "aboutPrivacyPolicy": "Política de privacidad",
-
   "modelPickerTranscriptionTitle": "MODELO DE TRANSCRIPCIÓN",
   "modelPickerSummaryTitle": "MODELO DE RESÚMENES",
   "pickerInstalled": "instalado · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} está listo — transcribiendo las notas en espera.",
   "modelReadySummarize": "{label} está listo — resumiendo las notas en espera.",
   "downloadFailed": "La descarga de {label} falló — comprueba tu conexión e inténtalo de nuevo.",
-
-  "firstRunWelcome": "Bienvenido a Diktafon",
+  "firstRunWelcome": "Bienvenido a Diktafon Pro",
   "firstRunIntro": "Escucha, escribe y resume aquí mismo, en tu teléfono. Las grabaciones, transcripciones y resúmenes **nunca salen de este dispositivo**. No hay cuenta ni nube.",
   "firstRunSetupHeader": "Configuración inicial",
   "allowMicRow": "Permitir el micrófono",
@@ -126,9 +120,8 @@
   "provisionChoose": "toca para elegir un modelo para descargar",
   "downloadsFinishInBackground": "Las descargas terminan en segundo plano.",
   "startRecordingKey": "EMPEZAR A GRABAR",
-
   "backupTitle": "EXPORTAR E IMPORTAR",
-  "backupIntro": "La copia de seguridad de tu dispositivo cubre automáticamente la lista de casetes, las transcripciones y los resúmenes. El audio ocupa mucho — llévatelo de forma explícita: la exportación empaqueta el audio, las transcripciones y los resúmenes de un casete en un único archivo .zip, y la importación los trae de vuelta. Diktafon no sube nada.",
+  "backupIntro": "La copia de seguridad de tu dispositivo cubre automáticamente la lista de casetes, las transcripciones y los resúmenes. El audio ocupa mucho — llévatelo de forma explícita: la exportación empaqueta el audio, las transcripciones y los resúmenes de un casete en un único archivo .zip, y la importación los trae de vuelta. Diktafon Pro no sube nada.",
   "groupExport": "Exportar",
   "exportAll": "Exportar todos los casetes",
   "exportAllDesc": "Todo, en un único archivo",
@@ -140,6 +133,32 @@
   "importArchive": "Importar un archivo",
   "importArchiveDesc": "Añade casetes de una exportación anterior",
   "importing": "Importando…",
+  "importAudio": "Importar audio",
+  "importingAudio": "Importando audio…",
+  "importedAudioFiles": "{count, plural, =1{Audio añadido al casete. La transcripción comenzará automáticamente.} other{{count} audios añadidos al casete. La transcripción comenzará automáticamente.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{No se pudo importar 1 archivo de audio.} other{No se pudieron importar {count} archivos de audio.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{Se importó 1 audio, pero no se pudo poner su transcripción en cola.} other{Se importaron {count} audios, pero no se pudieron poner sus transcripciones en cola.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importDialogTitle": "¿IMPORTAR CASETES?",
   "importDialogBody": "Los casetes del archivo se añaden junto a los que ya tienes — no se borra ni se cambia nada. Importar un casete que ya está aquí crea una segunda copia, que puedes borrar a mano. Las notas sin transcripción o resumen se procesan después de la importación.",
   "importAction": "IMPORTAR",
@@ -147,11 +166,9 @@
   "importFailures": "{count, plural, =1{No se pudo importar 1 casete.} other{No se pudieron importar {count} casetes.}}",
   "importNothingFound": "No se encontraron casetes en ese archivo.",
   "importFailed": "La importación falló: {error}",
-
-  "exportNote": "Exportado desde Diktafon el {date}.",
+  "exportNote": "Exportado desde Diktafon Pro el {date}.",
   "exportSummaryHeading": "Resumen",
   "exportNotTranscribed": "(sin transcribir)",
-
   "openSystemSettings": "AJUSTES",
   "changeColor": "Cambiar color",
   "retranscribe": "Volver a transcribir",
@@ -168,6 +185,43 @@
   "memoActions": "Acciones de la nota",
   "notifDownloading": "Descargando {label}",
   "notifModelInstalled": "{label} instalado",
+  "notifTranscriptionCompleted": "Transcripción terminada",
+  "notifTranscriptionCompletedBody": "La transcripción del audio está lista en Diktafon Pro.",
+  "notifSummaryCompleted": "Resumen terminado",
+  "notifSummaryCompletedBody": "El resumen del audio está listo en Diktafon Pro.",
   "notifRecording": "Grabando nota",
-  "notifRecordingChannel": "Grabación"
+  "notifRecordingChannel": "Grabación",
+  "insufficientModelStorage": "No hay espacio suficiente para descargar este modelo. Libera espacio y vuelve a intentarlo.",
+  "downloadNotificationsPermissionRequired": "Permite las notificaciones para que las descargas de modelos continúen en segundo plano.",
+  "importAudioTooltip": "Importar audio a este casete",
+  "localSummaryInstructionsGroup": "Instrucciones para resúmenes locales",
+  "localSummaryInstructionsHint": "Por ejemplo: céntrate en decisiones, tareas y fechas límite.",
+  "localSummaryInstructionsPrivacy": "Estas instrucciones permanecen en este dispositivo y no se envían a Gemini ni a ChatGPT.",
+  "localSummarySaveFailed": "No se pudieron guardar las instrucciones del resumen local.",
+  "localSummaryInstructionsTitle": "Tus instrucciones para los resúmenes",
+  "llmModelDetails": "{quantization} · {license} · memoria mínima estimada: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "descarga {size} · RAM mínima estimada: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

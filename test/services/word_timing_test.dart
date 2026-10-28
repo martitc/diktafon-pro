@@ -52,7 +52,10 @@ void main() {
 
     test('bracketed non-speech segments are dropped (§14 silence)', () {
       final transcript = assembleTranscript('en', [
-        RawSegment(0, 900, [_token(' [BLANK', 0, 400), _token('_AUDIO]', 400, 800)]),
+        RawSegment(0, 900, [
+          _token(' [BLANK', 0, 400),
+          _token('_AUDIO]', 400, 800),
+        ]),
         RawSegment(900, 1500, [_token(' (applause)', 900, 1400)]),
         RawSegment(1500, 2000, [_token(' ♪', 1500, 1900)]),
       ]);
@@ -71,10 +74,7 @@ void main() {
 
     test('whitespace-only tokens vanish; negative times clamp to zero', () {
       final transcript = assembleTranscript('en', [
-        RawSegment(-10, 600, [
-          _token(' ', 0, 10),
-          _token(' ok', -5, 300),
-        ]),
+        RawSegment(-10, 600, [_token(' ', 0, 10), _token(' ok', -5, 300)]),
       ]);
       final segment = transcript.segments.single;
       expect(segment.startMs, 0);
@@ -84,8 +84,10 @@ void main() {
 
     test('empty input → empty transcript', () {
       expect(assembleTranscript('en', []).isEmpty, isTrue);
-      expect(assembleTranscript('en', [const RawSegment(0, 100, [])]).isEmpty,
-          isTrue);
+      expect(
+        assembleTranscript('en', [const RawSegment(0, 100, [])]).isEmpty,
+        isTrue,
+      );
     });
   });
 
@@ -102,8 +104,13 @@ void main() {
       final words = transcript.segments.single.words;
       expect(words.map((w) => w.text), ['今天', '天气', '很好']);
       expect(words[1].startMs, 300);
-      expect(words[1].endMs, 700, reason: 'token times survive untouched — '
-          'VAD interpolation already happened on the RawToken times');
+      expect(
+        words[1].endMs,
+        700,
+        reason:
+            'token times survive untouched — '
+            'VAD interpolation already happened on the RawToken times',
+      );
     });
 
     test('a token split mid-character keeps accumulating until the char '
@@ -131,8 +138,12 @@ void main() {
           _token('飲む', 500, 800),
         ]),
       ]);
-      expect(transcript.segments.single.words.map((w) => w.text),
-          ['コー', 'ヒー', 'を', '飲む']);
+      expect(transcript.segments.single.words.map((w) => w.text), [
+        'コー',
+        'ヒー',
+        'を',
+        '飲む',
+      ]);
       expect(transcript.plainText, 'コーヒーを飲む');
     });
 
@@ -170,23 +181,30 @@ void main() {
       expect(transcript.plainText, 'です。「はい」');
     });
 
-    test('Korean stays space-ruled — Hangul is not in the CJK no-space set',
-        () {
-      final transcript = assembleTranscript('ko', [
-        RawSegment(0, 2000, [
-          _token(' 안녕', 0, 300),
-          _token('하세요', 300, 700),
-          _token(' 저는', 800, 1200),
-        ]),
-      ]);
-      expect(transcript.segments.single.words.map((w) => w.text),
-          ['안녕하세요', '저는']);
-    });
+    test(
+      'Korean stays space-ruled — Hangul is not in the CJK no-space set',
+      () {
+        final transcript = assembleTranscript('ko', [
+          RawSegment(0, 2000, [
+            _token(' 안녕', 0, 300),
+            _token('하세요', 300, 700),
+            _token(' 저는', 800, 1200),
+          ]),
+        ]);
+        expect(transcript.segments.single.words.map((w) => w.text), [
+          '안녕하세요',
+          '저는',
+        ]);
+      },
+    );
 
     test('fullwidth-bracketed noise segments drop like ASCII ones (§14)', () {
       final transcript = assembleTranscript('zh', [
-        RawSegment(0, 1000, [_token('（', 0, 10), _token('字幕', 10, 500),
-            _token('）', 500, 510)]),
+        RawSegment(0, 1000, [
+          _token('（', 0, 10),
+          _token('字幕', 10, 500),
+          _token('）', 500, 510),
+        ]),
         RawSegment(1000, 2000, [_token('真的', 1000, 1500)]),
       ]);
       expect(transcript.segments.single.words.single.text, '真的');

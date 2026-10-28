@@ -15,13 +15,15 @@ class DiktafonApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // System theme with manual override (§5.5).
     final theme = ref.watch(
-        settingsProvider.select((s) => s.value?.theme ?? 'system'));
+      settingsProvider.select((s) => s.value?.theme ?? 'system'),
+    );
     // First run (§5.6) until walked through/skipped; null → settings still
     // streaming in — hold on blank paper rather than flashing the wrong home.
     final firstRunDone = ref.watch(
-        settingsProvider.select((s) => s.value?.firstRunDone));
+      settingsProvider.select((s) => s.value?.firstRunDone),
+    );
     return MaterialApp(
-      title: 'Diktafon',
+      title: 'Diktafon Pro',
       debugShowCheckedModeBanner: false,
       // UI language follows the system locale (§13), independent of the
       // transcription language (D8). English is the fallback; script-less

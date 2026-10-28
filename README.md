@@ -1,15 +1,15 @@
 <h1 align="center"> 
-  <img src="media/icon.png" height="40" align="top" alt=""> Diktafon
+  <img src="media/icon.png" height="40" align="top" alt=""> Diktafon Pro
 </h1>
 
 <p align="center">
-  <a href="https://f-droid.org/packages/cz.mod42.diktafon"><img src="media/badges/f-droid.png" alt="Get it on F-Droid" height="60"></a>&nbsp;
-  <a href="https://play.google.com/store/apps/details?id=cz.mod42.diktafon"><img src="media/badges/google-play.png" alt="Get it on Google Play" height="60"></a>&nbsp;
-  <a href="https://apps.apple.com/app/diktafon-voice-memos-on-tape/id6790008802"><img src="media/badges/app-store.png" alt="Download on the App Store" height="60"></a>
+  An independent fork of <a href="https://github.com/jaromiru/diktafon">jaromiru/diktafon</a>, maintained at <a href="https://github.com/martitc/diktafon-pro">martitc/diktafon-pro</a>.
 </p>
 
+> Diktafon Pro is an independent, experimental fork. This release adds local audio import, editable note names, optional Gemini transcription and summaries, ChatGPT OAuth summaries, and additional on-device summary models. It is not an official release of the upstream app.
+
 <p align="center">
- <b>Voice memos on cassette tapes — transcribed and summarised entirely on your device.</b>
+ <b>Voice memos on cassette tapes — transcribe and summarize locally or with the cloud provider you choose.</b>
 </p>
 
 <p align="center">
@@ -31,8 +31,10 @@ recordings.
   rewind to find it again.
 - 🚀 **Modern** — Automatic transcriptions and summaries: every memo
   transcribed, every cassette summarised and titled.
-- 🔒 **Completely private** — Transcription and summaries are computed on
-  your device; no accounts, no cloud, no analytics — nothing ever leaves it.
+- 🔒 **Choose your privacy level** — Whisper, Qwen, and Gemma can run on
+  device. If selected, Gemini receives audio for transcription or transcript
+  text for summaries; ChatGPT OAuth receives transcript text for summaries.
+  Cloud work never falls back silently to another provider.
 - 🌍 **Built for you** — Speaks your language, in recordings, summaries, and
   the app itself.
 - ⓪ **Free & open-source** — No cost, no ads, no lock-in; MIT-licensed —
@@ -76,24 +78,26 @@ recordings.
   nothing gets overwritten.
 - **Little things** — light & dark themes, cassette colour labels,
   retranscribe-cassette, per-memo copy and delete.
-- **On-device models** — transcription by Whisper, summaries by Qwen. Models
-  are downloaded once on first run (Wi-Fi recommended) and can be switched in
-  Settings.
+- **Choose a summarizer** — use local Qwen or Gemma models, Gemini with your
+  own API key, or a model available through your ChatGPT subscription. Local
+  summary instructions stay on device; Gemini summary instructions are sent
+  with the transcript to Google.
+- **Choose a transcriber** — run Whisper locally or send audio to Gemini with
+  your own API key. Models are selected in Settings; local model weights are
+  downloaded to the device.
 
 ## Install
 
 ### Android
 
-Get it on [F-Droid](https://f-droid.org/packages/cz.mod42.diktafon) or
-[Google Play](https://play.google.com/store/apps/details?id=cz.mod42.diktafon).
-Requires Android 7.0 (API 24) or newer; 4 GB RAM recommended for the default
-models. F-Droid distributes the same developer-signed APKs as the
-[releases page](https://github.com/jaromiru/diktafon/releases), so F-Droid
-and sideloaded installs update interchangeably.
+Download Diktafon Pro from the [Diktafon Pro releases page](https://github.com/martitc/diktafon-pro/releases).
+Requires Android 7.0 (API 24) or newer. Local model availability depends on
+device memory and storage. F-Droid and Google Play links in the upstream
+project belong to the original Diktafon app, not this fork.
 
-To sideload instead, download `diktafon-<version>-android-arm64-v8a.apk`
+To sideload, download `diktafon-<version>-android-arm64-v8a.apk`
 (64-bit phones; the `x86_64` APK is for emulators) from the
-[releases page](https://github.com/jaromiru/diktafon/releases) and install
+[Diktafon Pro releases page](https://github.com/martitc/diktafon-pro/releases) and install
 it — you may need to allow "install unknown apps" for your browser or file
 manager.
 
@@ -115,7 +119,7 @@ models.
 ### Linux
 
 Download `diktafon-<version>-linux-x64.tar.gz` from the
-[releases page](https://github.com/jaromiru/diktafon/releases), then:
+[Diktafon Pro releases page](https://github.com/martitc/diktafon-pro/releases), then:
 
 ```bash
 tar xzf diktafon-<version>-linux-x64.tar.gz
@@ -129,13 +133,12 @@ source instead.
 
 ### Verifying a download
 
-Each release ships a `SHA256SUMS` file, and all artifacts carry a GitHub
-[build-provenance attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations)
-proving they were built by this repository's release workflow:
+Each release ships a `SHA256SUMS` file. Releases built by the repository's CI workflow may also include a GitHub
+[build-provenance attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations). Check the release notes to see whether an attestation is available:
 
 ```bash
 sha256sum -c SHA256SUMS --ignore-missing
-gh attestation verify diktafon-<version>-android-arm64-v8a.apk --repo jaromiru/diktafon
+gh attestation verify diktafon-<version>-android-arm64-v8a.apk --repo martitc/diktafon-pro  # only when the release provides an attestation
 ```
 
 ## Building from source
@@ -150,8 +153,8 @@ Prerequisites:
   automatically by the Flutter build (CMake / `externalNativeBuild`).
 
 ```bash
-git clone https://github.com/jaromiru/diktafon.git
-cd diktafon
+git clone https://github.com/martitc/diktafon-pro.git
+cd diktafon-pro
 flutter pub get
 
 flutter run -d linux                     # desktop dev run

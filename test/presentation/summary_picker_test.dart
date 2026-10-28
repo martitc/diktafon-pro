@@ -16,12 +16,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/picker_job_queue.dart';
+
 /// The summaries on/off switch lives in the summary-model picker as its
 /// first row (replacing the old Settings toggle): picking "No summaries"
 /// parks summary work, picking any model turns it back on.
 void main() {
   late Directory dir;
   late AppDatabase db;
+  late PickerJobQueue queue;
   final payload = utf8.encode('fake gguf payload');
   // The default llmTier, so the row carries the checkmark out of the box.
   final spec = LlmModel(
@@ -38,6 +41,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('dk_llm_picker_');
     db = AppDatabase.forTesting(NativeDatabase.memory());
+    queue = PickerJobQueue();
   });
 
   tearDown(() async {
@@ -46,45 +50,49 @@ void main() {
   });
 
   Widget app({required Widget home}) => ProviderScope(
-        overrides: [
-          appDatabaseProvider.overrideWithValue(db),
-          whisperModelManagerProvider
-              .overrideWithValue(WhisperModelManager(dir)),
-          llmModelManagerProvider
-              .overrideWithValue(LlmModelManager(dir, catalog: [spec])),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          theme: buildTheme(Brightness.light),
-          home: home,
-        ),
-      );
+    overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      jobQueueProvider.overrideWithValue(queue),
+      whisperModelManagerProvider.overrideWithValue(WhisperModelManager(dir)),
+      llmModelManagerProvider.overrideWithValue(
+        LlmModelManager(dir, catalog: [spec]),
+      ),
+    ],
+    child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
+      theme: buildTheme(Brightness.light),
+      home: home,
+    ),
+  );
 
   FontWeight? weightOf(WidgetTester tester, String text) =>
       tester.widget<Text>(find.text(text)).style?.fontWeight;
 
-  testWidgets('off row leads the picker and drives summariesEnabled',
-      (tester) async {
+  testWidgets('off row leads the picker and drives summariesEnabled', (
+    tester,
+  ) async {
     // Installed model: selecting it must not try to download.
     File('${dir.path}/${spec.fileName}').writeAsBytesSync(payload);
 
-    await tester.pumpWidget(app(
-      home: Builder(
-        builder: (context) => Scaffold(
-          body: Center(
-            child: TextButton(
-              onPressed: () => showDialog<void>(
-                context: context,
-                builder: (_) => const LlmModelPickerDialog(),
+    await tester.pumpWidget(
+      app(
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: TextButton(
+                onPressed: () => showDialog<void>(
+                  context: context,
+                  builder: (_) => const LlmModelPickerDialog(),
+                ),
+                child: const Text('open picker'),
               ),
-              child: const Text('open picker'),
             ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open picker'));
     await tester.pump();
     await tester.pump();
@@ -107,6 +115,11 @@ void main() {
     expect(weightOf(tester, 'Qwen test'), isNot(FontWeight.w700));
     var settings = await SettingsRepository(db).get();
     expect(settings.summariesEnabled, isFalse);
+    expect(
+      queue.drainCalls,
+      0,
+      reason: 'disabling summaries must keep queued work parked',
+    );
 
     // Picking a model is the way back on.
     await tester.tap(find.text('Qwen test'));
@@ -117,6 +130,11 @@ void main() {
     settings = await SettingsRepository(db).get();
     expect(settings.summariesEnabled, isTrue);
     expect(settings.llmTier, spec.tier);
+    expect(
+      queue.drainCalls,
+      1,
+      reason: 'choosing the installed model releases queued work',
+    );
 
     // Disposing the scope closes drift's stream queries; advance the fake
     // clock so their final zero-length timer fires.
@@ -124,8 +142,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1));
   });
 
-  testWidgets('Settings has no summaries toggle; the row mirrors off',
-      (tester) async {
+  testWidgets('Settings has no summaries toggle; the row mirrors off', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(home: const SettingsScreen()));
     await tester.pump();
     await tester.pump();
@@ -133,7 +152,10 @@ void main() {
     // Only the chime keeps a toggle; the summary-model row shows the
     // selected tier (the static catalog's label) while summaries are on…
     expect(find.byType(InkToggle), findsOneWidget);
-    expect(find.textContaining('Qwen3 1.7B'), findsOneWidget);
+    expect(
+      find.text('Qwen3 1.7B — not downloaded yet · tap to set up'),
+      findsOneWidget,
+    );
     expect(find.text('No summaries'), findsNothing);
 
     // …and mirrors the picker's off choice once summaries are disabled,
@@ -146,4 +168,34 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
   });
+
+  testWidgets(
+    'local summary prompt persists and is hidden for cloud summaries',
+    (tester) async {
+      await tester.pumpWidget(app(home: const SettingsScreen()));
+      await tester.pump();
+      await tester.pump();
+
+      final field = find.byType(TextField);
+      expect(field, findsOneWidget);
+      expect(
+        find.textContaining('never sent to Gemini or ChatGPT'),
+        findsOneWidget,
+      );
+      await tester.enterText(field, 'Keep decisions and deadlines.');
+      await tester.pump();
+      expect(
+        (await SettingsRepository(db).get()).localSummaryInstructions,
+        'Keep decisions and deadlines.',
+      );
+
+      await SettingsRepository(db).setSummaryProvider('chatgpt');
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(TextField), findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 1));
+    },
+  );
 }

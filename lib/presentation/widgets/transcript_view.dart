@@ -32,6 +32,7 @@ class TranscriptView extends StatefulWidget {
     this.onSeekGlobalMs,
     this.onRetryMemo,
     this.onEditMemo,
+    this.onRenameMemo,
     this.onDeleteMemo,
   });
 
@@ -58,6 +59,9 @@ class TranscriptView extends StatefulWidget {
   /// (§6.9) — offered for any memo that already has a transcript, even an
   /// empty "no speech" one (quiet speech the engine missed can be typed in).
   final ValueChanged<int>? onEditMemo;
+
+  /// Renames a memo from its divider menu, by tape index.
+  final ValueChanged<int>? onRenameMemo;
 
   /// Delete from the divider's memo menu, by ordinal index — same confirm
   /// flow as the timeline's long-press (§5.3).
@@ -97,8 +101,9 @@ class _TranscriptViewState extends State<TranscriptView> {
     Scrollable.ensureVisible(
       targetContext,
       alignment: 0.2,
-      duration:
-          reduceMotion ? Duration.zero : const Duration(milliseconds: 350),
+      duration: reduceMotion
+          ? Duration.zero
+          : const Duration(milliseconds: 350),
       curve: Curves.easeOutCubic,
     );
   }
@@ -121,8 +126,9 @@ class _TranscriptViewState extends State<TranscriptView> {
     if (widget.tape.isEmpty || !_scrollController.hasClients) return;
     final target = widget.tape.locate(widget.globalMs);
     final memo = widget.tape.memos[target.memoIndex];
-    final geometry =
-        _paragraphKeys[memo.id]?.currentState?.wordGeometryAt(target.localMs);
+    final geometry = _paragraphKeys[memo.id]?.currentState?.wordGeometryAt(
+      target.localMs,
+    );
     if (geometry == null) {
       _followFallback(generation, memo, attempt);
       return;
@@ -135,8 +141,9 @@ class _TranscriptViewState extends State<TranscriptView> {
     // Scroll offsets that park the word on the top/bottom viewport edge
     // bound the comfortable window (word ≥ margin from either edge).
     final atTop = viewport.getOffsetToReveal(render, 0, rect: wordRect).offset;
-    final atBottom =
-        viewport.getOffsetToReveal(render, 1, rect: wordRect).offset;
+    final atBottom = viewport
+        .getOffsetToReveal(render, 1, rect: wordRect)
+        .offset;
     var lower = atBottom + margin;
     var upper = atTop - margin;
     if (lower > upper) lower = upper = (lower + upper) / 2;
@@ -166,8 +173,9 @@ class _TranscriptViewState extends State<TranscriptView> {
       Scrollable.ensureVisible(
         memoContext,
         alignment: 0.2,
-        duration:
-            reduceMotion ? Duration.zero : const Duration(milliseconds: 240),
+        duration: reduceMotion
+            ? Duration.zero
+            : const Duration(milliseconds: 240),
         curve: Curves.easeOutCubic,
       );
       return;
@@ -175,8 +183,12 @@ class _TranscriptViewState extends State<TranscriptView> {
     final position = _scrollController.position;
     final total = widget.tape.totalDurationMs;
     if (attempt >= 3 || total <= 0 || position.maxScrollExtent <= 0) return;
-    position.jumpTo((position.maxScrollExtent * widget.globalMs / total)
-        .clamp(0.0, position.maxScrollExtent));
+    position.jumpTo(
+      (position.maxScrollExtent * widget.globalMs / total).clamp(
+        0.0,
+        position.maxScrollExtent,
+      ),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && generation == _followGeneration) {
         _followPlayhead(generation, attempt: attempt + 1);
@@ -218,6 +230,9 @@ class _TranscriptViewState extends State<TranscriptView> {
               onEdit: widget.onEditMemo == null || memo.transcript == null
                   ? null
                   : () => widget.onEditMemo!(i),
+              onRename: widget.onRenameMemo == null
+                  ? null
+                  : () => widget.onRenameMemo!(i),
               onDelete: widget.onDeleteMemo == null
                   ? null
                   : () => widget.onDeleteMemo!(i),
@@ -237,8 +252,9 @@ class _TranscriptViewState extends State<TranscriptView> {
     if (text.isEmpty) return;
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.transcriptCopied)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.transcriptCopied)));
   }
 
   Widget _memoBody(BuildContext context, Memo memo, int index) {
@@ -249,7 +265,9 @@ class _TranscriptViewState extends State<TranscriptView> {
       }
       return _MemoParagraph(
         key: _paragraphKeys.putIfAbsent(
-            memo.id, GlobalKey<_MemoParagraphState>.new),
+          memo.id,
+          GlobalKey<_MemoParagraphState>.new,
+        ),
         memo: memo,
         memoIndex: index,
         tape: widget.tape,
@@ -261,20 +279,20 @@ class _TranscriptViewState extends State<TranscriptView> {
     return switch (memo.status) {
       MemoStatus.transcribing => const _ShimmerRows(),
       MemoStatus.failed => _caption(
-          context,
-          context.l10n.transcriptionFailedRetry,
-          onTap: widget.onRetryMemo == null
-              ? null
-              : () => widget.onRetryMemo!(memo.id),
-        ),
+        context,
+        context.l10n.transcriptionFailedRetry,
+        onTap: widget.onRetryMemo == null
+            ? null
+            : () => widget.onRetryMemo!(memo.id),
+      ),
       // §14 "model missing/unavailable": captured, playable, queued —
       // enrichment starts the moment the model is provisioned.
       _ => _caption(
-          context,
-          widget.modelReady
-              ? context.l10n.queuedForTranscription
-              : context.l10n.waitingForModel,
-        ),
+        context,
+        widget.modelReady
+            ? context.l10n.queuedForTranscription
+            : context.l10n.waitingForModel,
+      ),
     };
   }
 
@@ -306,6 +324,7 @@ class _MemoDivider extends StatelessWidget {
     this.onRetry,
     this.onCopy,
     this.onEdit,
+    this.onRename,
     this.onDelete,
   });
 
@@ -320,6 +339,7 @@ class _MemoDivider extends StatelessWidget {
   /// side, edit an existing transcript, delete a wired-up confirm flow).
   final VoidCallback? onCopy;
   final VoidCallback? onEdit;
+  final VoidCallback? onRename;
   final VoidCallback? onDelete;
 
   /// The gist line under the stamp (§5.3): the memo summary once it exists,
@@ -340,8 +360,10 @@ class _MemoDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     final tape = context.tape;
     final locale = Localizations.localeOf(context).toString();
-    final stamp =
-        DateFormat('dd. MM. yyyy HH:mm', locale).format(memo.createdAt);
+    final stamp = DateFormat(
+      'dd. MM. yyyy HH:mm',
+      locale,
+    ).format(memo.createdAt);
     final caption = _caption(context);
     return Container(
       margin: EdgeInsets.only(top: first ? 0 : 13, bottom: 11),
@@ -360,14 +382,22 @@ class _MemoDivider extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(width: 10, height: 10, color: hue,
-              margin: const EdgeInsetsDirectional.only(top: 2, end: 9)),
+          Container(
+            width: 10,
+            height: 10,
+            color: hue,
+            margin: const EdgeInsetsDirectional.only(top: 2, end: 9),
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  context.l10n.memoDivider(ordinal, stamp),
+                  memo.displayTitle == null
+                      ? context.l10n.memoDivider(ordinal, stamp)
+                      : '${memo.displayTitle} — $stamp',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -402,7 +432,10 @@ class _MemoDivider extends StatelessWidget {
               ],
             ),
           ),
-          if (onCopy != null || onEdit != null || onDelete != null)
+          if (onCopy != null ||
+              onEdit != null ||
+              onRename != null ||
+              onDelete != null)
             _menu(context),
         ],
       ),
@@ -410,42 +443,58 @@ class _MemoDivider extends StatelessWidget {
   }
 
   Widget _menu(BuildContext context) => SizedBox(
-        width: 26,
-        height: 18,
-        child: PopupMenuButton<String>(
-          tooltip: context.l10n.memoActions,
-          padding: EdgeInsets.zero,
-          icon: Icon(Icons.more_horiz, size: 16, color: context.tape.ink2),
-          onSelected: (action) => switch (action) {
-            'copy' => onCopy!(),
-            'edit' => onEdit!(),
-            _ => onDelete!(),
-          },
-          itemBuilder: (menuContext) => [
-            if (onCopy != null)
-              PopupMenuItem(
-                value: 'copy',
-                height: 38,
-                child: Text(menuContext.l10n.copyTranscript,
-                    style: const TextStyle(fontSize: 12.5)),
-              ),
-            if (onEdit != null)
-              PopupMenuItem(
-                value: 'edit',
-                height: 38,
-                child: Text(menuContext.l10n.editTranscript,
-                    style: const TextStyle(fontSize: 12.5)),
-              ),
-            if (onDelete != null)
-              PopupMenuItem(
-                value: 'delete',
-                height: 38,
-                child: Text(menuContext.l10n.deleteMemo,
-                    style: const TextStyle(fontSize: 12.5)),
-              ),
-          ],
-        ),
-      );
+    width: 26,
+    height: 18,
+    child: PopupMenuButton<String>(
+      tooltip: context.l10n.memoActions,
+      padding: EdgeInsets.zero,
+      icon: Icon(Icons.more_horiz, size: 16, color: context.tape.ink2),
+      onSelected: (action) => switch (action) {
+        'copy' => onCopy!(),
+        'edit' => onEdit!(),
+        'rename' => onRename!(),
+        _ => onDelete!(),
+      },
+      itemBuilder: (menuContext) => [
+        if (onCopy != null)
+          PopupMenuItem(
+            value: 'copy',
+            height: 38,
+            child: Text(
+              menuContext.l10n.copyTranscript,
+              style: const TextStyle(fontSize: 12.5),
+            ),
+          ),
+        if (onEdit != null)
+          PopupMenuItem(
+            value: 'edit',
+            height: 38,
+            child: Text(
+              menuContext.l10n.editTranscript,
+              style: const TextStyle(fontSize: 12.5),
+            ),
+          ),
+        if (onRename != null)
+          PopupMenuItem(
+            value: 'rename',
+            height: 38,
+            child: Text(
+              menuContext.l10n.renameMemo,
+              style: const TextStyle(fontSize: 12.5),
+            ),
+          ),
+        if (onDelete != null)
+          PopupMenuItem(
+            value: 'delete',
+            height: 38,
+            child: Text(
+              menuContext.l10n.deleteMemo,
+              style: const TextStyle(fontSize: 12.5),
+            ),
+          ),
+      ],
+    ),
+  );
 }
 
 /// One memo's words as tappable spans with the current word highlighted;
@@ -496,7 +545,7 @@ class _MemoParagraphState extends State<_MemoParagraph> {
     var start = -1, end = -1;
     var found = false;
     final words = [
-      for (final segment in widget.memo.transcript!.segments) ...segment.words
+      for (final segment in widget.memo.transcript!.segments) ...segment.words,
     ];
     for (var i = 0; i < words.length; i++) {
       final word = words[i];
@@ -512,7 +561,8 @@ class _MemoParagraphState extends State<_MemoParagraph> {
     }
     if (start < 0) return null;
     final boxes = render.getBoxesForSelection(
-        TextSelection(baseOffset: start, extentOffset: end));
+      TextSelection(baseOffset: start, extentOffset: end),
+    );
     if (boxes.isEmpty) return null;
     var rect = boxes.first.toRect();
     for (final box in boxes.skip(1)) {
@@ -531,29 +581,35 @@ class _MemoParagraphState extends State<_MemoParagraph> {
     final tape = context.tape;
     final spans = <InlineSpan>[];
     final words = [
-      for (final segment in widget.memo.transcript!.segments) ...segment.words
+      for (final segment in widget.memo.transcript!.segments) ...segment.words,
     ];
     for (var i = 0; i < words.length; i++) {
       final word = words[i];
-      final wordGlobalStart =
-          widget.tape.toGlobalMs(widget.memoIndex, word.startMs);
-      final wordGlobalEnd =
-          widget.tape.toGlobalMs(widget.memoIndex, word.endMs);
-      final isCurrent = widget.globalMs >= wordGlobalStart &&
-          widget.globalMs < wordGlobalEnd;
+      final wordGlobalStart = widget.tape.toGlobalMs(
+        widget.memoIndex,
+        word.startMs,
+      );
+      final wordGlobalEnd = widget.tape.toGlobalMs(
+        widget.memoIndex,
+        word.endMs,
+      );
+      final isCurrent =
+          widget.globalMs >= wordGlobalStart && widget.globalMs < wordGlobalEnd;
       final recognizer = TapGestureRecognizer()
         ..onTap = () => widget.onSeekGlobalMs?.call(wordGlobalStart);
       _recognizers.add(recognizer);
-      spans.add(TextSpan(
-        text: word.text,
-        recognizer: recognizer,
-        style: isCurrent
-            ? TextStyle(
-                backgroundColor: tape.highlight,
-                fontWeight: FontWeight.w700,
-              )
-            : null,
-      ));
+      spans.add(
+        TextSpan(
+          text: word.text,
+          recognizer: recognizer,
+          style: isCurrent
+              ? TextStyle(
+                  backgroundColor: tape.highlight,
+                  fontWeight: FontWeight.w700,
+                )
+              : null,
+        ),
+      );
       if (i + 1 < words.length) {
         final separator = wordSeparator(word.text, words[i + 1].text);
         if (separator.isNotEmpty) spans.add(TextSpan(text: separator));
@@ -565,6 +621,7 @@ class _MemoParagraphState extends State<_MemoParagraph> {
         onLongPress: widget.onCopy,
         child: Text.rich(
           TextSpan(children: spans),
+          key: ValueKey('transcript-paragraph-${widget.memo.id}'),
           style: TextStyle(
             fontSize: 12.5,
             height: 1.75,

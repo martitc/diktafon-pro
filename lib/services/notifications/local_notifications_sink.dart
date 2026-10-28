@@ -10,8 +10,10 @@ import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'download_notifier.dart';
+import 'processing_completion_notifier.dart';
 
-class LocalNotificationsSink implements DownloadNotificationSink {
+class LocalNotificationsSink
+    implements DownloadNotificationSink, ProcessingNotificationSink {
   LocalNotificationsSink._(this._plugin);
 
   final FlutterLocalNotificationsPlugin _plugin;
@@ -44,7 +46,8 @@ class LocalNotificationsSink implements DownloadNotificationSink {
     _permissionRequested = true;
     await _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
   }
 
@@ -65,6 +68,16 @@ class LocalNotificationsSink implements DownloadNotificationSink {
 
   static const _linux = LinuxNotificationDetails(suppressSound: true);
 
+  static const _processingAndroid = AndroidNotificationDetails(
+    'audio_processing',
+    'Audio processing',
+    channelDescription: 'Notices when audio transcription or summaries finish',
+    importance: Importance.defaultImportance,
+    priority: Priority.defaultPriority,
+    onlyAlertOnce: true,
+    autoCancel: true,
+  );
+
   @override
   Future<void> showProgress(int id, String title, int percent) async {
     await _ensurePermission();
@@ -73,7 +86,9 @@ class LocalNotificationsSink implements DownloadNotificationSink {
       title: title,
       body: '$percent %',
       notificationDetails: NotificationDetails(
-          android: _android(progress: percent), linux: _linux),
+        android: _android(progress: percent),
+        linux: _linux,
+      ),
     );
   }
 
@@ -86,8 +101,24 @@ class LocalNotificationsSink implements DownloadNotificationSink {
     await _plugin.show(
       id: id,
       title: title,
-      notificationDetails:
-          NotificationDetails(android: _android(), linux: _linux),
+      notificationDetails: NotificationDetails(
+        android: _android(),
+        linux: _linux,
+      ),
+    );
+  }
+
+  @override
+  Future<void> showProcessingComplete(int id, String title, String body) async {
+    await _ensurePermission();
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(
+        android: _processingAndroid,
+        linux: _linux,
+      ),
     );
   }
 

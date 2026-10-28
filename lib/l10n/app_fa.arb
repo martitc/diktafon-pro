@@ -1,6 +1,5 @@
 {
   "@@locale": "fa",
-
   "untitledCassette": "کاست بی‌نام",
   "rename": "تغییر نام",
   "delete": "حذف",
@@ -9,7 +8,6 @@
   "deleteAction": "حذف",
   "ok": "تأیید",
   "back": "بازگشت",
-
   "settingsTooltip": "تنظیمات",
   "homeEmpty": "هنوز کاستی ندارید.\nبرای شروع یک نوار تازه، + را بزنید.",
   "newCassette": "کاست جدید",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "نام کاست",
   "deleteCassetteTitle": "کاست حذف شود؟",
   "deleteCassetteBody": "«{label}» و {count, plural, one{{count} یادداشت} other{{count} یادداشت}} آن حذف می‌شوند. این کار برگشت‌پذیر نیست.",
-
   "memoCount": "{count, plural, one{{count} یادداشت} other{{count} یادداشت}}",
   "cardEmptyMeta": "خالی · برای باز کردن بزنید",
   "cardMetaNaming": "{memos} · در حال نام‌گذاری…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}، {memos}",
   "todayAt": "امروز {time}",
   "yesterday": "دیروز",
-
   "deleteCassette": "حذف کاست",
   "blankTape": "یک نوار خالی.\nبرای ضبط، کلید قرمز را فشار دهید.",
   "emptyTape": "نوار خالی",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "یادداشت {n} حذف می‌شود و نوار جای خالی آن را پر می‌کند. این کار برگشت‌پذیر نیست.",
   "timelineLabel": "خط زمانی نوار",
   "timelinePosition": "{position} از {total}",
-
   "noSpeech": "(بدون گفتار)",
   "transcriptionFailedRetry": "رونویسی ناموفق بود — برای تلاش دوباره لمس کنید (صدا همچنان قابل پخش است)",
   "queuedForTranscription": "در صف رونویسی…",
@@ -55,7 +50,6 @@
   "summarizing": "در حال خلاصه‌سازی…",
   "summaryFailedRetry": "خلاصه‌سازی ناموفق بود — برای تلاش دوباره لمس کنید",
   "transcribing": "در حال رونویسی…",
-
   "settingsTitle": "تنظیمات",
   "groupLanguage": "زبان",
   "transcriptionLanguage": "زبان رونویسی",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "سبک‌تر و سریع‌تر — کم‌دقت‌تر، به‌ویژه در ضبط‌های پرنویز.",
   "whisperLargeDesc": "دقت بالاتر؛ به دستگاهی توانمند نیاز دارد (حدود ۲٫۵ گیگابایت رم هنگام رونویسی).",
   "whisperLargeDescCapable": "پیشنهادی — بسیار دقیق‌تر، به‌ویژه در محیط پرنویز (حدود ۲٫۵ گیگابایت رم هنگام رونویسی).",
+  "whisperFullLargeDesc": "بیشترین دقت — دانلود ۲٫۹ گیبی‌بایت؛ ۸ گیگابایت RAM توصیه می‌شود.",
+  "whisperFullLargeDescBlocked": "دانلود ۲٫۹ گیبی‌بایت — این دستگاه برای اجرا به حدود ۸ گیگابایت RAM نیاز دارد.",
   "llmDefaultDesc": "پیشنهادی — خلاصه‌های فشردهٔ چندزبانه.",
   "llm4bDesc": "خلاصه‌ها و عنوان‌های باکیفیت‌تر؛ به دستگاهی توانمند نیاز دارد (حدود ۳ گیگابایت رم هنگام خلاصه‌سازی).",
   "summariesOffValue": "بدون خلاصه · برای راه‌اندازی لمس کنید",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "درباره و حریم خصوصی",
   "aboutPrivacyDesc": "صدا هرگز از این دستگاه خارج نمی‌شود",
   "aboutTitle": "درباره و حریم خصوصی",
-  "aboutBody": "Diktafon همین‌جا روی گوشی شما گوش می‌دهد، می‌نویسد و خلاصه می‌کند.\n\nضبط‌ها، رونوشت‌ها و خلاصه‌ها هرگز از دستگاه خارج نمی‌شوند. حساب کاربری، فضای ابری و ابزار تحلیلی در کار نیست. داده‌ها تنها زمانی از دستگاه خارج می‌شوند که خودتان پشتیبان‌گیری یا برون‌بری را آغاز کنید.",
-  "aboutOpenSource": "Diktafon رایگان و متن‌باز است:",
+  "aboutBody": "Diktafon Pro همین‌جا روی گوشی شما گوش می‌دهد، می‌نویسد و خلاصه می‌کند.\n\nضبط‌ها، رونوشت‌ها و خلاصه‌ها هرگز از دستگاه خارج نمی‌شوند. حساب کاربری، فضای ابری و ابزار تحلیلی در کار نیست. داده‌ها تنها زمانی از دستگاه خارج می‌شوند که خودتان پشتیبان‌گیری یا برون‌بری را آغاز کنید.",
+  "aboutOpenSource": "Diktafon Pro رایگان و متن‌باز است:",
   "aboutPrivacyPolicy": "سیاست حریم خصوصی",
-
   "modelPickerTranscriptionTitle": "مدل رونویسی",
   "modelPickerSummaryTitle": "مدل خلاصه‌سازی",
   "pickerInstalled": "نصب‌شده · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} آماده است — یادداشت‌های در انتظار رونویسی می‌شوند.",
   "modelReadySummarize": "{label} آماده است — یادداشت‌های در انتظار خلاصه می‌شوند.",
   "downloadFailed": "دانلود {label} ناموفق بود — اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.",
-
-  "firstRunWelcome": "به Diktafon خوش آمدید",
+  "firstRunWelcome": "به Diktafon Pro خوش آمدید",
   "firstRunIntro": "همین‌جا روی گوشی شما گوش می‌دهد، می‌نویسد و خلاصه می‌کند. ضبط‌ها، رونوشت‌ها و خلاصه‌ها **هرگز از این دستگاه خارج نمی‌شوند**. نه حساب کاربری در کار است و نه فضای ابری.",
   "firstRunSetupHeader": "راه‌اندازی اولیه",
   "allowMicRow": "اجازهٔ میکروفون",
@@ -126,9 +120,8 @@
   "provisionChoose": "برای انتخاب و دانلود مدل لمس کنید",
   "downloadsFinishInBackground": "دانلودها در پس‌زمینه کامل می‌شوند.",
   "startRecordingKey": "شروع ضبط",
-
   "backupTitle": "برون‌بری و درون‌ریزی",
-  "backupIntro": "پشتیبان‌گیری خود دستگاه، فهرست کاست‌ها، رونوشت‌ها و خلاصه‌ها را به‌طور خودکار پوشش می‌دهد. فایل‌های صوتی حجیم‌اند — آن‌ها را خودتان با خود ببرید: برون‌بری، صدا، رونوشت‌ها و خلاصه‌های یک کاست را در یک فایل .zip بسته‌بندی می‌کند و درون‌ریزی آن فایل همه را بازمی‌گرداند. Diktafon هیچ چیزی را آپلود نمی‌کند.",
+  "backupIntro": "پشتیبان‌گیری خود دستگاه، فهرست کاست‌ها، رونوشت‌ها و خلاصه‌ها را به‌طور خودکار پوشش می‌دهد. فایل‌های صوتی حجیم‌اند — آن‌ها را خودتان با خود ببرید: برون‌بری، صدا، رونوشت‌ها و خلاصه‌های یک کاست را در یک فایل .zip بسته‌بندی می‌کند و درون‌ریزی آن فایل همه را بازمی‌گرداند. Diktafon Pro هیچ چیزی را آپلود نمی‌کند.",
   "groupExport": "برون‌بری",
   "exportAll": "برون‌بری همهٔ کاست‌ها",
   "exportAllDesc": "همه‌چیز، در یک فایل آرشیو",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{یک کاست درون‌ریزی نشد.} other{{count} کاست درون‌ریزی نشد.}}",
   "importNothingFound": "در آن آرشیو کاستی پیدا نشد.",
   "importFailed": "درون‌ریزی ناموفق بود: {error}",
-
-  "exportNote": "در تاریخ {date} از Diktafon برون‌بری شد.",
+  "exportNote": "در تاریخ {date} از Diktafon Pro برون‌بری شد.",
   "exportSummaryHeading": "خلاصه",
   "exportNotTranscribed": "(رونویسی‌نشده)",
-
   "openSystemSettings": "تنظیمات",
   "changeColor": "تغییر رنگ",
   "retranscribe": "رونویسی دوباره",
@@ -168,6 +159,69 @@
   "memoActions": "گزینه‌های یادداشت",
   "notifDownloading": "در حال دانلود {label}",
   "notifModelInstalled": "{label} نصب شد",
+  "notifTranscriptionCompleted": "رونویسی تمام شد",
+  "notifTranscriptionCompletedBody": "رونویسی صدا در Diktafon Pro آماده است.",
+  "notifSummaryCompleted": "خلاصه آماده شد",
+  "notifSummaryCompletedBody": "خلاصهٔ صدا در Diktafon Pro آماده است.",
   "notifRecording": "در حال ضبط",
-  "notifRecordingChannel": "ضبط"
+  "notifRecordingChannel": "ضبط",
+  "importAudio": "وارد کردن صدا",
+  "importingAudio": "در حال وارد کردن صدا…",
+  "importedAudioFiles": "{count, plural, =1{۱ یادداشت صوتی اضافه شد. رونویسی به‌طور خودکار شروع می‌شود.} other{{count} یادداشت صوتی اضافه شد. رونویسی به‌طور خودکار شروع می‌شود.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{وارد کردن ۱ فایل صوتی ممکن نشد.} other{وارد کردن {count} فایل صوتی ممکن نشد.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{۱ یادداشت صوتی وارد شد، اما افزودن رونویسی آن به صف ممکن نشد.} other{{count} یادداشت صوتی وارد شد، اما افزودن رونویسی آن‌ها به صف ممکن نشد.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "فضای خالی کافی برای دریافت این مدل وجود ندارد. فضا خالی کنید و دوباره تلاش کنید.",
+  "downloadNotificationsPermissionRequired": "برای ادامه دانلود مدل‌ها در پس‌زمینه، اعلان‌ها را مجاز کنید.",
+  "importAudioTooltip": "وارد کردن صدا به این کاست",
+  "localSummaryInstructionsGroup": "دستورهای خلاصه‌سازی محلی",
+  "localSummaryInstructionsHint": "مثلاً: روی تصمیم‌ها، کارها و مهلت‌ها تمرکز کن.",
+  "localSummaryInstructionsPrivacy": "این دستورها روی همین دستگاه می‌مانند و به Gemini یا ChatGPT فرستاده نمی‌شوند.",
+  "localSummarySaveFailed": "ذخیرهٔ دستورهای خلاصه‌سازی محلی ناموفق بود.",
+  "localSummaryInstructionsTitle": "دستورهای خلاصه‌سازی شما",
+  "llmModelDetails": "{quantization} · {license} · حداقل حافظهٔ تخمینی: {ram} گیگابایت",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "بارگیری {size} · حداقل حافظهٔ تخمینی: {ram} گیگابایت",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

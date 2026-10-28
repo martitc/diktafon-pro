@@ -1,6 +1,5 @@
 {
   "@@locale": "pt",
-
   "untitledCassette": "Cassete sem título",
   "rename": "Renomear",
   "delete": "Excluir",
@@ -9,7 +8,6 @@
   "deleteAction": "EXCLUIR",
   "ok": "OK",
   "back": "Voltar",
-
   "settingsTooltip": "Configurações",
   "homeEmpty": "Ainda não há cassetes.\nToque em + para começar uma fita nova.",
   "newCassette": "Nova cassete",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Nome da cassete",
   "deleteCassetteTitle": "EXCLUIR CASSETE?",
   "deleteCassetteBody": "\"{label}\" e {count, plural, one{sua {count} nota} other{suas {count} notas}} serão excluídas. Isso não pode ser desfeito.",
-
   "memoCount": "{count, plural, one{{count} nota} other{{count} notas}}",
   "cardEmptyMeta": "vazia · toque para abrir",
   "cardMetaNaming": "{memos} · escolhendo um nome…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "hoje {time}",
   "yesterday": "ontem",
-
   "deleteCassette": "Excluir cassete",
   "blankTape": "Uma fita em branco.\nAperte a tecla vermelha para gravar.",
   "emptyTape": "FITA VAZIA",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "A nota {n} será removida e a fita fecha o espaço. Isso não pode ser desfeito.",
   "timelineLabel": "Linha do tempo da fita",
   "timelinePosition": "{position} de {total}",
-
   "noSpeech": "(sem fala)",
   "transcriptionFailedRetry": "a transcrição falhou — toque para tentar de novo (o áudio continua tocando)",
   "queuedForTranscription": "na fila para transcrição…",
@@ -55,7 +50,6 @@
   "summarizing": "resumindo…",
   "summaryFailedRetry": "o resumo falhou — toque para tentar de novo",
   "transcribing": "transcrevendo…",
-
   "settingsTitle": "CONFIGURAÇÕES",
   "groupLanguage": "Idioma",
   "transcriptionLanguage": "Idioma da transcrição",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Mais leve e rápido — menos preciso, sobretudo em gravações ruidosas.",
   "whisperLargeDesc": "Maior precisão; requer um dispositivo potente (~2,5 GB de RAM ao transcrever).",
   "whisperLargeDescCapable": "Recomendado — muito mais preciso, sobretudo com ruído (~2,5 GB de RAM ao transcrever).",
+  "whisperFullLargeDesc": "Precisão máxima — download de 2,9 GiB; recomenda-se 8 GB de RAM.",
+  "whisperFullLargeDescBlocked": "Download de 2,9 GiB — este dispositivo precisa de cerca de 8 GB de RAM.",
   "llmDefaultDesc": "Recomendado — resumos multilingues compactos.",
   "llm4bDesc": "Resumos e títulos de maior qualidade; requer um dispositivo potente (~3 GB de RAM ao resumir).",
   "summariesOffValue": "Sem resumos · toque para configurar",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Sobre e privacidade",
   "aboutPrivacyDesc": "O áudio nunca sai deste dispositivo",
   "aboutTitle": "SOBRE E PRIVACIDADE",
-  "aboutBody": "O Diktafon escuta, escreve e resume aqui mesmo, no seu telefone.\n\nGravações, transcrições e resumos nunca saem do dispositivo. Não há conta, nem nuvem, nem análises. Os dados só saem por um backup ou exportação que você mesmo inicia.",
-  "aboutOpenSource": "O Diktafon é gratuito e de código aberto:",
+  "aboutBody": "O Diktafon Pro escuta, escreve e resume aqui mesmo, no seu telefone.\n\nGravações, transcrições e resumos nunca saem do dispositivo. Não há conta, nem nuvem, nem análises. Os dados só saem por um backup ou exportação que você mesmo inicia.",
+  "aboutOpenSource": "O Diktafon Pro é gratuito e de código aberto:",
   "aboutPrivacyPolicy": "Política de privacidade",
-
   "modelPickerTranscriptionTitle": "MODELO DE TRANSCRIÇÃO",
   "modelPickerSummaryTitle": "MODELO DE RESUMOS",
   "pickerInstalled": "instalado · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} está pronto — transcrevendo as notas em espera.",
   "modelReadySummarize": "{label} está pronto — resumindo as notas em espera.",
   "downloadFailed": "O download de {label} falhou — verifique sua conexão e tente novamente.",
-
-  "firstRunWelcome": "Bem-vindo ao Diktafon",
+  "firstRunWelcome": "Bem-vindo ao Diktafon Pro",
   "firstRunIntro": "Ele escuta, escreve e resume aqui mesmo, no seu telefone. Gravações, transcrições e resumos **nunca saem deste dispositivo**. Não há conta nem nuvem.",
   "firstRunSetupHeader": "Configuração inicial",
   "allowMicRow": "Permitir o microfone",
@@ -126,9 +120,8 @@
   "provisionChoose": "toque para escolher um modelo para baixar",
   "downloadsFinishInBackground": "Os downloads terminam em segundo plano.",
   "startRecordingKey": "COMEÇAR A GRAVAR",
-
   "backupTitle": "EXPORTAR E IMPORTAR",
-  "backupIntro": "O backup do seu dispositivo cobre automaticamente a lista de cassetes, as transcrições e os resumos. O áudio é pesado — leve-o explicitamente: a exportação empacota o áudio, as transcrições e os resumos de uma cassete em um único arquivo .zip, e a importação os traz de volta. O Diktafon não envia nada.",
+  "backupIntro": "O backup do seu dispositivo cobre automaticamente a lista de cassetes, as transcrições e os resumos. O áudio é pesado — leve-o explicitamente: a exportação empacota o áudio, as transcrições e os resumos de uma cassete em um único arquivo .zip, e a importação os traz de volta. O Diktafon Pro não envia nada.",
   "groupExport": "Exportar",
   "exportAll": "Exportar todas as cassetes",
   "exportAllDesc": "Tudo, em um único arquivo",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{Não foi possível importar 1 cassete.} other{Não foi possível importar {count} cassetes.}}",
   "importNothingFound": "Nenhuma cassete encontrada nesse arquivo.",
   "importFailed": "A importação falhou: {error}",
-
-  "exportNote": "Exportado do Diktafon em {date}.",
+  "exportNote": "Exportado do Diktafon Pro em {date}.",
   "exportSummaryHeading": "Resumo",
   "exportNotTranscribed": "(não transcrito)",
-
   "openSystemSettings": "CONFIGURAÇÕES",
   "changeColor": "Mudar a cor",
   "retranscribe": "Transcrever de novo",
@@ -168,6 +159,69 @@
   "memoActions": "Ações da nota",
   "notifDownloading": "Baixando {label}",
   "notifModelInstalled": "{label} instalado",
+  "notifTranscriptionCompleted": "Transcrição concluída",
+  "notifTranscriptionCompletedBody": "A transcrição do áudio está pronta no Diktafon Pro.",
+  "notifSummaryCompleted": "Resumo concluído",
+  "notifSummaryCompletedBody": "O resumo do áudio está pronto no Diktafon Pro.",
   "notifRecording": "Gravando nota",
-  "notifRecordingChannel": "Gravação"
+  "notifRecordingChannel": "Gravação",
+  "importAudio": "Importar áudio",
+  "importingAudio": "A importar áudio…",
+  "importedAudioFiles": "{count, plural, =1{Adicionada 1 nota de áudio. A transcrição começa automaticamente.} other{Adicionadas {count} notas de áudio. A transcrição começa automaticamente.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{Não foi possível importar 1 ficheiro de áudio.} other{Não foi possível importar {count} ficheiros de áudio.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{Foi importada 1 nota de áudio, mas não foi possível colocar a sua transcrição na fila.} other{Foram importadas {count} notas de áudio, mas não foi possível colocar as suas transcrições na fila.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Não há espaço livre suficiente para baixar este modelo. Libere espaço e tente novamente.",
+  "downloadNotificationsPermissionRequired": "Permita notificações para que os downloads dos modelos continuem em segundo plano.",
+  "importAudioTooltip": "Importar áudio para esta cassete",
+  "localSummaryInstructionsGroup": "Instruções para resumos locais",
+  "localSummaryInstructionsHint": "Por exemplo: destaca decisões, tarefas e prazos.",
+  "localSummaryInstructionsPrivacy": "Estas instruções ficam neste dispositivo e nunca são enviadas para o Gemini ou o ChatGPT.",
+  "localSummarySaveFailed": "Não foi possível guardar as instruções do resumo local.",
+  "localSummaryInstructionsTitle": "As tuas instruções para os resumos",
+  "llmModelDetails": "{quantization} · {license} · memória mínima estimada: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "transferência {size} · RAM mínima estimada: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

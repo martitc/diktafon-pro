@@ -68,16 +68,18 @@ void main() {
   Future<String> plantMemo(String memoId, {String extension = 'wav'}) async {
     final path = '${work.path}/$memoId.$extension';
     await File(path).writeAsBytes(List.filled(64, 7));
-    await memos.insert(Memo(
-      id: memoId,
-      cassetteId: cassetteId,
-      filePath: path,
-      durationMs: 1000,
-      createdAt: DateTime(2026, 7, 20, 10),
-      // `ready` keeps the launch reconciles from enqueueing enrichment —
-      // these tests are about the transcode stage alone.
-      status: MemoStatus.ready,
-    ));
+    await memos.insert(
+      Memo(
+        id: memoId,
+        cassetteId: cassetteId,
+        filePath: path,
+        durationMs: 1000,
+        createdAt: DateTime(2026, 7, 20, 10),
+        // `ready` keeps the launch reconciles from enqueueing enrichment —
+        // these tests are about the transcode stage alone.
+        status: MemoStatus.ready,
+      ),
+    );
     return path;
   }
 
@@ -86,8 +88,7 @@ void main() {
   Future<Memo> memoOf(String id) async =>
       (await memos.memosOf(cassetteId)).singleWhere((m) => m.id == id);
 
-  test('WAV capture becomes archival AAC: path swapped, WAV deleted',
-      () async {
+  test('WAV capture becomes archival AAC: path swapped, WAV deleted', () async {
     final wavPath = await plantMemo('m1');
     await queue.enqueueTranscode('m1');
     await queue.drain();
@@ -124,8 +125,7 @@ void main() {
     expect((await jobRows()).single.status, 'failed');
   });
 
-  test('memo deleted before the job runs → job completes as a no-op',
-      () async {
+  test('memo deleted before the job runs → job completes as a no-op', () async {
     await plantMemo('m1');
     await queue.enqueueTranscode('m1');
     await memos.delete('m1');
@@ -145,8 +145,7 @@ void main() {
     expect(await jobRows(), isEmpty);
   });
 
-  test('missing WAV (vanished audio, §14) completes without a swap',
-      () async {
+  test('missing WAV (vanished audio, §14) completes without a swap', () async {
     final wavPath = await plantMemo('m1');
     File(wavPath).deleteSync();
     await queue.enqueueTranscode('m1');
@@ -162,21 +161,23 @@ void main() {
     await queue.drain(); // first drain runs the reconciles
 
     expect(transcoder.calls, 1);
-    expect((await memoOf('m1')).filePath,
-        wavPath.replaceFirst('.wav', '.m4a'));
+    expect((await memoOf('m1')).filePath, wavPath.replaceFirst('.wav', '.m4a'));
   });
 
-  test('launch reconcile respects an existing failed transcode row',
-      () async {
+  test('launch reconcile respects an existing failed transcode row', () async {
     await plantMemo('m1');
-    await db.into(db.jobs).insert(JobRow(
-          id: 'j-dead',
-          type: JobType.transcodeAudio.name,
-          targetId: 'm1',
-          status: 'failed',
-          attempts: 5,
-          createdAt: DateTime(2026, 7, 19).millisecondsSinceEpoch,
-        ));
+    await db
+        .into(db.jobs)
+        .insert(
+          JobRow(
+            id: 'j-dead',
+            type: JobType.transcodeAudio.name,
+            targetId: 'm1',
+            status: 'failed',
+            attempts: 5,
+            createdAt: DateTime(2026, 7, 19).millisecondsSinceEpoch,
+          ),
+        );
     await queue.drain();
 
     expect(transcoder.calls, 0);

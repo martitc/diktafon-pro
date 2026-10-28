@@ -1,6 +1,5 @@
 {
   "@@locale": "en",
-
   "untitledCassette": "Untitled cassette",
   "rename": "Rename",
   "delete": "Delete",
@@ -9,7 +8,6 @@
   "deleteAction": "DELETE",
   "ok": "OK",
   "back": "Back",
-
   "settingsTooltip": "Settings",
   "homeEmpty": "No cassettes yet.\nPress + to start a new tape.",
   "newCassette": "New cassette",
@@ -19,37 +17,63 @@
   "deleteCassetteBody": "\"{label}\" and its {count, plural, =1{1 memo} other{{count} memos}} will be deleted. This cannot be undone.",
   "@deleteCassetteBody": {
     "placeholders": {
-      "label": {"type": "String"},
-      "count": {"type": "int"}
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "memoCount": "{count, plural, =1{1 memo} other{{count} memos}}",
   "@memoCount": {
     "description": "Memo count on a cassette card / export row",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "cardEmptyMeta": "empty · press to open",
   "cardMetaNaming": "{memos} · naming itself…",
-  "@cardMetaNaming": {"placeholders": {"memos": {"type": "String"}}},
+  "@cardMetaNaming": {
+    "placeholders": {
+      "memos": {
+        "type": "String"
+      }
+    }
+  },
   "cardMetaUpdated": "{memos} · {date}",
   "@cardMetaUpdated": {
     "placeholders": {
-      "memos": {"type": "String"},
-      "date": {"type": "String"}
+      "memos": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
     }
   },
   "cardSemantics": "{label}, {memos}",
   "@cardSemantics": {
     "placeholders": {
-      "label": {"type": "String"},
-      "memos": {"type": "String"}
+      "label": {
+        "type": "String"
+      },
+      "memos": {
+        "type": "String"
+      }
     }
   },
   "todayAt": "today {time}",
-  "@todayAt": {"placeholders": {"time": {"type": "String"}}},
+  "@todayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "yesterday": "yesterday",
-
   "deleteCassette": "Delete cassette",
   "blankTape": "A blank tape.\nPress the red key to record.",
   "emptyTape": "EMPTY TAPE",
@@ -57,12 +81,22 @@
   "@memoCounter": {
     "description": "LCD counter row, kept in caps like a tape deck",
     "placeholders": {
-      "n": {"type": "int"},
-      "total": {"type": "int"}
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "recordingMemo": "RECORDING MEMO {n}",
-  "@recordingMemo": {"placeholders": {"n": {"type": "int"}}},
+  "@recordingMemo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "summaryPlaceholder": "The cassette summary appears once memos are transcribed.",
   "back15": "Back 15 seconds",
   "forward15": "Forward 15 seconds",
@@ -74,19 +108,34 @@
   "recordingFailed": "Couldn't start recording — the microphone may be in use.",
   "playbackError": "Playback failed — the audio file may be missing or damaged.",
   "missingAudio": "{count, plural, =1{Audio for 1 memo is missing on this device.} other{Audio for {count} memos is missing on this device.}}",
-  "@missingAudio": {"placeholders": {"count": {"type": "int"}}},
+  "@missingAudio": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteMemoTitle": "DELETE MEMO?",
   "deleteMemoBody": "Memo {n} will be removed and the tape closes the gap. This cannot be undone.",
-  "@deleteMemoBody": {"placeholders": {"n": {"type": "int"}}},
+  "@deleteMemoBody": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "timelineLabel": "Tape timeline",
   "timelinePosition": "{position} of {total}",
   "@timelinePosition": {
     "placeholders": {
-      "position": {"type": "String"},
-      "total": {"type": "String"}
+      "position": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
     }
   },
-
   "noSpeech": "(no speech)",
   "transcriptionFailedRetry": "transcription failed — tap to retry (the audio still plays)",
   "queuedForTranscription": "queued for transcription…",
@@ -94,14 +143,17 @@
   "memoDivider": "Memo {n} — {date}",
   "@memoDivider": {
     "placeholders": {
-      "n": {"type": "int"},
-      "date": {"type": "String"}
+      "n": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
     }
   },
   "summarizing": "summarising…",
   "summaryFailedRetry": "summary failed — tap to retry",
   "transcribing": "transcribing…",
-
   "settingsTitle": "SETTINGS",
   "groupLanguage": "Language",
   "transcriptionLanguage": "Transcription language",
@@ -120,32 +172,52 @@
   "whisperSmallDescCapable": "Lighter and faster — less accurate, especially on noisy recordings.",
   "whisperLargeDesc": "Higher accuracy; needs a capable device (~2.5 GB RAM while transcribing).",
   "whisperLargeDescCapable": "Recommended — much more accurate, especially in noise (~2.5 GB RAM while transcribing).",
+  "whisperFullLargeDesc": "Maximum accuracy — 2.9 GiB download; 8 GB RAM recommended.",
+  "whisperFullLargeDescBlocked": "2.9 GiB download — this device needs about 8 GB RAM to run it.",
   "llmDefaultDesc": "Recommended — compact multilingual summaries.",
   "llm4bDesc": "Higher-quality summaries & titles; needs a capable device (~3 GB RAM while summarizing).",
   "summariesOffValue": "No summaries · tap to set up",
   "modelInstalled": "{label} · {size} — installed, tap to manage",
   "@modelInstalled": {
     "placeholders": {
-      "label": {"type": "String"},
-      "size": {"type": "String"}
+      "label": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
     }
   },
   "modelDownloading": "{label} — downloading {pct} %",
   "@modelDownloading": {
     "placeholders": {
-      "label": {"type": "String"},
-      "pct": {"type": "int"}
+      "label": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "int"
+      }
     }
   },
   "modelPaused": "{label} — download paused at {pct} %",
   "@modelPaused": {
     "placeholders": {
-      "label": {"type": "String"},
-      "pct": {"type": "int"}
+      "label": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "int"
+      }
     }
   },
   "modelNotDownloaded": "{label} — not downloaded yet · tap to set up",
-  "@modelNotDownloaded": {"placeholders": {"label": {"type": "String"}}},
+  "@modelNotDownloaded": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "groupAppearance": "Appearance",
   "themeRow": "Theme",
   "themeTitle": "THEME",
@@ -158,33 +230,85 @@
   "aboutPrivacy": "About & privacy",
   "aboutPrivacyDesc": "Audio never leaves this device",
   "aboutTitle": "ABOUT & PRIVACY",
-  "aboutBody": "Diktafon listens, writes and summarises right here on your phone.\n\nRecordings, transcripts and summaries never leave the device. There is no account, no cloud and no analytics. The only way data leaves is a backup or export you start yourself.",
-  "aboutOpenSource": "Diktafon is free and open source:",
+  "aboutBody": "Diktafon Pro listens, writes and summarises right here on your phone.\n\nRecordings, transcripts and summaries never leave the device. There is no account, no cloud and no analytics. The only way data leaves is a backup or export you start yourself.",
+  "aboutOpenSource": "Diktafon Pro is free and open source:",
   "aboutPrivacyPolicy": "Privacy policy",
-
   "modelPickerTranscriptionTitle": "TRANSCRIPTION MODEL",
   "modelPickerSummaryTitle": "SUMMARY MODEL",
   "pickerInstalled": "installed · {size}",
-  "@pickerInstalled": {"placeholders": {"size": {"type": "String"}}},
+  "@pickerInstalled": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "pickerDownloading": "downloading {pct} % — tap to pause",
-  "@pickerDownloading": {"placeholders": {"pct": {"type": "int"}}},
+  "@pickerDownloading": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
   "pickerPaused": "paused at {pct} % — tap to resume",
-  "@pickerPaused": {"placeholders": {"pct": {"type": "int"}}},
+  "@pickerPaused": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
   "pickerDownload": "download · {size}",
-  "@pickerDownload": {"placeholders": {"size": {"type": "String"}}},
+  "@pickerDownload": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "needsRam": "needs ≥ {gb} GB RAM",
-  "@needsRam": {"placeholders": {"gb": {"type": "int"}}},
+  "@needsRam": {
+    "placeholders": {
+      "gb": {
+        "type": "int"
+      }
+    }
+  },
   "storageNote": "Runs on this device only. Storage used by models: {mb} MB.",
-  "@storageNote": {"placeholders": {"mb": {"type": "int"}}},
+  "@storageNote": {
+    "placeholders": {
+      "mb": {
+        "type": "int"
+      }
+    }
+  },
   "deleteModelTooltip": "Delete model file",
   "modelReadyTranscribe": "{label} is ready — transcribing waiting memos.",
-  "@modelReadyTranscribe": {"placeholders": {"label": {"type": "String"}}},
+  "@modelReadyTranscribe": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "modelReadySummarize": "{label} is ready — summarising waiting memos.",
-  "@modelReadySummarize": {"placeholders": {"label": {"type": "String"}}},
+  "@modelReadySummarize": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "downloadFailed": "Download of {label} failed — check your connection and try again.",
-  "@downloadFailed": {"placeholders": {"label": {"type": "String"}}},
-
-  "firstRunWelcome": "Welcome to Diktafon",
+  "@downloadFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "firstRunWelcome": "Welcome to Diktafon Pro",
   "firstRunIntro": "It listens, writes and summarises right here on your phone. Recordings, transcripts and summaries **never leave this device**. There is no account and no cloud.",
   "@firstRunIntro": {
     "description": "The **…** span is rendered bold; keep exactly one such span."
@@ -200,72 +324,149 @@
   "provisionReady": "{label} · {size} · ready",
   "@provisionReady": {
     "placeholders": {
-      "label": {"type": "String"},
-      "size": {"type": "String"}
+      "label": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
     }
   },
   "provisionDownloading": "{label} · {size} · downloading — {pct} %",
   "@provisionDownloading": {
     "placeholders": {
-      "label": {"type": "String"},
-      "size": {"type": "String"},
-      "pct": {"type": "int"}
+      "label": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "int"
+      }
     }
   },
   "provisionPaused": "{label} · {size} · paused — {pct} %",
   "@provisionPaused": {
     "placeholders": {
-      "label": {"type": "String"},
-      "size": {"type": "String"},
-      "pct": {"type": "int"}
+      "label": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "int"
+      }
     }
   },
   "provisionChoose": "tap to choose a model to download",
   "downloadsFinishInBackground": "Downloads finish in the background.",
   "startRecordingKey": "START RECORDING",
-
   "backupTitle": "EXPORT & IMPORT",
-  "backupIntro": "Your device's own backup covers the cassette list, transcripts and summaries automatically. Audio recordings are large — take them with you explicitly: an export packs the audio, transcripts and summaries of a cassette into one .zip archive, and importing an archive brings them back. Nothing is uploaded by Diktafon.",
+  "backupIntro": "Your device's own backup covers the cassette list, transcripts and summaries automatically. Audio recordings are large — take them with you explicitly: an export packs the audio, transcripts and summaries of a cassette into one .zip archive, and importing an archive brings them back. Nothing is uploaded by Diktafon Pro.",
   "groupExport": "Export",
   "exportAll": "Export all cassettes",
   "exportAllDesc": "Everything, into one archive file",
   "exporting": "Exporting…",
   "exportedTo": "Exported to {path}.",
-  "@exportedTo": {"placeholders": {"path": {"type": "String"}}},
+  "@exportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "exportedAllTo": "{count, plural, =1{Exported 1 cassette to {path}.} other{Exported {count} cassettes to {path}.}}",
   "@exportedAllTo": {
     "placeholders": {
-      "count": {"type": "int"},
-      "path": {"type": "String"}
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
     }
   },
   "exportFailed": "Export failed: {error}",
-  "@exportFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "groupImport": "Import",
   "importArchive": "Import an archive",
   "importArchiveDesc": "Add cassettes from an earlier export",
   "importing": "Importing…",
+  "importAudio": "Import audio",
+  "importingAudio": "Importing audio…",
+  "importedAudioFiles": "{count, plural, =1{Added 1 audio memo. Transcription starts automatically.} other{Added {count} audio memos. Transcription starts automatically.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{1 audio file could not be imported.} other{{count} audio files could not be imported.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{1 audio memo was imported, but its transcription could not be queued.} other{{count} audio memos were imported, but their transcriptions could not be queued.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importDialogTitle": "IMPORT CASSETTES?",
   "importDialogBody": "The cassettes in the archive are added next to the ones you have — nothing is deleted or changed. Importing a cassette that is already here creates a second copy, which you can delete by hand. Memos missing a transcript or summary are processed after the import.",
   "importAction": "IMPORT",
   "importedResult": "{cassettes, plural, =1{Imported 1 cassette with {memos, plural, =1{1 memo} other{{memos} memos}}.} other{Imported {cassettes} cassettes with {memos, plural, =1{1 memo} other{{memos} memos}}.}}",
   "@importedResult": {
     "placeholders": {
-      "cassettes": {"type": "int"},
-      "memos": {"type": "int"}
+      "cassettes": {
+        "type": "int"
+      },
+      "memos": {
+        "type": "int"
+      }
     }
   },
   "importFailures": "{count, plural, =1{1 cassette could not be imported.} other{{count} cassettes could not be imported.}}",
-  "@importFailures": {"placeholders": {"count": {"type": "int"}}},
+  "@importFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importNothingFound": "No cassettes found in that archive.",
   "importFailed": "Import failed: {error}",
-  "@importFailed": {"placeholders": {"error": {"type": "String"}}},
-
-  "exportNote": "Exported from Diktafon on {date}.",
-  "@exportNote": {"placeholders": {"date": {"type": "String"}}},
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNote": "Exported from Diktafon Pro on {date}.",
+  "@exportNote": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "exportSummaryHeading": "Summary",
   "exportNotTranscribed": "(not transcribed)",
-
   "openSystemSettings": "SETTINGS",
   "changeColor": "Change colour",
   "retranscribe": "Re-transcribe",
@@ -273,12 +474,22 @@
   "retranscribeBody": "{count, plural, =1{The memo} other{All {count} memos}} will be transcribed again with the current models and the summary will be rebuilt. Existing transcripts and summaries are replaced, including any manual corrections. This can take a while.",
   "@retranscribeBody": {
     "description": "Confirmation before re-running transcription for a whole cassette",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "retranscribeAction": "RE-TRANSCRIBE",
   "colorPickerTitle": "CASSETTE COLOUR",
   "colorSwatch": "Colour {n}",
-  "@colorSwatch": {"placeholders": {"n": {"type": "int"}}},
+  "@colorSwatch": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "copyTranscript": "Copy transcription",
   "editTranscript": "Edit transcription",
   "editTranscriptTitle": "EDIT TRANSCRIPTION",
@@ -286,9 +497,58 @@
   "deleteMemo": "Delete memo",
   "memoActions": "Memo actions",
   "notifDownloading": "Downloading {label}",
-  "@notifDownloading": {"placeholders": {"label": {"type": "String"}}},
+  "@notifDownloading": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "notifModelInstalled": "{label} installed",
-  "@notifModelInstalled": {"placeholders": {"label": {"type": "String"}}},
+  "@notifModelInstalled": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "notifTranscriptionCompleted": "Transcription finished",
+  "notifTranscriptionCompletedBody": "Your audio transcription is ready in Diktafon Pro.",
+  "notifSummaryCompleted": "Summary finished",
+  "notifSummaryCompletedBody": "Your audio summary is ready in Diktafon Pro.",
   "notifRecording": "Recording memo",
-  "notifRecordingChannel": "Recording"
+  "notifRecordingChannel": "Recording",
+  "insufficientModelStorage": "Not enough free storage to download this model. Free space and try again.",
+  "downloadNotificationsPermissionRequired": "Allow notifications so model downloads can continue in the background.",
+  "importAudioTooltip": "Import audio into this cassette",
+  "localSummaryInstructionsGroup": "Local summary instructions",
+  "localSummaryInstructionsHint": "For example: focus on decisions, tasks and deadlines.",
+  "localSummaryInstructionsPrivacy": "These instructions stay on this device and are never sent to Gemini or ChatGPT.",
+  "localSummarySaveFailed": "Could not save local summary instructions.",
+  "localSummaryInstructionsTitle": "Your summary instructions",
+  "llmModelDetails": "{quantization} · {license} · estimated minimum RAM: {ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "download {size} · estimated minimum RAM: {ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

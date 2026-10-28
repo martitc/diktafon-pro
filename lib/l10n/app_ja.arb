@@ -1,6 +1,5 @@
 {
   "@@locale": "ja",
-
   "untitledCassette": "無題のカセット",
   "rename": "名前を変更",
   "delete": "削除",
@@ -9,7 +8,6 @@
   "deleteAction": "削除",
   "ok": "OK",
   "back": "戻る",
-
   "settingsTooltip": "設定",
   "homeEmpty": "まだカセットがありません。\n+ を押して新しいテープを始めましょう。",
   "newCassette": "新しいカセット",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "カセット名",
   "deleteCassetteTitle": "カセットを削除しますか？",
   "deleteCassetteBody": "「{label}」と{count, plural, other{{count} 件のメモ}}が削除されます。この操作は元に戻せません。",
-
   "memoCount": "{count, plural, other{{count} 件のメモ}}",
   "cardEmptyMeta": "メモなし・タップで開く",
   "cardMetaNaming": "{memos}・名前を考え中…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}、{memos}",
   "todayAt": "今日 {time}",
   "yesterday": "昨日",
-
   "deleteCassette": "カセットを削除",
   "blankTape": "空のテープです。\n赤いキーを押して録音しましょう。",
   "emptyTape": "空のテープ",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "メモ {n} が削除され、テープの空いた部分は詰められます。この操作は元に戻せません。",
   "timelineLabel": "テープのタイムライン",
   "timelinePosition": "{total} 中 {position}",
-
   "noSpeech": "（発話なし）",
   "transcriptionFailedRetry": "文字起こしに失敗しました — タップで再試行（音声は再生できます）",
   "queuedForTranscription": "文字起こしを待機中…",
@@ -55,7 +50,6 @@
   "summarizing": "要約中…",
   "summaryFailedRetry": "要約に失敗しました — タップで再試行",
   "transcribing": "文字起こし中…",
-
   "settingsTitle": "設定",
   "groupLanguage": "言語",
   "transcriptionLanguage": "文字起こしの言語",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "より軽量で高速ですが、精度は下がります。特に騒がしい録音で差が出ます。",
   "whisperLargeDesc": "より高精度。高性能な端末が必要です（文字起こし中に約 2.5 GB の RAM を使用）。",
   "whisperLargeDescCapable": "おすすめ — はるかに高精度で、特に騒音下で強みがあります（文字起こし中に約 2.5 GB の RAM を使用）。",
+  "whisperFullLargeDesc": "最高精度 — 2.9 GiB のダウンロード。RAM は 8 GB 以上を推奨します。",
+  "whisperFullLargeDescBlocked": "2.9 GiB のダウンロード — 実行には約 8 GB の RAM が必要です。",
   "llmDefaultDesc": "おすすめ — コンパクトな多言語対応の要約。",
   "llm4bDesc": "より高品質な要約とタイトル。高性能な端末が必要です（要約中に約 3 GB の RAM を使用）。",
   "summariesOffValue": "要約なし・タップで設定",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "アプリ情報とプライバシー",
   "aboutPrivacyDesc": "音声がこの端末の外に出ることはありません",
   "aboutTitle": "アプリ情報とプライバシー",
-  "aboutBody": "Diktafon は、聞き取りも、書き起こしも、要約も、すべてお使いのスマートフォンの中で行います。\n\n録音・文字起こし・要約が端末の外に出ることはありません。アカウントも、クラウドも、分析ツールもありません。データが外に出るのは、ご自身で行うバックアップやエクスポートだけです。",
-  "aboutOpenSource": "Diktafon は無料のオープンソースソフトウェアです：",
+  "aboutBody": "Diktafon Pro は、聞き取りも、書き起こしも、要約も、すべてお使いのスマートフォンの中で行います。\n\n録音・文字起こし・要約が端末の外に出ることはありません。アカウントも、クラウドも、分析ツールもありません。データが外に出るのは、ご自身で行うバックアップやエクスポートだけです。",
+  "aboutOpenSource": "Diktafon Pro は無料のオープンソースソフトウェアです：",
   "aboutPrivacyPolicy": "プライバシーポリシー",
-
   "modelPickerTranscriptionTitle": "文字起こしモデル",
   "modelPickerSummaryTitle": "要約モデル",
   "pickerInstalled": "インストール済み・{size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} の準備ができました — 待機中のメモを文字起こしします。",
   "modelReadySummarize": "{label} の準備ができました — 待機中のメモを要約します。",
   "downloadFailed": "{label} のダウンロードに失敗しました — 接続を確認して、もう一度お試しください。",
-
-  "firstRunWelcome": "Diktafon へようこそ",
+  "firstRunWelcome": "Diktafon Pro へようこそ",
   "firstRunIntro": "聞き取りも、書き起こしも、要約も、すべてお使いのスマートフォンの中で行われます。録音・文字起こし・要約が**この端末の外に出ることはありません**。アカウントもクラウドもありません。",
   "firstRunSetupHeader": "初回セットアップ",
   "allowMicRow": "マイクを許可",
@@ -126,9 +120,8 @@
   "provisionChoose": "タップしてダウンロードするモデルを選択",
   "downloadsFinishInBackground": "ダウンロードはバックグラウンドで完了します。",
   "startRecordingKey": "録音を開始",
-
   "backupTitle": "エクスポートとインポート",
-  "backupIntro": "カセットの一覧・文字起こし・要約は、端末標準のバックアップで自動的に保護されます。録音音声はサイズが大きいため、明示的に持ち出します。エクスポートすると、カセットの音声・文字起こし・要約が 1 つの .zip アーカイブにまとまり、そのアーカイブをインポートすれば元に戻せます。Diktafon が何かをアップロードすることはありません。",
+  "backupIntro": "カセットの一覧・文字起こし・要約は、端末標準のバックアップで自動的に保護されます。録音音声はサイズが大きいため、明示的に持ち出します。エクスポートすると、カセットの音声・文字起こし・要約が 1 つの .zip アーカイブにまとまり、そのアーカイブをインポートすれば元に戻せます。Diktafon Pro が何かをアップロードすることはありません。",
   "groupExport": "エクスポート",
   "exportAll": "すべてのカセットをエクスポート",
   "exportAllDesc": "すべてを 1 つのアーカイブファイルに",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, other{{count} 本のカセットをインポートできませんでした。}}",
   "importNothingFound": "そのアーカイブにカセットは見つかりませんでした。",
   "importFailed": "インポートに失敗しました：{error}",
-
-  "exportNote": "{date} に Diktafon からエクスポートされました。",
+  "exportNote": "{date} に Diktafon Pro からエクスポートされました。",
   "exportSummaryHeading": "要約",
   "exportNotTranscribed": "（文字起こしなし）",
-
   "openSystemSettings": "設定",
   "changeColor": "色を変更",
   "retranscribe": "文字起こしをやり直す",
@@ -168,6 +159,69 @@
   "memoActions": "メモの操作",
   "notifDownloading": "{label} をダウンロード中",
   "notifModelInstalled": "{label} をインストールしました",
+  "notifTranscriptionCompleted": "文字起こしが完了しました",
+  "notifTranscriptionCompletedBody": "音声の文字起こしを Diktafon Pro で確認できます。",
+  "notifSummaryCompleted": "要約が完了しました",
+  "notifSummaryCompletedBody": "音声の要約を Diktafon Pro で確認できます。",
   "notifRecording": "録音中",
-  "notifRecordingChannel": "録音"
+  "notifRecordingChannel": "録音",
+  "importAudio": "音声をインポート",
+  "importingAudio": "音声をインポート中…",
+  "importedAudioFiles": "{count, plural, other{音声メモを{count}件追加しました。文字起こしは自動的に開始されます。}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, other{音声ファイル{count}件をインポートできませんでした。}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, other{音声メモ{count}件をインポートしましたが、文字起こしをキューに追加できませんでした。}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "このモデルをダウンロードする空き容量がありません。空き容量を確保して再試行してください。",
+  "downloadNotificationsPermissionRequired": "モデルのダウンロードをバックグラウンドで続けるには、通知を許可してください。",
+  "importAudioTooltip": "このカセットに音声をインポート",
+  "localSummaryInstructionsGroup": "ローカル要約の指示",
+  "localSummaryInstructionsHint": "例：決定事項、タスク、期限を中心にまとめる。",
+  "localSummaryInstructionsPrivacy": "この指示はこの端末に保存され、Gemini や ChatGPT に送信されません。",
+  "localSummarySaveFailed": "ローカル要約の指示を保存できませんでした。",
+  "localSummaryInstructionsTitle": "要約の指示",
+  "llmModelDetails": "{quantization} · {license} · 推定最小 RAM：{ram} GB",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "ダウンロード {size} · 推定最小 RAM：{ram} GB",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

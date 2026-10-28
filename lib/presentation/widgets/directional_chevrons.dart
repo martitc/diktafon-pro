@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 /// row affordance points against it.
 IconData backChevron(BuildContext context) =>
     Directionality.of(context) == TextDirection.rtl
-        ? Icons.chevron_right
-        : Icons.chevron_left;
+    ? Icons.chevron_right
+    : Icons.chevron_left;
 
 IconData forwardChevron(BuildContext context) =>
     Directionality.of(context) == TextDirection.rtl
-        ? Icons.chevron_left
-        : Icons.chevron_right;
+    ? Icons.chevron_left
+    : Icons.chevron_right;

@@ -58,15 +58,21 @@ class CassetteExporter {
     try {
       for (final item in items) {
         await exportCassette(
-            cassette: item.cassette, memos: item.memos, target: staging);
+          cassette: item.cassette,
+          memos: item.memos,
+          target: staging,
+        );
       }
       // Zipping a multi-hundred-MB library is seconds of pure CPU — off
       // the UI isolate, or the export screen freezes for its duration.
       final stagingPath = staging.path;
-      await Isolate.run(() => ZipFileEncoder().zipDirectory(
+      await Isolate.run(
+        () => ZipFileEncoder().zipDirectory(
           Directory(stagingPath),
           filename: outputPath,
-          level: ZipFileEncoder.store));
+          level: ZipFileEncoder.store,
+        ),
+      );
       return File(outputPath);
     } finally {
       await staging.delete(recursive: true);
@@ -82,7 +88,9 @@ class CassetteExporter {
     required Directory target,
   }) async {
     final dir = await _claimDir(
-        target, fileSafe(cassette.label ?? labels.untitled));
+      target,
+      fileSafe(cassette.label ?? labels.untitled),
+    );
     final audioDir = Directory('${dir.path}/audio');
     await audioDir.create(recursive: true);
 
@@ -102,17 +110,21 @@ class CassetteExporter {
       final ext = dot > memo.filePath.lastIndexOf('/')
           ? memo.filePath.substring(dot)
           : '.m4a';
-      final name = 'memo-${(i + 1).toString().padLeft(3, '0')}_'
+      final name =
+          'memo-${(i + 1).toString().padLeft(3, '0')}_'
           '${DateFormat('yyyy-MM-dd_HH-mm-ss').format(memo.createdAt)}$ext';
       await source.copy('${audioDir.path}/$name');
       audioNames[memo.id] = name;
     }
 
-    await File('${dir.path}/transcript.md')
-        .writeAsString(_transcriptMd(cassette, memos));
+    await File(
+      '${dir.path}/transcript.md',
+    ).writeAsString(_transcriptMd(cassette, memos));
     await File('${dir.path}/cassette.json').writeAsString(
-        const JsonEncoder.withIndent('  ')
-            .convert(_manifest(cassette, memos, audioNames)));
+      const JsonEncoder.withIndent(
+        '  ',
+      ).convert(_manifest(cassette, memos, audioNames)),
+    );
     return dir;
   }
 
@@ -132,7 +144,9 @@ class CassetteExporter {
     for (var i = 0; i < memos.length; i++) {
       final memo = memos[i];
       buffer
-        ..writeln('## ${labels.memoHeading(i + 1, _stamp(memo.createdAt))}')
+        ..writeln(
+          '## ${memo.displayTitle ?? labels.memoHeading(i + 1, _stamp(memo.createdAt))}',
+        )
         ..writeln();
       if (memo.memoSummary != null) {
         buffer
@@ -151,38 +165,40 @@ class CassetteExporter {
     return buffer.toString();
   }
 
-  Map<String, Object?> _manifest(Cassette cassette, List<Memo> memos,
-          Map<String, String?> audioNames) =>
-      {
-        'formatVersion': manifestVersion,
-        'label': cassette.label,
-        'titleIsUserSet': cassette.titleIsUserSet,
-        'colorSeed': cassette.colorSeed,
-        'summary': cassette.summary,
-        'summaryUpdatedAt': cassette.summaryUpdatedAt?.toIso8601String(),
-        'createdAt': cassette.createdAt.toIso8601String(),
-        'updatedAt': cassette.updatedAt.toIso8601String(),
-        'exportedAt': DateTime.now().toIso8601String(),
-        'memos': [
-          for (final memo in memos)
-            {
-              'id': memo.id,
-              'createdAt': memo.createdAt.toIso8601String(),
-              'durationMs': memo.durationMs,
-              'language': memo.detectedLang,
-              'summary': memo.memoSummary,
-              'audio': audioNames[memo.id] == null
-                  ? null
-                  : 'audio/${audioNames[memo.id]}',
-              'transcript': memo.transcript?.toJson(),
-            },
-        ],
-      };
+  Map<String, Object?> _manifest(
+    Cassette cassette,
+    List<Memo> memos,
+    Map<String, String?> audioNames,
+  ) => {
+    'formatVersion': manifestVersion,
+    'label': cassette.label,
+    'titleIsUserSet': cassette.titleIsUserSet,
+    'colorSeed': cassette.colorSeed,
+    'summary': cassette.summary,
+    'summaryUpdatedAt': cassette.summaryUpdatedAt?.toIso8601String(),
+    'createdAt': cassette.createdAt.toIso8601String(),
+    'updatedAt': cassette.updatedAt.toIso8601String(),
+    'exportedAt': DateTime.now().toIso8601String(),
+    'memos': [
+      for (final memo in memos)
+        {
+          'id': memo.id,
+          'title': memo.title,
+          'createdAt': memo.createdAt.toIso8601String(),
+          'durationMs': memo.durationMs,
+          'language': memo.detectedLang,
+          'summary': memo.memoSummary,
+          'audio': audioNames[memo.id] == null
+              ? null
+              : 'audio/${audioNames[memo.id]}',
+          'transcript': memo.transcript?.toJson(),
+        },
+    ],
+  };
 
   static String _plainText(Transcript transcript) => transcript.plainText;
 
-  static String _stamp(DateTime t) =>
-      DateFormat('yyyy-MM-dd HH:mm').format(t);
+  static String _stamp(DateTime t) => DateFormat('yyyy-MM-dd HH:mm').format(t);
 
   /// Keeps the label usable as a folder or archive name on every filesystem.
   static String fileSafe(String label) {
@@ -194,7 +210,7 @@ class CassetteExporter {
   }
 
   static Future<Directory> _claimDir(Directory target, String name) async {
-    for (var attempt = 0;; attempt++) {
+    for (var attempt = 0; ; attempt++) {
       final suffix = attempt == 0 ? '' : ' (${attempt + 1})';
       final dir = Directory('${target.path}/$name$suffix');
       if (!await dir.exists()) {

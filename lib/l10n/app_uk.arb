@@ -1,6 +1,5 @@
 {
   "@@locale": "uk",
-
   "untitledCassette": "Касета без назви",
   "rename": "Перейменувати",
   "delete": "Видалити",
@@ -9,7 +8,6 @@
   "deleteAction": "ВИДАЛИТИ",
   "ok": "OK",
   "back": "Назад",
-
   "settingsTooltip": "Налаштування",
   "homeEmpty": "Касет поки немає.\nНатисніть +, щоб почати нову плівку.",
   "newCassette": "Нова касета",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Назва касети",
   "deleteCassetteTitle": "ВИДАЛИТИ КАСЕТУ?",
   "deleteCassetteBody": "«{label}» та {count, plural, one{{count} запис} few{{count} записи} many{{count} записів} other{{count} запису}} буде видалено. Цю дію не можна скасувати.",
-
   "memoCount": "{count, plural, one{{count} запис} few{{count} записи} many{{count} записів} other{{count} запису}}",
   "cardEmptyMeta": "порожньо · натисніть, щоб відкрити",
   "cardMetaNaming": "{memos} · добирає назву…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "сьогодні {time}",
   "yesterday": "вчора",
-
   "deleteCassette": "Видалити касету",
   "blankTape": "Чиста плівка.\nНатисніть червону клавішу, щоб записати.",
   "emptyTape": "ПОРОЖНЯ ПЛІВКА",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Запис {n} буде видалено, і плівка зімкнеться без розриву. Цю дію не можна скасувати.",
   "timelineLabel": "Шкала плівки",
   "timelinePosition": "{position} з {total}",
-
   "noSpeech": "(немає мовлення)",
   "transcriptionFailedRetry": "розшифровка не вдалася — натисніть, щоб повторити (звук і далі відтворюється)",
   "queuedForTranscription": "у черзі на розшифровку…",
@@ -55,7 +50,6 @@
   "summarizing": "складається підсумок…",
   "summaryFailedRetry": "не вдалося скласти підсумок — натисніть, щоб повторити",
   "transcribing": "іде розшифровка…",
-
   "settingsTitle": "НАЛАШТУВАННЯ",
   "groupLanguage": "Мова",
   "transcriptionLanguage": "Мова розшифровки",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Легша й швидша — менш точна, особливо на шумних записах.",
   "whisperLargeDesc": "Вища точність; потрібен потужний пристрій (~2,5 ГБ ОЗП під час розшифровки).",
   "whisperLargeDescCapable": "Рекомендовано — помітно точніша, особливо в шумі (~2,5 ГБ ОЗП під час розшифровки).",
+  "whisperFullLargeDesc": "Максимальна точність — завантаження 2,9 ГіБ; рекомендовано 8 ГБ RAM.",
+  "whisperFullLargeDescBlocked": "Завантаження 2,9 ГіБ — для запуску пристрою потрібно близько 8 ГБ RAM.",
   "llmDefaultDesc": "Рекомендовано — компактні багатомовні підсумки.",
   "llm4bDesc": "Якісніші підсумки й назви; потрібен потужний пристрій (~3 ГБ ОЗП під час складання підсумків).",
   "summariesOffValue": "Без підсумків · натисніть, щоб налаштувати",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "Про застосунок і приватність",
   "aboutPrivacyDesc": "Звук ніколи не покидає цей пристрій",
   "aboutTitle": "ПРО ЗАСТОСУНОК І ПРИВАТНІСТЬ",
-  "aboutBody": "Диктафон слухає, записує й підсумовує просто у вашому телефоні.\n\nЗаписи, розшифровки та підсумки ніколи не покидають пристрій. Немає ні акаунта, ні хмари, ні аналітики. Дані покидають пристрій лише через резервну копію або експорт, які ви запускаєте самі.",
-  "aboutOpenSource": "Диктафон — безкоштовний застосунок із відкритим вихідним кодом:",
+  "aboutBody": "Diktafon Pro слухає, записує й підсумовує просто у вашому телефоні.\n\nЗаписи, розшифровки та підсумки ніколи не покидають пристрій. Немає ні акаунта, ні хмари, ні аналітики. Дані покидають пристрій лише через резервну копію або експорт, які ви запускаєте самі.",
+  "aboutOpenSource": "Diktafon Pro — безкоштовний застосунок із відкритим вихідним кодом:",
   "aboutPrivacyPolicy": "Політика конфіденційності",
-
   "modelPickerTranscriptionTitle": "МОДЕЛЬ РОЗШИФРОВКИ",
   "modelPickerSummaryTitle": "МОДЕЛЬ ПІДСУМКІВ",
   "pickerInstalled": "установлено · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} готова — розшифровую записи, що очікують.",
   "modelReadySummarize": "{label} готова — складаю підсумки записів, що очікують.",
   "downloadFailed": "Не вдалося завантажити {label} — перевірте з'єднання та спробуйте ще раз.",
-
-  "firstRunWelcome": "Ласкаво просимо до Диктафона",
+  "firstRunWelcome": "Ласкаво просимо до Diktafon Pro",
   "firstRunIntro": "Він слухає, записує й підсумовує просто у вашому телефоні. Записи, розшифровки та підсумки **ніколи не покидають цей пристрій**. Ні акаунта, ні хмари.",
   "firstRunSetupHeader": "Початкове налаштування",
   "allowMicRow": "Дозволити мікрофон",
@@ -126,9 +120,8 @@
   "provisionChoose": "натисніть, щоб вибрати модель для завантаження",
   "downloadsFinishInBackground": "Завантаження завершиться у фоні.",
   "startRecordingKey": "ПОЧАТИ ЗАПИС",
-
   "backupTitle": "ЕКСПОРТ ТА ІМПОРТ",
-  "backupIntro": "Резервна копія вашого пристрою сама охоплює список касет, розшифровки та підсумки. Аудіозаписи великі — заберіть їх явно: експорт запаковує звук, розшифровки й підсумки касети в один архів .zip, а імпорт архіву повертає їх назад. Диктафон нічого нікуди не надсилає.",
+  "backupIntro": "Резервна копія вашого пристрою сама охоплює список касет, розшифровки та підсумки. Аудіозаписи великі — заберіть їх явно: експорт запаковує звук, розшифровки й підсумки касети в один архів .zip, а імпорт архіву повертає їх назад. Diktafon Pro нічого нікуди не надсилає.",
   "groupExport": "Експорт",
   "exportAll": "Експортувати всі касети",
   "exportAllDesc": "Усе в один архів",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{Не вдалося імпортувати {count} касету.} few{Не вдалося імпортувати {count} касети.} many{Не вдалося імпортувати {count} касет.} other{Не вдалося імпортувати {count} касети.}}",
   "importNothingFound": "У цьому архіві немає касет.",
   "importFailed": "Імпорт не вдався: {error}",
-
-  "exportNote": "Експортовано з Диктафона {date}.",
+  "exportNote": "Експортовано з Diktafon Pro {date}.",
   "exportSummaryHeading": "Підсумок",
   "exportNotTranscribed": "(не розшифровано)",
-
   "openSystemSettings": "НАЛАШТУВАННЯ",
   "changeColor": "Змінити колір",
   "retranscribe": "Розшифрувати заново",
@@ -168,6 +159,69 @@
   "memoActions": "Дії із записом",
   "notifDownloading": "Завантажується {label}",
   "notifModelInstalled": "{label} — установлено",
+  "notifTranscriptionCompleted": "Транскрибування завершено",
+  "notifTranscriptionCompletedBody": "Транскрипція аудіо готова в Diktafon Pro.",
+  "notifSummaryCompleted": "Підсумок готовий",
+  "notifSummaryCompletedBody": "Підсумок аудіо готовий у Diktafon Pro.",
   "notifRecording": "Триває запис",
-  "notifRecordingChannel": "Запис"
+  "notifRecordingChannel": "Запис",
+  "importAudio": "Імпортувати аудіо",
+  "importingAudio": "Імпорт аудіо…",
+  "importedAudioFiles": "{count, plural, one{Додано {count} аудіонотатку. Транскрибування почнеться автоматично.} few{Додано {count} аудіонотатки. Транскрибування почнеться автоматично.} many{Додано {count} аудіонотаток. Транскрибування почнеться автоматично.} other{Додано {count} аудіонотатки. Транскрибування почнеться автоматично.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, one{Не вдалося імпортувати {count} аудіофайл.} few{Не вдалося імпортувати {count} аудіофайли.} many{Не вдалося імпортувати {count} аудіофайлів.} other{Не вдалося імпортувати {count} аудіофайлу.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, one{Імпортовано {count} аудіонотатку, але не вдалося додати її транскрибування до черги.} few{Імпортовано {count} аудіонотатки, але не вдалося додати їхнє транскрибування до черги.} many{Імпортовано {count} аудіонотаток, але не вдалося додати їхнє транскрибування до черги.} other{Імпортовано {count} аудіонотатки, але не вдалося додати їхнє транскрибування до черги.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Недостатньо вільного місця для завантаження цієї моделі. Звільніть місце й повторіть спробу.",
+  "downloadNotificationsPermissionRequired": "Дозвольте сповіщення, щоб завантаження моделей тривало у фоновому режимі.",
+  "importAudioTooltip": "Імпортувати аудіо в цю касету",
+  "localSummaryInstructionsGroup": "Інструкції для локальних підсумків",
+  "localSummaryInstructionsHint": "Наприклад: зосередься на рішеннях, завданнях і термінах.",
+  "localSummaryInstructionsPrivacy": "Ці інструкції залишаються на пристрої й не надсилаються до Gemini чи ChatGPT.",
+  "localSummarySaveFailed": "Не вдалося зберегти інструкції локального підсумку.",
+  "localSummaryInstructionsTitle": "Ваші інструкції для підсумків",
+  "llmModelDetails": "{quantization} · {license} · орієнтовний мінімум ОЗП: {ram} ГБ",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "завантаження {size} · орієнтовний мінімум ОЗП: {ram} ГБ",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

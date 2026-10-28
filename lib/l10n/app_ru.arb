@@ -1,6 +1,5 @@
 {
   "@@locale": "ru",
-
   "untitledCassette": "Кассета без названия",
   "rename": "Переименовать",
   "delete": "Удалить",
@@ -9,7 +8,6 @@
   "deleteAction": "УДАЛИТЬ",
   "ok": "OK",
   "back": "Назад",
-
   "settingsTooltip": "Настройки",
   "homeEmpty": "Кассет пока нет.\nНажмите +, чтобы начать новую плёнку.",
   "newCassette": "Новая кассета",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Название кассеты",
   "deleteCassetteTitle": "УДАЛИТЬ КАССЕТУ?",
   "deleteCassetteBody": "«{label}» и {count, plural, one{{count} запись} few{{count} записи} many{{count} записей} other{{count} записи}} будут удалены. Это нельзя отменить.",
-
   "memoCount": "{count, plural, one{{count} запись} few{{count} записи} many{{count} записей} other{{count} записи}}",
   "cardEmptyMeta": "пусто · нажмите, чтобы открыть",
   "cardMetaNaming": "{memos} · подбирает название…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "сегодня {time}",
   "yesterday": "вчера",
-
   "deleteCassette": "Удалить кассету",
   "blankTape": "Чистая плёнка.\nНажмите красную клавишу, чтобы записать.",
   "emptyTape": "ПУСТАЯ ПЛЁНКА",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Запись {n} будет удалена, и плёнка сомкнётся без разрыва. Это нельзя отменить.",
   "timelineLabel": "Шкала плёнки",
   "timelinePosition": "{position} из {total}",
-
   "noSpeech": "(нет речи)",
   "transcriptionFailedRetry": "расшифровка не удалась — нажмите, чтобы повторить (звук по-прежнему играет)",
   "queuedForTranscription": "в очереди на расшифровку…",
@@ -55,7 +50,6 @@
   "summarizing": "составляется сводка…",
   "summaryFailedRetry": "сводка не удалась — нажмите, чтобы повторить",
   "transcribing": "идёт расшифровка…",
-
   "settingsTitle": "НАСТРОЙКИ",
   "groupLanguage": "Язык",
   "transcriptionLanguage": "Язык расшифровки",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Легче и быстрее — менее точная, особенно на шумных записях.",
   "whisperLargeDesc": "Выше точность; нужно мощное устройство (~2,5 ГБ ОЗУ во время расшифровки).",
   "whisperLargeDescCapable": "Рекомендуется — заметно точнее, особенно в шуме (~2,5 ГБ ОЗУ во время расшифровки).",
+  "whisperFullLargeDesc": "Максимальная точность — загрузка 2,9 ГиБ; рекомендуется 8 ГБ ОЗУ.",
+  "whisperFullLargeDescBlocked": "Загрузка 2,9 ГиБ — для запуска устройству требуется около 8 ГБ ОЗУ.",
   "llmDefaultDesc": "Рекомендуется — компактные многоязычные сводки.",
   "llm4bDesc": "Более качественные сводки и названия; нужно мощное устройство (~3 ГБ ОЗУ при создании сводки).",
   "summariesOffValue": "Без сводок · нажмите, чтобы настроить",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "О приложении и приватность",
   "aboutPrivacyDesc": "Звук никогда не покидает это устройство",
   "aboutTitle": "О ПРИЛОЖЕНИИ И ПРИВАТНОСТЬ",
-  "aboutBody": "Диктафон слушает, записывает и составляет сводки прямо в вашем телефоне.\n\nЗаписи, расшифровки и сводки никогда не покидают устройство. Нет ни аккаунта, ни облака, ни аналитики. Данные покидают устройство только через резервную копию или экспорт, которые запускаете вы сами.",
-  "aboutOpenSource": "Диктафон — бесплатное приложение с открытым исходным кодом:",
+  "aboutBody": "Diktafon Pro слушает, записывает и составляет сводки прямо в вашем телефоне.\n\nЗаписи, расшифровки и сводки никогда не покидают устройство. Нет ни аккаунта, ни облака, ни аналитики. Данные покидают устройство только через резервную копию или экспорт, которые запускаете вы сами.",
+  "aboutOpenSource": "Diktafon Pro — бесплатное приложение с открытым исходным кодом:",
   "aboutPrivacyPolicy": "Политика конфиденциальности",
-
   "modelPickerTranscriptionTitle": "МОДЕЛЬ РАСШИФРОВКИ",
   "modelPickerSummaryTitle": "МОДЕЛЬ СВОДОК",
   "pickerInstalled": "установлено · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} готова — расшифровываю ожидающие записи.",
   "modelReadySummarize": "{label} готова — составляю сводки ожидающих записей.",
   "downloadFailed": "Не удалось скачать {label} — проверьте соединение и попробуйте ещё раз.",
-
-  "firstRunWelcome": "Добро пожаловать в Диктафон",
+  "firstRunWelcome": "Добро пожаловать в Diktafon Pro",
   "firstRunIntro": "Он слушает, записывает и составляет сводки прямо в вашем телефоне. Записи, расшифровки и сводки **никогда не покидают это устройство**. Ни аккаунта, ни облака.",
   "firstRunSetupHeader": "Первоначальная настройка",
   "allowMicRow": "Разрешить микрофон",
@@ -126,9 +120,8 @@
   "provisionChoose": "нажмите, чтобы выбрать модель для скачивания",
   "downloadsFinishInBackground": "Скачивание завершится в фоне.",
   "startRecordingKey": "НАЧАТЬ ЗАПИСЬ",
-
   "backupTitle": "ЭКСПОРТ И ИМПОРТ",
-  "backupIntro": "Резервная копия вашего устройства сама охватывает список кассет, расшифровки и сводки. Аудиозаписи большие — заберите их явно: экспорт упаковывает звук, расшифровки и сводки кассеты в один архив .zip, а импорт архива возвращает их обратно. Диктафон ничего никуда не загружает.",
+  "backupIntro": "Резервная копия вашего устройства сама охватывает список кассет, расшифровки и сводки. Аудиозаписи большие — заберите их явно: экспорт упаковывает звук, расшифровки и сводки кассеты в один архив .zip, а импорт архива возвращает их обратно. Diktafon Pro ничего никуда не загружает.",
   "groupExport": "Экспорт",
   "exportAll": "Экспортировать все кассеты",
   "exportAllDesc": "Всё в один архив",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{Не удалось импортировать {count} кассету.} few{Не удалось импортировать {count} кассеты.} many{Не удалось импортировать {count} кассет.} other{Не удалось импортировать {count} кассеты.}}",
   "importNothingFound": "В этом архиве нет кассет.",
   "importFailed": "Импорт не удался: {error}",
-
-  "exportNote": "Экспортировано из Диктафона {date}.",
+  "exportNote": "Экспортировано из Diktafon Pro {date}.",
   "exportSummaryHeading": "Сводка",
   "exportNotTranscribed": "(не расшифровано)",
-
   "openSystemSettings": "НАСТРОЙКИ",
   "changeColor": "Изменить цвет",
   "retranscribe": "Расшифровать заново",
@@ -168,6 +159,69 @@
   "memoActions": "Действия с записью",
   "notifDownloading": "Скачивается {label}",
   "notifModelInstalled": "{label} — установлено",
+  "notifTranscriptionCompleted": "Транскрибация завершена",
+  "notifTranscriptionCompletedBody": "Транскрипция аудио готова в Diktafon Pro.",
+  "notifSummaryCompleted": "Сводка готова",
+  "notifSummaryCompletedBody": "Сводка аудио готова в Diktafon Pro.",
   "notifRecording": "Идёт запись",
-  "notifRecordingChannel": "Запись"
+  "notifRecordingChannel": "Запись",
+  "importAudio": "Импортировать аудио",
+  "importingAudio": "Импорт аудио…",
+  "importedAudioFiles": "{count, plural, one{Добавлена {count} аудиозаметка. Расшифровка начнётся автоматически.} few{Добавлены {count} аудиозаметки. Расшифровка начнётся автоматически.} many{Добавлено {count} аудиозаметок. Расшифровка начнётся автоматически.} other{Добавлено {count} аудиозаметки. Расшифровка начнётся автоматически.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, one{Не удалось импортировать {count} аудиофайл.} few{Не удалось импортировать {count} аудиофайла.} many{Не удалось импортировать {count} аудиофайлов.} other{Не удалось импортировать {count} аудиофайла.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, one{Импортирована {count} аудиозаметка, но не удалось добавить её расшифровку в очередь.} few{Импортированы {count} аудиозаметки, но не удалось добавить их расшифровку в очередь.} many{Импортировано {count} аудиозаметок, но не удалось добавить их расшифровку в очередь.} other{Импортировано {count} аудиозаметки, но не удалось добавить их расшифровку в очередь.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Недостаточно свободного места для загрузки этой модели. Освободите место и повторите попытку.",
+  "downloadNotificationsPermissionRequired": "Разрешите уведомления, чтобы загрузка моделей продолжалась в фоновом режиме.",
+  "importAudioTooltip": "Импортировать аудио в эту кассету",
+  "localSummaryInstructionsGroup": "Инструкции для локальных сводок",
+  "localSummaryInstructionsHint": "Например: выделяй решения, задачи и сроки.",
+  "localSummaryInstructionsPrivacy": "Эти инструкции остаются на устройстве и не отправляются в Gemini или ChatGPT.",
+  "localSummarySaveFailed": "Не удалось сохранить инструкции для локальной сводки.",
+  "localSummaryInstructionsTitle": "Ваши инструкции для сводок",
+  "llmModelDetails": "{quantization} · {license} · примерный минимум ОЗУ: {ram} ГБ",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "загрузка {size} · примерный минимум ОЗУ: {ram} ГБ",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

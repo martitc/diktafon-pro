@@ -10,15 +10,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('joinWords', () {
     test('Latin words keep their spaces', () {
-      expect(joinWords(['buy', 'milk', 'and', 'bread']),
-          'buy milk and bread');
+      expect(joinWords(['buy', 'milk', 'and', 'bread']), 'buy milk and bread');
     });
 
-    test('Korean is spaced like Latin — Hangul is not in the no-space class',
-        () {
-      expect(joinWords(['안녕하세요', '저는', '클로드입니다']),
-          '안녕하세요 저는 클로드입니다');
-    });
+    test(
+      'Korean is spaced like Latin — Hangul is not in the no-space class',
+      () {
+        expect(joinWords(['안녕하세요', '저는', '클로드입니다']), '안녕하세요 저는 클로드입니다');
+      },
+    );
 
     test('Han words join flush', () {
       expect(joinWords(['今天', '天气', '很好']), '今天天气很好');
@@ -54,14 +54,18 @@ void main() {
   group('Transcript.plainText', () {
     test('joins CJK segments without spaces, Latin with', () {
       Transcript t(List<String> words) => Transcript(
-            languageCode: 'x',
-            segments: [
-              Segment(startMs: 0, endMs: 1000, words: [
-                for (final (i, w) in words.indexed)
-                  Word(text: w, startMs: i * 10, endMs: i * 10 + 9),
-              ]),
+        languageCode: 'x',
+        segments: [
+          Segment(
+            startMs: 0,
+            endMs: 1000,
+            words: [
+              for (final (i, w) in words.indexed)
+                Word(text: w, startMs: i * 10, endMs: i * 10 + 9),
             ],
-          );
+          ),
+        ],
+      );
       expect(t(['你好', '世界']).plainText, '你好世界');
       expect(t(['hello', 'world']).plainText, 'hello world');
     });

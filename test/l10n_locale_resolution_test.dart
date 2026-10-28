@@ -29,23 +29,30 @@ void main() {
 
   test('explicit scripts resolve directly', () {
     expect(
-        resolve([
-          const Locale.fromSubtags(
-              languageCode: 'zh', scriptCode: 'Hant', countryCode: 'TW')
-        ]).toString(),
-        'zh_Hant');
+      resolve([
+        const Locale.fromSubtags(
+          languageCode: 'zh',
+          scriptCode: 'Hant',
+          countryCode: 'TW',
+        ),
+      ]).toString(),
+      'zh_Hant',
+    );
     expect(
-        resolve([
-          const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
-        ]).scriptCode,
-        isNull,
-        reason: 'Hans is the base zh ARB');
+      resolve([
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+      ]).scriptCode,
+      isNull,
+      reason: 'Hans is the base zh ARB',
+    );
   });
 
   test('non-Chinese locales are untouched; unsupported falls back', () {
     expect(resolve([const Locale('it')]).languageCode, 'it');
-    expect(resolve([const Locale('xx'), const Locale('uk')]).languageCode,
-        'uk');
+    expect(
+      resolve([const Locale('xx'), const Locale('uk')]).languageCode,
+      'uk',
+    );
   });
 
   test('the notification lookup pad qualifies script-less zh too', () {
@@ -53,11 +60,12 @@ void main() {
     expect(padZhLocale(const Locale('zh', 'CN')).scriptCode, 'Hans');
     expect(padZhLocale(const Locale('cs')).scriptCode, isNull);
     expect(
-        lookupAppLocalizations(padZhLocale(const Locale('zh', 'TW')))
-            .settingsTitle,
-        lookupAppLocalizations(
-                const Locale.fromSubtags(
-                    languageCode: 'zh', scriptCode: 'Hant'))
-            .settingsTitle);
+      lookupAppLocalizations(
+        padZhLocale(const Locale('zh', 'TW')),
+      ).settingsTitle,
+      lookupAppLocalizations(
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+      ).settingsTitle,
+    );
   });
 }

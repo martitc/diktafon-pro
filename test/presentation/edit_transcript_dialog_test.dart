@@ -10,28 +10,33 @@ void main() {
   // Returns the dialog's own future (unawaited — it completes on pop).
   Future<Future<String?>> open(WidgetTester tester, String initialText) async {
     late Future<String?> result;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('en'),
-      theme: buildTheme(Brightness.light),
-      home: Scaffold(
-        body: Builder(
-          builder: (context) => TextButton(
-            onPressed: () => result =
-                showEditTranscriptDialog(context, initialText: initialText),
-            child: const Text('open'),
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        theme: buildTheme(Brightness.light),
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => result = showEditTranscriptDialog(
+                context,
+                initialText: initialText,
+              ),
+              child: const Text('open'),
+            ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     return result;
   }
 
   TextButton saveButton(WidgetTester tester) => tester.widget<TextButton>(
-      find.ancestor(of: find.text('SAVE'), matching: find.byType(TextButton)));
+    find.ancestor(of: find.text('SAVE'), matching: find.byType(TextButton)),
+  );
 
   testWidgets('SAVE returns the edited text', (tester) async {
     final result = await open(tester, 'hello world');
@@ -42,8 +47,9 @@ void main() {
     expect(await result, 'hello there world');
   });
 
-  testWidgets('emptied text disables SAVE until words come back',
-      (tester) async {
+  testWidgets('emptied text disables SAVE until words come back', (
+    tester,
+  ) async {
     await open(tester, 'hello');
     await tester.enterText(find.byType(TextField), '  \n ');
     await tester.pump();

@@ -38,79 +38,86 @@ class CassetteCard extends StatelessWidget {
         : null;
     return Semantics(
       button: true,
-      label: l10n.cardSemantics(label ?? l10n.untitledCassette,
-          l10n.memoCount(overview.memoCount)),
+      label: l10n.cardSemantics(
+        label ?? l10n.untitledCassette,
+        l10n.memoCount(overview.memoCount),
+      ),
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
         child: AspectRatio(
           aspectRatio: tapeSpriteWidth / tapeSpriteHeight,
-          child: LayoutBuilder(builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final h = constraints.maxHeight;
-            // The mockup's type scale: 14 px Jersey 10 name / 7 px mono meta
-            // on a 157 px tile (the 2-up portrait-phone width).
-            final scale = w / 157.0;
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                _TapeSprite(
-                  hue: hue,
-                  windingWidth: tapeWindingWidth(_fullness()),
-                  dark: Theme.of(context).brightness == Brightness.dark,
-                ),
-                _print(
-                  tapeNameBand,
-                  w,
-                  h,
-                  label != null
-                      ? Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textScaler: TextScaler.noScaling,
-                          style: TextStyle(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final w = constraints.maxWidth;
+              final h = constraints.maxHeight;
+              // The mockup's type scale: 14 px Jersey 10 name / 7 px mono meta
+              // on a 157 px tile (the 2-up portrait-phone width).
+              final scale = w / 157.0;
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  _TapeSprite(
+                    hue: hue,
+                    windingWidth: tapeWindingWidth(_fullness()),
+                    dark: Theme.of(context).brightness == Brightness.dark,
+                  ),
+                  _print(
+                    tapeNameBand,
+                    w,
+                    h,
+                    label != null
+                        ? Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textScaler: TextScaler.noScaling,
+                            style: TextStyle(
                               fontFamily: displayFont,
                               fontFamilyFallback: fontFallback,
                               fontSize: 14 * scale,
                               height: 1,
-                              color: tapeNameInk),
-                        )
-                      : Text(
-                          l10n.untitledCassette,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textScaler: TextScaler.noScaling,
-                          style: TextStyle(
+                              color: tapeNameInk,
+                            ),
+                          )
+                        : Text(
+                            l10n.untitledCassette,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textScaler: TextScaler.noScaling,
+                            style: TextStyle(
                               fontFamily: bodyFont,
                               fontFamilyFallback: fontFallback,
                               fontSize: 8 * scale,
                               height: 1,
                               fontStyle: FontStyle.italic,
-                              color: tapePlaceholderInk),
-                        ),
-                ),
-                _print(
-                  tapeMetaStrip,
-                  w,
-                  h,
-                  Text(
-                    _metaLine(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                    softWrap: false,
-                    textScaler: TextScaler.noScaling,
-                    style: TextStyle(
+                              color: tapePlaceholderInk,
+                            ),
+                          ),
+                  ),
+                  _print(
+                    tapeMetaStrip,
+                    w,
+                    h,
+                    Text(
+                      _metaLine(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.clip,
+                      softWrap: false,
+                      textScaler: TextScaler.noScaling,
+                      style: TextStyle(
                         fontFamily: bodyFont,
                         fontFamilyFallback: fontFallback,
                         fontSize: 7 * scale,
                         height: 1,
-                        color: tapeNameInk),
+                        color: tapeNameInk,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            );
-          }),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -118,12 +125,12 @@ class CassetteCard extends StatelessWidget {
 
   /// Centers [text] on a sprite-space band (fractions of the tile).
   Widget _print(Rect band, double w, double h, Widget text) => Positioned(
-        left: band.left * w,
-        top: band.top * h,
-        width: band.width * w,
-        height: band.height * h,
-        child: Center(child: text),
-      );
+    left: band.left * w,
+    top: band.top * h,
+    width: band.width * w,
+    height: band.height * h,
+    child: Center(child: text),
+  );
 
   String _metaLine(BuildContext context) {
     final l10n = context.l10n;
@@ -134,7 +141,9 @@ class CassetteCard extends StatelessWidget {
       return l10n.cardMetaNaming(memoPart);
     }
     return l10n.cardMetaUpdated(
-        memoPart, relativeDate(context, overview.cassette.updatedAt));
+      memoPart,
+      relativeDate(context, overview.cassette.updatedAt),
+    );
   }
 
   /// 0..1 → wound-tape block width; a glanceable fullness cue (§5.2).
@@ -162,8 +171,11 @@ String relativeDate(BuildContext context, DateTime t) {
 /// Resolves the composed sprite variant and paints it with no smoothing —
 /// pixels enlarge, nothing else (§5.2).
 class _TapeSprite extends StatefulWidget {
-  const _TapeSprite(
-      {required this.hue, required this.windingWidth, required this.dark});
+  const _TapeSprite({
+    required this.hue,
+    required this.windingWidth,
+    required this.dark,
+  });
 
   final int? hue;
   final int windingWidth;
@@ -196,8 +208,9 @@ class _TapeSpriteState extends State<_TapeSprite> {
     final hue = widget.hue;
     final windingWidth = widget.windingWidth;
     final dark = widget.dark;
-    tapeSpriteImage(hue: hue, windingWidth: windingWidth, dark: dark)
-        .then((image) {
+    tapeSpriteImage(hue: hue, windingWidth: windingWidth, dark: dark).then((
+      image,
+    ) {
       // A stale resolve (variant changed while composing) must not win.
       if (mounted &&
           hue == widget.hue &&
@@ -210,8 +223,8 @@ class _TapeSpriteState extends State<_TapeSprite> {
 
   @override
   Widget build(BuildContext context) => RawImage(
-        image: _image,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.none,
-      );
+    image: _image,
+    fit: BoxFit.fill,
+    filterQuality: FilterQuality.none,
+  );
 }

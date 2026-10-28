@@ -22,6 +22,7 @@ import '../../../domain/script.dart';
 import '../../audio/pcm_decoder.dart';
 import '../../audio/pcm_highpass.dart';
 import '../transcription_provider.dart';
+import '../../system/device_ram.dart';
 import 'whisper_model_manager.dart';
 import 'whisper_worker.dart';
 
@@ -49,11 +50,30 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
   /// untouched. Applied to the small/tiny tiers only.
   final double? _highPassHz;
 
-  bool get _isLarge => _model.tier == WhisperModel.largeV3Turbo.tier;
+  bool get _isLarge =>
+      _model.tier == WhisperModel.largeV3Turbo.tier ||
+      _model.tier == WhisperModel.largeV3.tier;
+
+  int get _requiredRamGb => switch (_model.tier) {
+    'large-v3-turbo' => 5,
+    'large-v3' => 8,
+    _ => 0,
+  };
+
+  void _requireSupportedRam() {
+    final required = _requiredRamGb;
+    final actual = devicePhysicalRamBytes();
+    if (required > 0 &&
+        actual != null &&
+        actual < required * 1024 * 1024 * 1024) {
+      throw StateError(
+        'whisper model ${_model.tier} requires about $required GB RAM',
+      );
+    }
+  }
 
   /// Leave headroom for the UI/OS; whisper gains little beyond 8 threads.
-  static final int _threads =
-      max(1, min(Platform.numberOfProcessors - 2, 8));
+  static final int _threads = max(1, min(Platform.numberOfProcessors - 2, 8));
 
   @override
   String get id => 'whisper.cpp/${_model.tier}';
@@ -62,8 +82,10 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
   Future<ModelStatus> modelStatus() async => _models.statusOf(_model);
 
   @override
-  Future<void> ensureModel({ProgressSink? onProgress}) =>
-      _models.download(_model, onProgress: onProgress);
+  Future<void> ensureModel({ProgressSink? onProgress}) {
+    _requireSupportedRam();
+    return _models.download(_model, onProgress: onProgress);
+  }
 
   @override
   Future<Transcript> transcribe(
@@ -71,6 +93,7 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
     String? languageCode,
     CancelToken? cancel,
   }) async {
+    _requireSupportedRam();
     // Whisper knows bare codes only — the script-qualified zh-Hans/zh-Hant
     // preference (D8) both force plain `zh` here; the job queue converts
     // the output script afterwards.
@@ -111,7 +134,9 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
           );
           if (!hasSpeech) {
             return Transcript(
-                languageCode: languageCode ?? '', segments: const []);
+              languageCode: languageCode ?? '',
+              segments: const [],
+            );
           }
         } on WhisperWorkerException {
           // fall through to whisper

@@ -4,13 +4,26 @@
 library;
 
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 
-typedef _SysctlByNameC = Int32 Function(
-    Pointer<Utf8>, Pointer<Void>, Pointer<Size>, Pointer<Void>, Size);
-typedef _SysctlByNameDart = int Function(
-    Pointer<Utf8>, Pointer<Void>, Pointer<Size>, Pointer<Void>, int);
+typedef _SysctlByNameC =
+    Int32 Function(
+      Pointer<Utf8>,
+      Pointer<Void>,
+      Pointer<Size>,
+      Pointer<Void>,
+      Size,
+    );
+typedef _SysctlByNameDart =
+    int Function(
+      Pointer<Utf8>,
+      Pointer<Void>,
+      Pointer<Size>,
+      Pointer<Void>,
+      int,
+    );
 
 /// Null when the lookup fails — callers fail open, like the meminfo path.
 int? applePhysicalRamBytes() {
@@ -27,4 +40,22 @@ int? applePhysicalRamBytes() {
   } catch (_) {
     return null;
   }
+}
+
+/// Physical-memory estimate shared by UI and inference gates. Unknown values
+/// fail open so unsupported platforms are not blocked without evidence.
+int? devicePhysicalRamBytes() {
+  if (Platform.isIOS || Platform.isMacOS) return applePhysicalRamBytes();
+  if (Platform.isAndroid || Platform.isLinux) {
+    try {
+      final line = File(
+        '/proc/meminfo',
+      ).readAsLinesSync().firstWhere((value) => value.startsWith('MemTotal:'));
+      final kb = int.parse(RegExp(r'\d+').firstMatch(line)!.group(0)!);
+      return kb * 1024;
+    } catch (_) {
+      return null;
+    }
+  }
+  return null;
 }

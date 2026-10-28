@@ -71,37 +71,45 @@ class ModelDownloadNotifier {
         _enqueue(() => _sink.cancel(id));
       }
     }
-    _subs.add(manager.changes.listen((_) {
-      final snapshot = manager.snapshot();
-      for (var i = 0; i < snapshot.length; i++) {
-        final state = snapshot[i];
-        final tier = state.model.tier;
-        final id = idBase + i;
-        switch (state.status) {
-          case ModelStatus.downloading:
-            final percent = (state.progress * 100).floor().clamp(0, 100);
-            if (_shownPercent[tier] != percent) {
-              _shownPercent[tier] = percent;
-              _enqueue(() => _sink.showProgress(
-                  id, _texts.downloading(state.model.label), percent));
-            }
-          case ModelStatus.ready:
-            if (last[tier] == ModelStatus.downloading) {
-              _shownPercent.remove(tier);
-              _enqueue(() =>
-                  _sink.showDone(id, _texts.installed(state.model.label)));
-            }
-          // Paused behaves like gone for the shade: the picker shows the
-          // stashed progress, an ongoing notification would overpromise.
-          case ModelStatus.notInstalled || ModelStatus.paused:
-            if (last[tier] == ModelStatus.downloading) {
-              _shownPercent.remove(tier);
-              _enqueue(() => _sink.cancel(id));
-            }
+    _subs.add(
+      manager.changes.listen((_) {
+        final snapshot = manager.snapshot();
+        for (var i = 0; i < snapshot.length; i++) {
+          final state = snapshot[i];
+          final tier = state.model.tier;
+          final id = idBase + i;
+          switch (state.status) {
+            case ModelStatus.downloading:
+              final percent = (state.progress * 100).floor().clamp(0, 100);
+              if (_shownPercent[tier] != percent) {
+                _shownPercent[tier] = percent;
+                _enqueue(
+                  () => _sink.showProgress(
+                    id,
+                    _texts.downloading(state.model.label),
+                    percent,
+                  ),
+                );
+              }
+            case ModelStatus.ready:
+              if (last[tier] == ModelStatus.downloading) {
+                _shownPercent.remove(tier);
+                _enqueue(
+                  () => _sink.showDone(id, _texts.installed(state.model.label)),
+                );
+              }
+            // Paused behaves like gone for the shade: the picker shows the
+            // stashed progress, an ongoing notification would overpromise.
+            case ModelStatus.notInstalled || ModelStatus.paused:
+              if (last[tier] == ModelStatus.downloading) {
+                _shownPercent.remove(tier);
+                _enqueue(() => _sink.cancel(id));
+              }
+          }
+          last[tier] = state.status;
         }
-        last[tier] = state.status;
-      }
-    }));
+      }),
+    );
   }
 
   void dispose() {

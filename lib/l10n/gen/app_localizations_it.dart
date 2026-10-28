@@ -271,6 +271,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Consigliato — molto più preciso, soprattutto in presenza di rumore (~2,5 GB di RAM mentre trascrive).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Massima precisione — download da 2,9 GiB; consigliati 8 GB di RAM.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'Download da 2,9 GiB — questo dispositivo richiede circa 8 GB di RAM.';
+
+  @override
   String get llmDefaultDesc => 'Consigliato — riassunti multilingue compatti.';
 
   @override
@@ -339,10 +347,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon ascolta, scrive e riassume direttamente sul tuo telefono.\n\nRegistrazioni, trascrizioni e riassunti non lasciano mai il dispositivo. Niente account, niente cloud e niente analytics. I dati escono solo con un backup o un\'esportazione che avvii tu.';
+      'Diktafon Pro ascolta, scrive e riassume direttamente sul tuo telefono.\n\nRegistrazioni, trascrizioni e riassunti non lasciano mai il dispositivo. Niente account, niente cloud e niente analytics. I dati escono solo con un backup o un\'esportazione che avvii tu.';
 
   @override
-  String get aboutOpenSource => 'Diktafon è gratuito e open source:';
+  String get aboutOpenSource => 'Diktafon Pro è gratuito e open source:';
 
   @override
   String get aboutPrivacyPolicy => 'Informativa sulla privacy';
@@ -402,7 +410,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Benvenuto in Diktafon';
+  String get firstRunWelcome => 'Benvenuto in Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -463,7 +471,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Il backup del dispositivo copre già in automatico l\'elenco delle cassette, le trascrizioni e i riassunti. Le registrazioni audio invece sono pesanti — portale con te esplicitamente: l\'esportazione raccoglie audio, trascrizioni e riassunti di una cassetta in un unico archivio .zip, e importando l\'archivio li riporti indietro. Diktafon non carica nulla online.';
+      'Il backup del dispositivo copre già in automatico l\'elenco delle cassette, le trascrizioni e i riassunti. Le registrazioni audio invece sono pesanti — portale con te esplicitamente: l\'esportazione raccoglie audio, trascrizioni e riassunti di una cassetta in un unico archivio .zip, e importando l\'archivio li riporti indietro. Diktafon Pro non carica nulla online.';
 
   @override
   String get groupExport => 'Esporta';
@@ -510,6 +518,48 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get importing => 'Importazione in corso…';
+
+  @override
+  String get importAudio => 'Importa audio';
+
+  @override
+  String get importingAudio => 'Importazione audio…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Aggiunti $count memo audio. La trascrizione si avvia automaticamente.',
+      one: 'Aggiunto 1 memo audio. La trascrizione si avvia automaticamente.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Impossibile importare $count file audio.',
+      one: 'Impossibile importare 1 file audio.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count memo audio sono stati importati, ma non è stato possibile accodarne le trascrizioni.',
+      one:
+          '1 memo audio è stato importato, ma non è stato possibile accodarne la trascrizione.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'IMPORTARE LE CASSETTE?';
@@ -566,7 +616,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Esportato da Diktafon il $date.';
+    return 'Esportato da Diktafon Pro il $date.';
   }
 
   @override
@@ -638,8 +688,63 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Trascrizione completata';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'La trascrizione audio è pronta in Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'Riepilogo completato';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Il riepilogo audio è pronto in Diktafon Pro.';
+
+  @override
   String get notifRecording => 'Registrazione in corso';
 
   @override
   String get notifRecordingChannel => 'Registrazione';
+
+  @override
+  String get insufficientModelStorage =>
+      'Spazio insufficiente per scaricare questo modello. Libera spazio e riprova.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Consenti le notifiche per continuare a scaricare i modelli in background.';
+
+  @override
+  String get importAudioTooltip => 'Importa audio in questa cassetta';
+
+  @override
+  String get localSummaryInstructionsGroup =>
+      'Istruzioni per i riepiloghi locali';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Per esempio: concentrati su decisioni, attività e scadenze.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Queste istruzioni restano su questo dispositivo e non vengono inviate a Gemini o ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'Impossibile salvare le istruzioni per il riepilogo locale.';
+
+  @override
+  String get localSummaryInstructionsTitle =>
+      'Le tue istruzioni per i riepiloghi';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · RAM minima stimata: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'download $size · RAM minima stimata: $ram GB';
+  }
 }

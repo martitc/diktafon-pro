@@ -270,6 +270,14 @@ class AppLocalizationsCs extends AppLocalizations {
       'Doporučený — výrazně přesnější, zvlášť v hluku (~2,5 GB RAM při přepisu).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Maximální přesnost — stažení 2,9 GiB; doporučeno 8 GB RAM.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'Stažení 2,9 GiB — zařízení potřebuje ke spuštění přibližně 8 GB RAM.';
+
+  @override
   String get llmDefaultDesc => 'Doporučený — kompaktní vícejazyčné souhrny.';
 
   @override
@@ -338,11 +346,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon poslouchá, zapisuje a shrnuje přímo ve vašem telefonu.\n\nNahrávky, přepisy ani souhrny nikdy neopustí zařízení. Žádný účet, žádný cloud, žádná analytika. Data odcházejí jen zálohou nebo exportem, který spustíte sami.';
+      'Diktafon Pro poslouchá, zapisuje a shrnuje přímo ve vašem telefonu.\n\nNahrávky, přepisy ani souhrny nikdy neopustí zařízení. Žádný účet, žádný cloud, žádná analytika. Data odcházejí jen zálohou nebo exportem, který spustíte sami.';
 
   @override
   String get aboutOpenSource =>
-      'Diktafon je zdarma a s otevřeným zdrojovým kódem:';
+      'Diktafon Pro je zdarma a s otevřeným zdrojovým kódem:';
 
   @override
   String get aboutPrivacyPolicy => 'Zásady ochrany soukromí';
@@ -402,7 +410,7 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Vítejte v Diktafonu';
+  String get firstRunWelcome => 'Vítejte v Diktafon Prou';
 
   @override
   String get firstRunIntro =>
@@ -462,7 +470,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Záloha vašeho zařízení se o seznam kazet, přepisy a souhrny postará automaticky. Nahrávky jsou velké — vezměte si je výslovně: export zabalí zvuk, přepisy a souhrny kazety do jednoho archivu .zip a import archivu je vrátí zpět. Diktafon nic nikam nenahrává.';
+      'Záloha vašeho zařízení se o seznam kazet, přepisy a souhrny postará automaticky. Nahrávky jsou velké — vezměte si je výslovně: export zabalí zvuk, přepisy a souhrny kazety do jednoho archivu .zip a import archivu je vrátí zpět. Diktafon Pro nic nikam nenahrává.';
 
   @override
   String get groupExport => 'Export';
@@ -509,6 +517,51 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get importing => 'Importuji…';
+
+  @override
+  String get importAudio => 'Importovat zvuk';
+
+  @override
+  String get importingAudio => 'Import zvuku…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Přidáno $count zvukových záznamů. Přepis se spustí automaticky.',
+      few: 'Přidány $count zvukové záznamy. Přepis se spustí automaticky.',
+      one: 'Přidán 1 zvukový záznam. Přepis se spustí automaticky.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count zvukových souborů se nepodařilo importovat.',
+      few: '$count zvukové soubory se nepodařilo importovat.',
+      one: '1 zvukový soubor se nepodařilo importovat.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count zvukových záznamů bylo importováno, ale jejich přepis se nepodařilo zařadit do fronty.',
+      few:
+          '$count zvukové záznamy byly importovány, ale jejich přepis se nepodařilo zařadit do fronty.',
+      one:
+          '1 zvukový záznam byl importován, ale jeho přepis se nepodařilo zařadit do fronty.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'IMPORTOVAT KAZETY?';
@@ -575,7 +628,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Exportováno z Diktafonu $date.';
+    return 'Exportováno z Diktafon Prou $date.';
   }
 
   @override
@@ -648,8 +701,61 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Přepis dokončen';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'Přepis zvuku je připraven v aplikaci Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'Shrnutí dokončeno';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Shrnutí zvuku je připraveno v aplikaci Diktafon Pro.';
+
+  @override
   String get notifRecording => 'Probíhá nahrávání';
 
   @override
   String get notifRecordingChannel => 'Nahrávání';
+
+  @override
+  String get insufficientModelStorage =>
+      'Pro stažení tohoto modelu není dost volného místa. Uvolněte místo a zkuste to znovu.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Povolte oznámení, aby stahování modelů mohlo pokračovat na pozadí.';
+
+  @override
+  String get importAudioTooltip => 'Importovat zvuk do této kazety';
+
+  @override
+  String get localSummaryInstructionsGroup => 'Pokyny pro místní souhrny';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Například: zaměř se na rozhodnutí, úkoly a termíny.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Tyto pokyny zůstávají v tomto zařízení a nikdy se neposílají do Gemini ani ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'Pokyny pro místní souhrn se nepodařilo uložit.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'Tvoje pokyny pro souhrny';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · odhadovaná minimální RAM: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'stažení $size · odhadovaná minimální RAM: $ram GB';
+  }
 }

@@ -256,6 +256,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '추천 — 훨씬 더 정확합니다. 특히 소음이 있을 때 그렇습니다(전사 중 약 2.5 GB RAM).';
 
   @override
+  String get whisperFullLargeDesc => '최고 정확도 — 2.9 GiB 다운로드, RAM 8 GB 권장.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      '2.9 GiB 다운로드 — 이 기기에서 실행하려면 RAM이 약 8 GB 필요합니다.';
+
+  @override
   String get llmDefaultDesc => '추천 — 간결한 다국어 요약.';
 
   @override
@@ -322,10 +329,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon은 휴대폰 안에서 바로 듣고, 적고, 요약합니다.\n\n녹음, 변환 텍스트, 요약은 기기를 절대 벗어나지 않습니다. 계정도, 클라우드도, 분석 도구도 없습니다. 데이터가 나가는 유일한 길은 직접 시작한 백업이나 내보내기뿐입니다.';
+      'Diktafon Pro은 휴대폰 안에서 바로 듣고, 적고, 요약합니다.\n\n녹음, 변환 텍스트, 요약은 기기를 절대 벗어나지 않습니다. 계정도, 클라우드도, 분석 도구도 없습니다. 데이터가 나가는 유일한 길은 직접 시작한 백업이나 내보내기뿐입니다.';
 
   @override
-  String get aboutOpenSource => 'Diktafon은 무료 오픈 소스입니다:';
+  String get aboutOpenSource => 'Diktafon Pro은 무료 오픈 소스입니다:';
 
   @override
   String get aboutPrivacyPolicy => '개인정보 처리방침';
@@ -385,7 +392,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Diktafon에 오신 것을 환영합니다';
+  String get firstRunWelcome => 'Diktafon Pro에 오신 것을 환영합니다';
 
   @override
   String get firstRunIntro =>
@@ -444,7 +451,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      '기기 자체 백업이 카세트 목록, 변환 텍스트, 요약을 자동으로 보관합니다. 녹음 파일은 용량이 큽니다 — 직접 챙기세요: 내보내기는 카세트의 오디오, 변환 텍스트, 요약을 .zip 아카이브 하나로 묶고, 아카이브를 가져오면 다시 복원됩니다. Diktafon은 아무것도 업로드하지 않습니다.';
+      '기기 자체 백업이 카세트 목록, 변환 텍스트, 요약을 자동으로 보관합니다. 녹음 파일은 용량이 큽니다 — 직접 챙기세요: 내보내기는 카세트의 오디오, 변환 텍스트, 요약을 .zip 아카이브 하나로 묶고, 아카이브를 가져오면 다시 복원됩니다. Diktafon Pro은 아무것도 업로드하지 않습니다.';
 
   @override
   String get groupExport => '내보내기';
@@ -491,6 +498,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get importing => '가져오는 중…';
 
   @override
+  String get importAudio => '오디오 가져오기';
+
+  @override
+  String get importingAudio => '오디오 가져오는 중…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '오디오 메모 $count개를 추가했습니다. 텍스트 변환이 자동으로 시작됩니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '오디오 파일 $count개를 가져오지 못했습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '오디오 메모 $count개를 가져왔지만 텍스트 변환을 대기열에 추가하지 못했습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get importDialogTitle => '카세트를 가져올까요?';
 
   @override
@@ -520,7 +563,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return '$date에 Diktafon에서 내보냄.';
+    return '$date에 Diktafon Pro에서 내보냄.';
   }
 
   @override
@@ -591,8 +634,58 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => '받아쓰기가 완료되었습니다';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      '오디오 받아쓰기를 Diktafon Pro에서 확인할 수 있습니다.';
+
+  @override
+  String get notifSummaryCompleted => '요약이 완료되었습니다';
+
+  @override
+  String get notifSummaryCompletedBody => '오디오 요약을 Diktafon Pro에서 확인할 수 있습니다.';
+
+  @override
   String get notifRecording => '녹음 중';
 
   @override
   String get notifRecordingChannel => '녹음';
+
+  @override
+  String get insufficientModelStorage =>
+      '이 모델을 다운로드할 저장 공간이 부족합니다. 공간을 확보한 뒤 다시 시도하세요.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      '모델 다운로드를 백그라운드에서 계속하려면 알림을 허용하세요.';
+
+  @override
+  String get importAudioTooltip => '이 카세트로 오디오 가져오기';
+
+  @override
+  String get localSummaryInstructionsGroup => '로컬 요약 지침';
+
+  @override
+  String get localSummaryInstructionsHint => '예: 결정 사항, 작업 및 기한에 집중하세요.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      '이 지침은 이 기기에 저장되며 Gemini나 ChatGPT로 전송되지 않습니다.';
+
+  @override
+  String get localSummarySaveFailed => '로컬 요약 지침을 저장하지 못했습니다.';
+
+  @override
+  String get localSummaryInstructionsTitle => '요약 지침';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · 예상 최소 RAM: ${ram}GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return '다운로드 $size · 예상 최소 RAM: ${ram}GB';
+  }
 }

@@ -1,6 +1,5 @@
 {
   "@@locale": "fr",
-
   "untitledCassette": "Cassette sans titre",
   "rename": "Renommer",
   "delete": "Supprimer",
@@ -9,7 +8,6 @@
   "deleteAction": "SUPPRIMER",
   "ok": "OK",
   "back": "Retour",
-
   "settingsTooltip": "Réglages",
   "homeEmpty": "Pas encore de cassette.\nAppuyez sur + pour démarrer une bande.",
   "newCassette": "Nouvelle cassette",
@@ -17,7 +15,6 @@
   "cassetteNameHint": "Nom de la cassette",
   "deleteCassetteTitle": "SUPPRIMER LA CASSETTE ?",
   "deleteCassetteBody": "« {label} » et {count, plural, one{son {count} mémo} other{ses {count} mémos}} seront supprimés. C'est irréversible.",
-
   "memoCount": "{count, plural, one{{count} mémo} other{{count} mémos}}",
   "cardEmptyMeta": "vide · appuyez pour ouvrir",
   "cardMetaNaming": "{memos} · se nomme…",
@@ -25,7 +22,6 @@
   "cardSemantics": "{label}, {memos}",
   "todayAt": "aujourd'hui {time}",
   "yesterday": "hier",
-
   "deleteCassette": "Supprimer la cassette",
   "blankTape": "Une bande vierge.\nAppuyez sur la touche rouge pour enregistrer.",
   "emptyTape": "BANDE VIDE",
@@ -46,7 +42,6 @@
   "deleteMemoBody": "Le mémo {n} sera retiré et la bande se resserre. C'est irréversible.",
   "timelineLabel": "Chronologie de la bande",
   "timelinePosition": "{position} sur {total}",
-
   "noSpeech": "(pas de parole)",
   "transcriptionFailedRetry": "transcription échouée — touchez pour réessayer (le son se lit toujours)",
   "queuedForTranscription": "en attente de transcription…",
@@ -55,7 +50,6 @@
   "summarizing": "résumé en cours…",
   "summaryFailedRetry": "résumé échoué — touchez pour réessayer",
   "transcribing": "transcription en cours…",
-
   "settingsTitle": "RÉGLAGES",
   "groupLanguage": "Langue",
   "transcriptionLanguage": "Langue de transcription",
@@ -74,6 +68,8 @@
   "whisperSmallDescCapable": "Plus léger et rapide — moins précis, surtout sur les enregistrements bruyants.",
   "whisperLargeDesc": "Plus précis ; nécessite un appareil puissant (~2,5 Go de RAM pendant la transcription).",
   "whisperLargeDescCapable": "Recommandé — nettement plus précis, surtout dans le bruit (~2,5 Go de RAM pendant la transcription).",
+  "whisperFullLargeDesc": "Précision maximale — téléchargement de 2,9 Gio ; 8 Go de RAM recommandés.",
+  "whisperFullLargeDescBlocked": "Téléchargement de 2,9 Gio — cet appareil nécessite environ 8 Go de RAM.",
   "llmDefaultDesc": "Recommandé — résumés multilingues compacts.",
   "llm4bDesc": "Résumés et titres de meilleure qualité ; nécessite un appareil puissant (~3 Go de RAM pendant le résumé).",
   "summariesOffValue": "Pas de résumés · touchez pour configurer",
@@ -93,10 +89,9 @@
   "aboutPrivacy": "À propos & confidentialité",
   "aboutPrivacyDesc": "L'audio ne quitte jamais cet appareil",
   "aboutTitle": "À PROPOS & CONFIDENTIALITÉ",
-  "aboutBody": "Diktafon écoute, écrit et résume directement sur votre téléphone.\n\nEnregistrements, transcriptions et résumés ne quittent jamais l'appareil. Pas de compte, pas de cloud, pas de statistiques. Les données ne sortent que par une sauvegarde ou un export que vous lancez vous-même.",
-  "aboutOpenSource": "Diktafon est gratuit et open source :",
+  "aboutBody": "Diktafon Pro écoute, écrit et résume directement sur votre téléphone.\n\nEnregistrements, transcriptions et résumés ne quittent jamais l'appareil. Pas de compte, pas de cloud, pas de statistiques. Les données ne sortent que par une sauvegarde ou un export que vous lancez vous-même.",
+  "aboutOpenSource": "Diktafon Pro est gratuit et open source :",
   "aboutPrivacyPolicy": "Politique de confidentialité",
-
   "modelPickerTranscriptionTitle": "MODÈLE DE TRANSCRIPTION",
   "modelPickerSummaryTitle": "MODÈLE DE RÉSUMÉ",
   "pickerInstalled": "installé · {size}",
@@ -109,8 +104,7 @@
   "modelReadyTranscribe": "{label} est prêt — transcription des mémos en attente.",
   "modelReadySummarize": "{label} est prêt — résumé des mémos en attente.",
   "downloadFailed": "Le téléchargement de {label} a échoué — vérifiez votre connexion et réessayez.",
-
-  "firstRunWelcome": "Bienvenue dans Diktafon",
+  "firstRunWelcome": "Bienvenue dans Diktafon Pro",
   "firstRunIntro": "Il écoute, écrit et résume directement sur votre téléphone. Enregistrements, transcriptions et résumés **ne quittent jamais cet appareil**. Pas de compte, pas de cloud.",
   "firstRunSetupHeader": "Configuration initiale",
   "allowMicRow": "Autoriser le micro",
@@ -126,9 +120,8 @@
   "provisionChoose": "touchez pour choisir un modèle à télécharger",
   "downloadsFinishInBackground": "Les téléchargements se terminent en arrière-plan.",
   "startRecordingKey": "ENREGISTRER",
-
   "backupTitle": "EXPORT ET IMPORT",
-  "backupIntro": "La sauvegarde de votre appareil couvre automatiquement la liste des cassettes, les transcriptions et les résumés. L'audio est volumineux — emportez-le explicitement : un export regroupe l'audio, les transcriptions et les résumés d'une cassette dans une archive .zip, et un import les ramène. Diktafon n'envoie rien.",
+  "backupIntro": "La sauvegarde de votre appareil couvre automatiquement la liste des cassettes, les transcriptions et les résumés. L'audio est volumineux — emportez-le explicitement : un export regroupe l'audio, les transcriptions et les résumés d'une cassette dans une archive .zip, et un import les ramène. Diktafon Pro n'envoie rien.",
   "groupExport": "Export",
   "exportAll": "Exporter toutes les cassettes",
   "exportAllDesc": "Tout, dans une seule archive",
@@ -147,11 +140,9 @@
   "importFailures": "{count, plural, one{1 cassette n'a pas pu être importée.} other{{count} cassettes n'ont pas pu être importées.}}",
   "importNothingFound": "Aucune cassette trouvée dans cette archive.",
   "importFailed": "Échec de l'import : {error}",
-
-  "exportNote": "Exporté depuis Diktafon le {date}.",
+  "exportNote": "Exporté depuis Diktafon Pro le {date}.",
   "exportSummaryHeading": "Résumé",
   "exportNotTranscribed": "(non transcrit)",
-
   "openSystemSettings": "RÉGLAGES",
   "changeColor": "Changer la couleur",
   "retranscribe": "Retranscrire",
@@ -168,6 +159,69 @@
   "memoActions": "Actions du mémo",
   "notifDownloading": "Téléchargement de {label}",
   "notifModelInstalled": "{label} installé",
+  "notifTranscriptionCompleted": "Transcription terminée",
+  "notifTranscriptionCompletedBody": "La transcription audio est disponible dans Diktafon Pro.",
+  "notifSummaryCompleted": "Résumé terminé",
+  "notifSummaryCompletedBody": "Le résumé audio est disponible dans Diktafon Pro.",
   "notifRecording": "Enregistrement en cours",
-  "notifRecordingChannel": "Enregistrement"
+  "notifRecordingChannel": "Enregistrement",
+  "importAudio": "Importer un fichier audio",
+  "importingAudio": "Importation audio…",
+  "importedAudioFiles": "{count, plural, =1{1 mémo audio ajouté. La transcription démarre automatiquement.} other{{count} mémos audio ajoutés. La transcription démarre automatiquement.}}",
+  "@importedAudioFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioImportFailures": "{count, plural, =1{1 fichier audio n’a pas pu être importé.} other{{count} fichiers audio n’ont pas pu être importés.}}",
+  "@localAudioImportFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localAudioTranscriptionFailures": "{count, plural, =1{1 mémo audio a été importé, mais sa transcription n’a pas pu être mise en file d’attente.} other{{count} mémos audio ont été importés, mais leurs transcriptions n’ont pas pu être mises en file d’attente.}}",
+  "@localAudioTranscriptionFailures": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientModelStorage": "Espace libre insuffisant pour télécharger ce modèle. Libérez de l’espace puis réessayez.",
+  "downloadNotificationsPermissionRequired": "Autorisez les notifications pour que le téléchargement des modèles continue en arrière-plan.",
+  "importAudioTooltip": "Importer un fichier audio dans cette cassette",
+  "localSummaryInstructionsGroup": "Instructions des résumés locaux",
+  "localSummaryInstructionsHint": "Par exemple : privilégier les décisions, tâches et échéances.",
+  "localSummaryInstructionsPrivacy": "Ces instructions restent sur cet appareil et ne sont jamais envoyées à Gemini ou ChatGPT.",
+  "localSummarySaveFailed": "Impossible d’enregistrer les instructions du résumé local.",
+  "localSummaryInstructionsTitle": "Vos instructions de résumé",
+  "llmModelDetails": "{quantization} · {license} · mémoire minimale estimée : {ram} Go",
+  "@llmModelDetails": {
+    "placeholders": {
+      "quantization": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  },
+  "llmModelNeedsRam": "téléchargement {size} · RAM minimale estimée : {ram} Go",
+  "@llmModelNeedsRam": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "ram": {
+        "type": "int"
+      }
+    }
+  }
 }

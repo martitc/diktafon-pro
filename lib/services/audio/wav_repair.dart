@@ -10,10 +10,7 @@ import 'dart:typed_data';
 
 /// The format facts recovery needs from a (possibly unfinalized) WAV file.
 class WavInfo {
-  const WavInfo({
-    required this.durationMs,
-    required this.dataBytes,
-  });
+  const WavInfo({required this.durationMs, required this.dataBytes});
 
   final int durationMs;
   final int dataBytes;
@@ -49,7 +46,11 @@ Future<WavInfo?> repairWav(String path) async {
       await raf.setPosition(offset);
       final header = await raf.read(8);
       final id = String.fromCharCodes(header, 0, 4);
-      final size = ByteData.sublistView(header, 4, 8).getUint32(0, Endian.little);
+      final size = ByteData.sublistView(
+        header,
+        4,
+        8,
+      ).getUint32(0, Endian.little);
       if (id == 'fmt ') {
         if (size < 16 || offset + 8 + 16 > length) return null;
         final fmt = await raf.read(16);

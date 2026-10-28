@@ -36,8 +36,13 @@ class RawToken {
 }
 
 class RawSegment {
-  const RawSegment(this.t0Ms, this.t1Ms, this.tokens,
-      {this.noSpeechProb = 0, this.avgTokenP = 1});
+  const RawSegment(
+    this.t0Ms,
+    this.t1Ms,
+    this.tokens, {
+    this.noSpeechProb = 0,
+    this.avgTokenP = 1,
+  });
 
   final int t0Ms;
   final int t1Ms;
@@ -82,8 +87,11 @@ Transcript filterByConfidence(
   return Transcript(languageCode: t.languageCode, segments: kept);
 }
 
-Transcript assembleTranscript(String languageCode, List<RawSegment> raw,
-    {List<SegmentConfidence>? confidenceOut}) {
+Transcript assembleTranscript(
+  String languageCode,
+  List<RawSegment> raw, {
+  List<SegmentConfidence>? confidenceOut,
+}) {
   const space = 0x20;
   final segments = <Segment>[];
   for (final rawSegment in raw) {
@@ -96,11 +104,13 @@ Transcript assembleTranscript(String languageCode, List<RawSegment> raw,
       if (pending == null) return;
       final text = utf8.decode(pending!, allowMalformed: true).trim();
       if (text.isNotEmpty) {
-        words.add(Word(
-          text: text,
-          startMs: max(0, startMs),
-          endMs: max(max(0, startMs), endMs),
-        ));
+        words.add(
+          Word(
+            text: text,
+            startMs: max(0, startMs),
+            endMs: max(max(0, startMs), endMs),
+          ),
+        );
       }
       pending = null;
     }
@@ -123,13 +133,16 @@ Transcript assembleTranscript(String languageCode, List<RawSegment> raw,
     _mergeCjkPunct(words);
 
     if (words.isEmpty || _isNonSpeech(words)) continue;
-    segments.add(Segment(
-      startMs: max(0, rawSegment.t0Ms),
-      endMs: max(0, rawSegment.t1Ms),
-      words: words,
-    ));
+    segments.add(
+      Segment(
+        startMs: max(0, rawSegment.t0Ms),
+        endMs: max(0, rawSegment.t1Ms),
+        words: words,
+      ),
+    );
     confidenceOut?.add(
-        SegmentConfidence(rawSegment.noSpeechProb, rawSegment.avgTokenP));
+      SegmentConfidence(rawSegment.noSpeechProb, rawSegment.avgTokenP),
+    );
   }
   return Transcript(languageCode: languageCode, segments: segments);
 }
@@ -224,10 +237,10 @@ void _mergeCjkPunct(List<Word> words) {
 bool _isNonSpeech(List<Word> words) {
   final text = words.map((w) => w.text).join(' ');
   const brackets = [('[', ']'), ('(', ')'), ('（', '）'), ('【', '】')];
-  final bracketed = brackets
-      .any((b) => text.startsWith(b.$1) && text.endsWith(b.$2));
+  final bracketed = brackets.any(
+    (b) => text.startsWith(b.$1) && text.endsWith(b.$2),
+  );
   if (bracketed) return true;
   const notes = {0x266A, 0x266B}; // ♪ ♫
-  return words
-      .every((w) => w.text.runes.every((rune) => notes.contains(rune)));
+  return words.every((w) => w.text.runes.every((rune) => notes.contains(rune)));
 }

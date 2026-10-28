@@ -4,7 +4,16 @@ import '../theme/tape_colors.dart';
 
 /// Tape-deck transport keys (§5.3, mockup 03): squared keys with 2 px ink
 /// borders and offset cardstock shadows. Red is reserved for record.
-enum DeckGlyph { rewind, play, pause, fastForward, record, stop, plus }
+enum DeckGlyph {
+  rewind,
+  play,
+  pause,
+  fastForward,
+  record,
+  importAudio,
+  stop,
+  plus,
+}
 
 enum DeckKeyStyle { paper, ink, record }
 
@@ -97,27 +106,71 @@ class _GlyphPainter extends CustomPainter {
       case DeckGlyph.play:
         _triangle(canvas, fill, Offset(c.dx - 5, c.dy), 12, left: false);
       case DeckGlyph.pause:
-        canvas.drawRect(
-            Rect.fromLTWH(c.dx - 7, c.dy - 8, 4.4, 16), fill);
-        canvas.drawRect(
-            Rect.fromLTWH(c.dx + 2.6, c.dy - 8, 4.4, 16), fill);
+        canvas.drawRect(Rect.fromLTWH(c.dx - 7, c.dy - 8, 4.4, 16), fill);
+        canvas.drawRect(Rect.fromLTWH(c.dx + 2.6, c.dy - 8, 4.4, 16), fill);
       case DeckGlyph.record:
         // Microphone: capsule body, pickup arc, stem.
         canvas.drawRect(Rect.fromLTWH(c.dx - 3, c.dy - 9, 6, 11), fill);
-        canvas.drawArc(Rect.fromCircle(center: Offset(c.dx, c.dy - 1), radius: 6),
-            0, 3.14159, false, stroke);
+        canvas.drawArc(
+          Rect.fromCircle(center: Offset(c.dx, c.dy - 1), radius: 6),
+          0,
+          3.14159,
+          false,
+          stroke,
+        );
         canvas.drawRect(Rect.fromLTWH(c.dx - 1, c.dy + 5, 2, 4), fill);
+      case DeckGlyph.importAudio:
+        // Clear download-to-tray silhouette, drawn with the same square
+        // corners and two-pixel stroke as the rest of the cassette deck.
+        canvas.drawLine(Offset(c.dx, c.dy - 9), Offset(c.dx, c.dy + 2), stroke);
+        canvas.drawLine(
+          Offset(c.dx - 4, c.dy - 2),
+          Offset(c.dx, c.dy + 2),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(c.dx + 4, c.dy - 2),
+          Offset(c.dx, c.dy + 2),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(c.dx - 10, c.dy + 6),
+          Offset(c.dx + 10, c.dy + 6),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(c.dx - 10, c.dy + 6),
+          Offset(c.dx - 10, c.dy + 9),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(c.dx + 10, c.dy + 6),
+          Offset(c.dx + 10, c.dy + 9),
+          stroke,
+        );
+        canvas.drawLine(
+          Offset(c.dx - 10, c.dy + 9),
+          Offset(c.dx + 10, c.dy + 9),
+          stroke,
+        );
       case DeckGlyph.stop:
         canvas.drawRect(
-            Rect.fromCenter(center: c, width: 20, height: 20), fill);
+          Rect.fromCenter(center: c, width: 20, height: 20),
+          fill,
+        );
       case DeckGlyph.plus:
         canvas.drawRect(Rect.fromLTWH(c.dx - 1, c.dy - 9, 2, 18), fill);
         canvas.drawRect(Rect.fromLTWH(c.dx - 9, c.dy - 1, 18, 2), fill);
     }
   }
 
-  void _triangle(Canvas canvas, Paint paint, Offset tipBase, double h,
-      {required bool left}) {
+  void _triangle(
+    Canvas canvas,
+    Paint paint,
+    Offset tipBase,
+    double h, {
+    required bool left,
+  }) {
     final path = Path();
     if (left) {
       path

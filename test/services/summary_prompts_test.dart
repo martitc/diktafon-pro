@@ -4,30 +4,77 @@ import 'package:diktafon/services/providers/summarization_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Transcript transcriptOf(List<String> lines) => Transcript(
-      languageCode: 'cs',
-      segments: [
-        for (final line in lines)
-          Segment(startMs: 0, endMs: 1000, words: [
-            for (final word in line.split(' '))
-              Word(text: word, startMs: 0, endMs: 100),
-          ]),
-      ],
-    );
+  languageCode: 'cs',
+  segments: [
+    for (final line in lines)
+      Segment(
+        startMs: 0,
+        endMs: 1000,
+        words: [
+          for (final word in line.split(' '))
+            Word(text: word, startMs: 0, endMs: 100),
+        ],
+      ),
+  ],
+);
 
 void main() {
   group('prompt building', () {
-    test('memo prompt carries the transcript and pins the output language',
-        () {
+    test('memo prompt carries the transcript and pins the output language', () {
       final prompt = memoSummaryPrompt(
-          transcriptOf(['koupit mléko a chleba']),
-          languageCode: 'cs');
+        transcriptOf(['koupit mléko a chleba']),
+        languageCode: 'cs',
+      );
       expect(prompt.user, contains('koupit mléko a chleba'));
       expect(prompt.user, contains('Czech'));
-      expect(prompt.user, contains('one short sentence'),
-          reason: 'gists are single-sentence (§6.7 revised 2026-07-14)');
-      expect(prompt.user, contains('/no_think'),
-          reason: 'Qwen3 soft switch — no thinking tokens on-device');
+      expect(
+        prompt.user,
+        contains('one short sentence'),
+        reason: 'gists are single-sentence (§6.7 revised 2026-07-14)',
+      );
+      expect(
+        prompt.user,
+        contains('/no_think'),
+        reason: 'Qwen3 soft switch — no thinking tokens on-device',
+      );
       expect(prompt.maxTokens, greaterThan(0));
+    });
+
+    test(
+      'custom instructions affect only local memo and cassette summaries',
+      () {
+        final memo = memoSummaryPrompt(
+          transcriptOf(['koupit mléko a chleba']),
+          languageCode: 'cs',
+          instructions: 'Use bullet points.',
+        );
+        final cassette = cassetteSummaryPrompt(
+          previousSummary: null,
+          newMemos: [
+            MemoDigest(memoSummary: 'mléko', createdAt: DateTime(2026)),
+          ],
+          languageCode: 'cs',
+          instructions: 'Emphasize decisions.',
+        );
+        final title = titlePrompt('Nákupy', languageCode: 'cs');
+
+        expect(memo.user, contains('Use bullet points.'));
+        expect(cassette.user, contains('Emphasize decisions.'));
+        expect(title.user, isNot(contains('Use bullet points.')));
+        expect(title.user, isNot(contains('Emphasize decisions.')));
+      },
+    );
+
+    test('blank custom instructions preserve the default prompt', () {
+      final transcript = transcriptOf(['koupit mléko']);
+      expect(
+        memoSummaryPrompt(transcript, languageCode: 'cs').user,
+        memoSummaryPrompt(
+          transcript,
+          languageCode: 'cs',
+          instructions: '  ',
+        ).user,
+      );
     });
 
     test('unknown language codes fall back to the code itself', () {
@@ -38,31 +85,129 @@ void main() {
       expect(languageName('xx'), 'xx');
     });
 
-    test('languageName is total over the whisper language set (§13 wave 2)',
-        () {
-      // whisper.cpp's g_lang, v3 vocab — any of these can land in
-      // detectedLang under auto-detect (D8) and must resolve to an English
-      // name, never to a raw code inside the prompt.
-      const whisperCodes = [
-        'en', 'zh', 'de', 'es', 'ru', 'ko', 'fr', 'ja', 'pt', 'tr', 'pl',
-        'ca', 'nl', 'ar', 'sv', 'it', 'id', 'hi', 'fi', 'vi', 'he', 'uk',
-        'el', 'ms', 'cs', 'ro', 'da', 'hu', 'ta', 'no', 'th', 'ur', 'hr',
-        'bg', 'lt', 'la', 'mi', 'ml', 'cy', 'sk', 'te', 'fa', 'lv', 'bn',
-        'sr', 'az', 'sl', 'kn', 'et', 'mk', 'br', 'eu', 'is', 'hy', 'ne',
-        'mn', 'bs', 'kk', 'sq', 'sw', 'gl', 'mr', 'pa', 'si', 'km', 'sn',
-        'yo', 'so', 'af', 'oc', 'ka', 'be', 'tg', 'sd', 'gu', 'am', 'yi',
-        'lo', 'uz', 'fo', 'ht', 'ps', 'tk', 'nn', 'mt', 'sa', 'lb', 'my',
-        'bo', 'tl', 'mg', 'as', 'tt', 'haw', 'ln', 'ha', 'ba', 'jw', 'su',
-        'yue',
-      ];
-      expect(whisperCodes, hasLength(100));
-      for (final code in whisperCodes) {
-        expect(languageName(code), isNot(code),
-            reason: 'prompts would read "Write a summary in $code"');
-        expect(languageName(code), matches(RegExp(r'^[A-Z]')),
-            reason: '$code should resolve to an English display name');
-      }
-    });
+    test(
+      'languageName is total over the whisper language set (§13 wave 2)',
+      () {
+        // whisper.cpp's g_lang, v3 vocab — any of these can land in
+        // detectedLang under auto-detect (D8) and must resolve to an English
+        // name, never to a raw code inside the prompt.
+        const whisperCodes = [
+          'en',
+          'zh',
+          'de',
+          'es',
+          'ru',
+          'ko',
+          'fr',
+          'ja',
+          'pt',
+          'tr',
+          'pl',
+          'ca',
+          'nl',
+          'ar',
+          'sv',
+          'it',
+          'id',
+          'hi',
+          'fi',
+          'vi',
+          'he',
+          'uk',
+          'el',
+          'ms',
+          'cs',
+          'ro',
+          'da',
+          'hu',
+          'ta',
+          'no',
+          'th',
+          'ur',
+          'hr',
+          'bg',
+          'lt',
+          'la',
+          'mi',
+          'ml',
+          'cy',
+          'sk',
+          'te',
+          'fa',
+          'lv',
+          'bn',
+          'sr',
+          'az',
+          'sl',
+          'kn',
+          'et',
+          'mk',
+          'br',
+          'eu',
+          'is',
+          'hy',
+          'ne',
+          'mn',
+          'bs',
+          'kk',
+          'sq',
+          'sw',
+          'gl',
+          'mr',
+          'pa',
+          'si',
+          'km',
+          'sn',
+          'yo',
+          'so',
+          'af',
+          'oc',
+          'ka',
+          'be',
+          'tg',
+          'sd',
+          'gu',
+          'am',
+          'yi',
+          'lo',
+          'uz',
+          'fo',
+          'ht',
+          'ps',
+          'tk',
+          'nn',
+          'mt',
+          'sa',
+          'lb',
+          'my',
+          'bo',
+          'tl',
+          'mg',
+          'as',
+          'tt',
+          'haw',
+          'ln',
+          'ha',
+          'ba',
+          'jw',
+          'su',
+          'yue',
+        ];
+        expect(whisperCodes, hasLength(100));
+        for (final code in whisperCodes) {
+          expect(
+            languageName(code),
+            isNot(code),
+            reason: 'prompts would read "Write a summary in $code"',
+          );
+          expect(
+            languageName(code),
+            matches(RegExp(r'^[A-Z]')),
+            reason: '$code should resolve to an English display name',
+          );
+        }
+      },
+    );
 
     test('script-qualified Chinese pins the script; unknown subtags fall '
         'back to the base language', () {
@@ -74,28 +219,34 @@ void main() {
 
     test('overlong transcripts are truncated to the context budget', () {
       final prompt = memoSummaryPrompt(
-          transcriptOf([List.filled(9000, 'slovo').join(' ')]),
-          languageCode: 'cs');
-      expect(prompt.user.length,
-          lessThan(3 * transcriptTokenBudget + 500),
-          reason: 'latin ~3 chars/token: clamp + instruction overhead');
+        transcriptOf([List.filled(9000, 'slovo').join(' ')]),
+        languageCode: 'cs',
+      );
+      expect(
+        prompt.user.length,
+        lessThan(3 * transcriptTokenBudget + 500),
+        reason: 'latin ~3 chars/token: clamp + instruction overhead',
+      );
       expect(prompt.user, contains('…'));
     });
 
-    test('first cassette update has no previous summary; later ones fold',
-        () {
+    test('first cassette update has no previous summary; later ones fold', () {
       final digests = [
         MemoDigest(memoSummary: 'první', createdAt: DateTime(2026)),
       ];
       final first = cassetteSummaryPrompt(
-          previousSummary: null, newMemos: digests, languageCode: 'cs');
+        previousSummary: null,
+        newMemos: digests,
+        languageCode: 'cs',
+      );
       expect(first.user, isNot(contains('Current overview')));
       expect(first.user, contains('- první'));
 
       final folding = cassetteSummaryPrompt(
-          previousSummary: 'starý přehled',
-          newMemos: digests,
-          languageCode: 'cs');
+        previousSummary: 'starý přehled',
+        newMemos: digests,
+        languageCode: 'cs',
+      );
       expect(folding.user, contains('starý přehled'));
       expect(folding.user, contains('Newly added'));
     });
@@ -104,9 +255,13 @@ void main() {
       final prompt = titlePrompt('nákupy na víkend', languageCode: 'cs');
       expect(prompt.user, contains('nákupy na víkend'));
       expect(prompt.user, contains('1–4 words'));
-      expect(prompt.user, contains('what the memos are about'),
-          reason: 'the title distills the topic ("Shopping list"), it does '
-              'not compress the overview');
+      expect(
+        prompt.user,
+        contains('what the memos are about'),
+        reason:
+            'the title distills the topic ("Shopping list"), it does '
+            'not compress the overview',
+      );
     });
   });
 
@@ -129,18 +284,22 @@ void main() {
       final hangulCut = truncateTokens('가' * 600, 100);
       expect(latinCut, endsWith('…'));
       expect(hangulCut, endsWith('…'));
-      expect(hangulCut.length, lessThan(latinCut.length),
-          reason: 'Hangul spends the token budget in fewer chars');
+      expect(
+        hangulCut.length,
+        lessThan(latinCut.length),
+        reason: 'Hangul spends the token budget in fewer chars',
+      );
     });
 
-    test('a Korean transcript is clamped to fewer chars than a latin one',
-        () {
+    test('a Korean transcript is clamped to fewer chars than a latin one', () {
       final latin = memoSummaryPrompt(
-          transcriptOf([List.filled(9000, 'word').join(' ')]),
-          languageCode: 'en');
+        transcriptOf([List.filled(9000, 'word').join(' ')]),
+        languageCode: 'en',
+      );
       final korean = memoSummaryPrompt(
-          transcriptOf([List.filled(9000, '메모').join(' ')]),
-          languageCode: 'ko');
+        transcriptOf([List.filled(9000, '메모').join(' ')]),
+        languageCode: 'ko',
+      );
       expect(korean.user, contains('…'));
       expect(korean.user.length, lessThan(latin.user.length));
     });
@@ -149,16 +308,19 @@ void main() {
   group('output cleanup', () {
     test('strips closed think blocks and surrounding whitespace', () {
       expect(
-          cleanLlmOutput('<think>\nhmm\n</think>\n\n  Koupit mléko.  '),
-          'Koupit mléko.');
+        cleanLlmOutput('<think>\nhmm\n</think>\n\n  Koupit mléko.  '),
+        'Koupit mléko.',
+      );
       expect(cleanLlmOutput('<think></think>Text'), 'Text');
     });
 
-    test('drops an unclosed think block entirely (token cap hit mid-think)',
-        () {
-      expect(cleanLlmOutput('<think>endless reasoning about milk'), '');
-      expect(cleanLlmOutput('Summary. <think>tail'), 'Summary.');
-    });
+    test(
+      'drops an unclosed think block entirely (token cap hit mid-think)',
+      () {
+        expect(cleanLlmOutput('<think>endless reasoning about milk'), '');
+        expect(cleanLlmOutput('Summary. <think>tail'), 'Summary.');
+      },
+    );
 
     test('unwraps quotes the model added despite instructions', () {
       expect(cleanLlmOutput('"Nákupní seznam"'), 'Nákupní seznam');
@@ -169,13 +331,19 @@ void main() {
       expect(cleanLlmOutput('Bod jedna.\nBod dva.'), 'Bod jedna. Bod dva.');
     });
 
-    test('titles lose list markers, trailing punctuation and excess length',
-        () {
-      expect(cleanTitle('- Nákupní seznam.'), 'Nákupní seznam');
-      expect(cleanTitle('<think></think>\n**Nákupy**'.replaceAll('*', '')),
-          'Nákupy');
-      expect(cleanTitle(List.filled(30, 'slovo').join(' ')).length,
-          lessThanOrEqualTo(60));
-    });
+    test(
+      'titles lose list markers, trailing punctuation and excess length',
+      () {
+        expect(cleanTitle('- Nákupní seznam.'), 'Nákupní seznam');
+        expect(
+          cleanTitle('<think></think>\n**Nákupy**'.replaceAll('*', '')),
+          'Nákupy',
+        );
+        expect(
+          cleanTitle(List.filled(30, 'slovo').join(' ')).length,
+          lessThanOrEqualTo(60),
+        );
+      },
+    );
   });
 }

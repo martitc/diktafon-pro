@@ -11,21 +11,24 @@ import 'package:flutter_test/flutter_test.dart';
 /// Import must be gated by the D14 explanation dialog — the user hears
 /// "nothing is deleted, re-imports duplicate" before any picker opens.
 void main() {
-  testWidgets('import explains itself first; cancel stops everything',
-      (tester) async {
+  testWidgets('import explains itself first; cancel stops everything', (
+    tester,
+  ) async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(db.close);
 
-    await tester.pumpWidget(ProviderScope(
-      overrides: [appDatabaseProvider.overrideWithValue(db)],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        theme: buildTheme(Brightness.light),
-        home: const BackupScreen(),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          theme: buildTheme(Brightness.light),
+          home: const BackupScreen(),
+        ),
       ),
-    ));
+    );
     // Discrete pumps, not pumpAndSettle — see model_picker_test (ambient
     // frames keep pumpAndSettle from ever settling).
     await tester.pump();

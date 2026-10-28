@@ -24,8 +24,11 @@ class AudioFileStore {
   /// Absolute path for a memo's audio; creates the cassette dir. The
   /// default extension is the archival form; capture and the importer (which
   /// keeps whatever the archive holds) pass their own.
-  Future<String> pathFor(String cassetteId, String memoId,
-      {String extension = 'm4a'}) async {
+  Future<String> pathFor(
+    String cassetteId,
+    String memoId, {
+    String extension = 'm4a',
+  }) async {
     final dir = Directory('${_root.path}/$cassetteId');
     await dir.create(recursive: true);
     return '${dir.path}/$memoId.$extension';

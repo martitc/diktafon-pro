@@ -33,13 +33,23 @@ void main() {
 
   test('diacritics are meaning-bearing, punctuation is not', () {
     expect(wordErrors('Byl jsem tam.', 'byl jsem tam').errors, 0);
-    expect(wordErrors('být', 'byt').errors, 1,
-        reason: 'diacritics distinguish Czech words');
+    expect(
+      wordErrors('být', 'byt').errors,
+      1,
+      reason: 'diacritics distinguish Czech words',
+    );
   });
 
   test('normalizeWords collapses punctuation runs and dashes', () {
-    expect(normalizeWords('dalo by se to - to hrubé audio…'),
-        ['dalo', 'by', 'se', 'to', 'to', 'hrubé', 'audio']);
+    expect(normalizeWords('dalo by se to - to hrubé audio…'), [
+      'dalo',
+      'by',
+      'se',
+      'to',
+      'to',
+      'hrubé',
+      'audio',
+    ]);
   });
 
   test('CER scores character edits within normalized text', () {
@@ -56,15 +66,23 @@ void main() {
     final skipped = wordErrors('šel jsem [???] domů', 'šel jsem domů');
     expect(skipped.errors, 0);
 
-    final twoExtra = wordErrors('šel jsem [???] domů', 'šel jsem moc rychle domů');
+    final twoExtra = wordErrors(
+      'šel jsem [???] domů',
+      'šel jsem moc rychle domů',
+    );
     expect(twoExtra.errors, 1, reason: 'wildcard covers only one word');
   });
 
   test('standalone digits are spelled out per language', () {
-    expect(wordErrors('rozměr osm a deset', 'rozměr 8 a 10', language: 'cs')
-        .errors, 0);
+    expect(
+      wordErrors('rozměr osm a deset', 'rozměr 8 a 10', language: 'cs').errors,
+      0,
+    );
     expect(wordErrors('number ten', 'number 10', language: 'en').errors, 0);
-    expect(wordErrors('rok 2026', 'rok 2026', language: 'cs').errors, 0,
-        reason: 'large numbers stay digits');
+    expect(
+      wordErrors('rok 2026', 'rok 2026', language: 'cs').errors,
+      0,
+      reason: 'large numbers stay digits',
+    );
   });
 }

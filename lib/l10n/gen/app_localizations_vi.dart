@@ -264,6 +264,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Khuyên dùng — chính xác hơn nhiều, nhất là khi ồn (~2,5 GB RAM khi chép lời).';
 
   @override
+  String get whisperFullLargeDesc =>
+      'Độ chính xác cao nhất — tải xuống 2,9 GiB; khuyến nghị RAM 8 GB.';
+
+  @override
+  String get whisperFullLargeDescBlocked =>
+      'Tải xuống 2,9 GiB — thiết bị cần khoảng 8 GB RAM để chạy.';
+
+  @override
   String get llmDefaultDesc => 'Khuyên dùng — tóm tắt đa ngôn ngữ, gọn nhẹ.';
 
   @override
@@ -332,10 +340,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aboutBody =>
-      'Diktafon nghe, ghi chép và tóm tắt ngay trên điện thoại của bạn.\n\nBản thu, bản chép lời và tóm tắt không bao giờ rời khỏi thiết bị. Không có tài khoản, không đám mây và không phân tích dữ liệu. Dữ liệu chỉ rời khỏi thiết bị khi chính bạn sao lưu hoặc xuất.';
+      'Diktafon Pro nghe, ghi chép và tóm tắt ngay trên điện thoại của bạn.\n\nBản thu, bản chép lời và tóm tắt không bao giờ rời khỏi thiết bị. Không có tài khoản, không đám mây và không phân tích dữ liệu. Dữ liệu chỉ rời khỏi thiết bị khi chính bạn sao lưu hoặc xuất.';
 
   @override
-  String get aboutOpenSource => 'Diktafon miễn phí và mã nguồn mở:';
+  String get aboutOpenSource => 'Diktafon Pro miễn phí và mã nguồn mở:';
 
   @override
   String get aboutPrivacyPolicy => 'Chính sách quyền riêng tư';
@@ -395,7 +403,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get firstRunWelcome => 'Chào mừng đến với Diktafon';
+  String get firstRunWelcome => 'Chào mừng đến với Diktafon Pro';
 
   @override
   String get firstRunIntro =>
@@ -456,7 +464,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Sao lưu của chính thiết bị đã tự động bao gồm danh sách băng cassette, bản chép lời và tóm tắt. Bản thu âm thanh khá nặng — hãy chủ động mang theo: thao tác xuất đóng gói âm thanh, bản chép lời và tóm tắt của một băng cassette vào một tệp .zip, và nhập tệp đó sẽ đưa chúng trở lại. Diktafon không tải gì lên mạng.';
+      'Sao lưu của chính thiết bị đã tự động bao gồm danh sách băng cassette, bản chép lời và tóm tắt. Bản thu âm thanh khá nặng — hãy chủ động mang theo: thao tác xuất đóng gói âm thanh, bản chép lời và tóm tắt của một băng cassette vào một tệp .zip, và nhập tệp đó sẽ đưa chúng trở lại. Diktafon Pro không tải gì lên mạng.';
 
   @override
   String get groupExport => 'Xuất';
@@ -501,6 +509,44 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get importing => 'Đang nhập…';
+
+  @override
+  String get importAudio => 'Nhập âm thanh';
+
+  @override
+  String get importingAudio => 'Đang nhập âm thanh…';
+
+  @override
+  String importedAudioFiles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Đã thêm $count ghi chú âm thanh. Quá trình chép lời sẽ tự động bắt đầu.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioImportFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Không thể nhập $count tệp âm thanh.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String localAudioTranscriptionFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Đã nhập $count ghi chú âm thanh nhưng không thể thêm tác vụ chép lời vào hàng đợi.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get importDialogTitle => 'NHẬP BĂNG CASSETTE?';
@@ -548,7 +594,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String exportNote(String date) {
-    return 'Đã xuất từ Diktafon ngày $date.';
+    return 'Đã xuất từ Diktafon Pro ngày $date.';
   }
 
   @override
@@ -619,8 +665,61 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get notifTranscriptionCompleted => 'Đã chép lời xong';
+
+  @override
+  String get notifTranscriptionCompletedBody =>
+      'Bản chép lời âm thanh đã sẵn sàng trong Diktafon Pro.';
+
+  @override
+  String get notifSummaryCompleted => 'Đã tóm tắt xong';
+
+  @override
+  String get notifSummaryCompletedBody =>
+      'Bản tóm tắt âm thanh đã sẵn sàng trong Diktafon Pro.';
+
+  @override
   String get notifRecording => 'Đang thu âm';
 
   @override
   String get notifRecordingChannel => 'Thu âm';
+
+  @override
+  String get insufficientModelStorage =>
+      'Không đủ dung lượng trống để tải mô hình này. Hãy giải phóng dung lượng rồi thử lại.';
+
+  @override
+  String get downloadNotificationsPermissionRequired =>
+      'Cho phép thông báo để tiếp tục tải mô hình trong nền.';
+
+  @override
+  String get importAudioTooltip => 'Nhập âm thanh vào băng này';
+
+  @override
+  String get localSummaryInstructionsGroup => 'Hướng dẫn tóm tắt cục bộ';
+
+  @override
+  String get localSummaryInstructionsHint =>
+      'Ví dụ: tập trung vào quyết định, công việc và thời hạn.';
+
+  @override
+  String get localSummaryInstructionsPrivacy =>
+      'Các hướng dẫn này chỉ lưu trên thiết bị và không gửi đến Gemini hoặc ChatGPT.';
+
+  @override
+  String get localSummarySaveFailed =>
+      'Không thể lưu hướng dẫn tóm tắt cục bộ.';
+
+  @override
+  String get localSummaryInstructionsTitle => 'Hướng dẫn tóm tắt của bạn';
+
+  @override
+  String llmModelDetails(String quantization, String license, int ram) {
+    return '$quantization · $license · RAM tối thiểu ước tính: $ram GB';
+  }
+
+  @override
+  String llmModelNeedsRam(String size, int ram) {
+    return 'tải xuống $size · RAM tối thiểu ước tính: $ram GB';
+  }
 }

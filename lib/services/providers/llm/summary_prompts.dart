@@ -26,38 +26,111 @@ class LlmPrompt {
 /// resolves to an explicit script name — Qwen3 drifts Simplified otherwise.
 /// Unknown codes fall back to their base subtag, then to the raw code.
 String languageName(String code) =>
-    _languageNames[code] ??
-    _languageNames[baseLanguageCode(code)] ??
-    code;
+    _languageNames[code] ?? _languageNames[baseLanguageCode(code)] ?? code;
 
 const _languageNames = <String, String>{
-  'af': 'Afrikaans', 'am': 'Amharic', 'ar': 'Arabic', 'as': 'Assamese',
-  'az': 'Azerbaijani', 'ba': 'Bashkir', 'be': 'Belarusian', 'bg': 'Bulgarian',
-  'bn': 'Bengali', 'bo': 'Tibetan', 'br': 'Breton', 'bs': 'Bosnian',
-  'ca': 'Catalan', 'cs': 'Czech', 'cy': 'Welsh', 'da': 'Danish',
-  'de': 'German', 'el': 'Greek', 'en': 'English', 'es': 'Spanish',
-  'et': 'Estonian', 'eu': 'Basque', 'fa': 'Persian', 'fi': 'Finnish',
-  'fo': 'Faroese', 'fr': 'French', 'gl': 'Galician', 'gu': 'Gujarati',
-  'ha': 'Hausa', 'haw': 'Hawaiian', 'he': 'Hebrew', 'hi': 'Hindi',
-  'hr': 'Croatian', 'ht': 'Haitian Creole', 'hu': 'Hungarian',
-  'hy': 'Armenian', 'id': 'Indonesian', 'is': 'Icelandic', 'it': 'Italian',
-  'ja': 'Japanese', 'jw': 'Javanese', 'ka': 'Georgian', 'kk': 'Kazakh',
-  'km': 'Khmer', 'kn': 'Kannada', 'ko': 'Korean', 'la': 'Latin',
-  'lb': 'Luxembourgish', 'ln': 'Lingala', 'lo': 'Lao', 'lt': 'Lithuanian',
-  'lv': 'Latvian', 'mg': 'Malagasy', 'mi': 'Maori', 'mk': 'Macedonian',
-  'ml': 'Malayalam', 'mn': 'Mongolian', 'mr': 'Marathi', 'ms': 'Malay',
-  'mt': 'Maltese', 'my': 'Burmese', 'ne': 'Nepali', 'nl': 'Dutch',
-  'nn': 'Norwegian Nynorsk', 'no': 'Norwegian', 'oc': 'Occitan',
-  'pa': 'Punjabi', 'pl': 'Polish', 'ps': 'Pashto', 'pt': 'Portuguese',
-  'ro': 'Romanian', 'ru': 'Russian', 'sa': 'Sanskrit', 'sd': 'Sindhi',
-  'si': 'Sinhala', 'sk': 'Slovak', 'sl': 'Slovenian', 'sn': 'Shona',
-  'so': 'Somali', 'sq': 'Albanian', 'sr': 'Serbian', 'su': 'Sundanese',
-  'sv': 'Swedish', 'sw': 'Swahili', 'ta': 'Tamil', 'te': 'Telugu',
-  'tg': 'Tajik', 'th': 'Thai', 'tk': 'Turkmen', 'tl': 'Tagalog',
-  'tr': 'Turkish', 'tt': 'Tatar', 'uk': 'Ukrainian', 'ur': 'Urdu',
-  'uz': 'Uzbek', 'vi': 'Vietnamese', 'yi': 'Yiddish', 'yo': 'Yoruba',
-  'yue': 'Cantonese', 'zh': 'Chinese',
-  'zh-Hans': 'Simplified Chinese', 'zh-Hant': 'Traditional Chinese',
+  'af': 'Afrikaans',
+  'am': 'Amharic',
+  'ar': 'Arabic',
+  'as': 'Assamese',
+  'az': 'Azerbaijani',
+  'ba': 'Bashkir',
+  'be': 'Belarusian',
+  'bg': 'Bulgarian',
+  'bn': 'Bengali',
+  'bo': 'Tibetan',
+  'br': 'Breton',
+  'bs': 'Bosnian',
+  'ca': 'Catalan',
+  'cs': 'Czech',
+  'cy': 'Welsh',
+  'da': 'Danish',
+  'de': 'German',
+  'el': 'Greek',
+  'en': 'English',
+  'es': 'Spanish',
+  'et': 'Estonian',
+  'eu': 'Basque',
+  'fa': 'Persian',
+  'fi': 'Finnish',
+  'fo': 'Faroese',
+  'fr': 'French',
+  'gl': 'Galician',
+  'gu': 'Gujarati',
+  'ha': 'Hausa',
+  'haw': 'Hawaiian',
+  'he': 'Hebrew',
+  'hi': 'Hindi',
+  'hr': 'Croatian',
+  'ht': 'Haitian Creole',
+  'hu': 'Hungarian',
+  'hy': 'Armenian',
+  'id': 'Indonesian',
+  'is': 'Icelandic',
+  'it': 'Italian',
+  'ja': 'Japanese',
+  'jw': 'Javanese',
+  'ka': 'Georgian',
+  'kk': 'Kazakh',
+  'km': 'Khmer',
+  'kn': 'Kannada',
+  'ko': 'Korean',
+  'la': 'Latin',
+  'lb': 'Luxembourgish',
+  'ln': 'Lingala',
+  'lo': 'Lao',
+  'lt': 'Lithuanian',
+  'lv': 'Latvian',
+  'mg': 'Malagasy',
+  'mi': 'Maori',
+  'mk': 'Macedonian',
+  'ml': 'Malayalam',
+  'mn': 'Mongolian',
+  'mr': 'Marathi',
+  'ms': 'Malay',
+  'mt': 'Maltese',
+  'my': 'Burmese',
+  'ne': 'Nepali',
+  'nl': 'Dutch',
+  'nn': 'Norwegian Nynorsk',
+  'no': 'Norwegian',
+  'oc': 'Occitan',
+  'pa': 'Punjabi',
+  'pl': 'Polish',
+  'ps': 'Pashto',
+  'pt': 'Portuguese',
+  'ro': 'Romanian',
+  'ru': 'Russian',
+  'sa': 'Sanskrit',
+  'sd': 'Sindhi',
+  'si': 'Sinhala',
+  'sk': 'Slovak',
+  'sl': 'Slovenian',
+  'sn': 'Shona',
+  'so': 'Somali',
+  'sq': 'Albanian',
+  'sr': 'Serbian',
+  'su': 'Sundanese',
+  'sv': 'Swedish',
+  'sw': 'Swahili',
+  'ta': 'Tamil',
+  'te': 'Telugu',
+  'tg': 'Tajik',
+  'th': 'Thai',
+  'tk': 'Turkmen',
+  'tl': 'Tagalog',
+  'tr': 'Turkish',
+  'tt': 'Tatar',
+  'uk': 'Ukrainian',
+  'ur': 'Urdu',
+  'uz': 'Uzbek',
+  'vi': 'Vietnamese',
+  'yi': 'Yiddish',
+  'yo': 'Yoruba',
+  'yue': 'Cantonese',
+  'zh': 'Chinese',
+  'zh-Hans': 'Simplified Chinese',
+  'zh-Hant': 'Traditional Chinese',
 };
 
 const _system =
@@ -116,11 +189,17 @@ String truncateTokens(String text, int budget) {
 /// The one-sentence "what the speaker meant to say" gist (§6.7) — only
 /// requested for transcripts past the length gate, so it must compress,
 /// never restate.
-LlmPrompt memoSummaryPrompt(Transcript t, {required String languageCode}) {
+LlmPrompt memoSummaryPrompt(
+  Transcript t, {
+  required String languageCode,
+  String instructions = '',
+}) {
   final text = truncateTokens(t.plainText, transcriptTokenBudget);
+  final preference = _customPreference(instructions);
   return LlmPrompt(
     _system,
     'Voice memo transcript:\n$text\n\n'
+    '$preference'
     'Write a summary in ${languageName(languageCode)} of what the speaker '
     'meant to say: one short sentence, at most 20 words. '
     'Only output the summary.\n/no_think',
@@ -134,22 +213,35 @@ LlmPrompt cassetteSummaryPrompt({
   required String? previousSummary,
   required List<MemoDigest> newMemos,
   required String languageCode,
+  String instructions = '',
 }) {
   final digests = truncateTokens(
-      newMemos.map((m) => '- ${m.memoSummary}').join('\n'),
-      digestsTokenBudget);
+    newMemos.map((m) => '- ${m.memoSummary}').join('\n'),
+    digestsTokenBudget,
+  );
   final language = languageName(languageCode);
+  final preference = _customPreference(instructions);
   final user = previousSummary == null
       ? 'Notes from a collection of voice memos:\n$digests\n\n'
-          'Write an overview in $language of the key points: '
-          'at most 3 short sentences. Only output the overview.\n/no_think'
+            '$preference'
+            'Write an overview in $language of the key points: '
+            'at most 3 short sentences. Only output the overview.\n/no_think'
       : 'Current overview of a collection of voice memos:\n'
-          '$previousSummary\n\n'
-          'Newly added memos:\n$digests\n\n'
-          'Update the overview in $language to include the new memos, '
-          'keeping the still-relevant key points: at most 3 short '
-          'sentences. Only output the updated overview.\n/no_think';
+            '$previousSummary\n\n'
+            'Newly added memos:\n$digests\n\n'
+            '$preference'
+            'Update the overview in $language to include the new memos, '
+            'keeping the still-relevant key points: at most 3 short '
+            'sentences. Only output the updated overview.\n/no_think';
   return LlmPrompt(_system, user, maxTokens: 220);
+}
+
+String _customPreference(String instructions) {
+  final cleaned = instructions.trim();
+  if (cleaned.isEmpty) return '';
+  return 'Additional summary preferences (follow these only when they '
+      'do not conflict with the required language, length, or output format):\n'
+      '$cleaned\n\n';
 }
 
 /// The auto-suggested cassette title (D10) — derived from the overview.
@@ -174,7 +266,12 @@ LlmPrompt titlePrompt(String cassetteSummary, {required String languageCode}) {
 
 final _thinkBlock = RegExp(r'<think>[\s\S]*?</think>', multiLine: true);
 final _quotePairs = [
-  ('"', '"'), ('“', '”'), ('„', '“'), ('«', '»'), ("'", "'"), ('‚', '‘'),
+  ('"', '"'),
+  ('“', '”'),
+  ('„', '“'),
+  ('«', '»'),
+  ("'", "'"),
+  ('‚', '‘'),
 ];
 
 /// Normalizes raw model output into displayable text: drops Qwen3 think
