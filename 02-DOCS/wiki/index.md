@@ -5,7 +5,7 @@
 - [Reglas del proyecto](sdd/constitution.md) — v1.0.0 ratificada el 2026-10-26.
 - [Configuración SDD](sdd/config.yaml) — Flutter/Dart; comprobaciones configuradas para el repo `diktafon/`.
 - [Decisiones SDD](sdd/decisions.md) — decisiones aceptadas del proyecto.
-- [Progreso de proveedores](sdd/progress/resumenes-con-proveedores.md) — transcripción Gemini confirmada; resúmenes Gemini implementados, prueba real y release pendientes.
+- [Progreso de proveedores](sdd/progress/resumenes-con-proveedores.md) — resúmenes Gemini implementados; release v1.0.10 publicada; prueba real pendiente en el X7 Pro.
 - [Progreso de modelos y descargas](sdd/progress/modelos-y-descargas.md) — implementación iniciada tras aprobar spec y plan.
 
 ## Especificaciones

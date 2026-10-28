@@ -82,7 +82,7 @@ slug: resumenes-con-proveedores
 
 ## T007/T013 — Gemini para resúmenes 2026-10-28
 
-- status: implementation and emulator smoke complete; GitHub release pending.
+- status: implementation and emulator smoke complete; v1.0.10 published; live Gemini summary check pending on the X7 Pro.
 - gap fixed: el plan aprobado incluía Gemini para resúmenes, pero la app principal solo exponía Qwen local y ChatGPT OAuth.
 - implementation: nuevo `GeminiSummaryProvider` para GenerateContent; envía texto de transcripción/digests e instrucciones, nunca audio. Usa la clave del `CredentialVault`, errores tipados y sin fallback.
 - settings: proveedor y modelo Gemini de resumen se guardan por separado de los ajustes de transcripción. Gemini muestra selector de modelo, clave API y un campo de instrucciones de resumen con aviso de Free Tier; Qwen/Gemma permanecen en el selector local y ChatGPT OAuth conserva su modelo/razonamiento.
@@ -90,4 +90,4 @@ slug: resumenes-con-proveedores
 - tests: contrato HTTP (solo texto, clave en header, instrucciones, limpieza de salida y cuota), persistencia de preferencias/modelo/prompt y prueba de widget del selector Gemini.
 - live check: el usuario confirma que Gemini 2.5 Flash ya transcribe en su cuenta; falta verificar una solicitud de resumen real en el X7 Pro.
 - build: Flutter analysis limpio; suite completa: 327 pruebas correctas, 22 omitidas por depender de motores o muestras externas. APK release ARM64 `1.0.10+11` compilada, instalada y abierta en emulador Android API 36. La interfaz de selección Gemini se verificó visualmente; la llamada real de resumen queda pendiente en el X7 Pro. APK: 33 MB; SHA-256 `fe3ae41ec334375d8b7ebe537d5e3ead683873449067fe50e0e71d829004b398`.
-- publicación: la persona autorizó subir código, descripción del repositorio y release a `martitc/diktafon-pro`. El workspace actual no tiene historial Git, así que se prepara el cambio sobre el `main` remoto existente y se preserva su HEAD; publicar ahora está en curso.
+- publicación: descripción About y README actualizados; commits `94d1ac0` y `4d76741` publicados en `main` de `martitc/diktafon-pro`. Release estable `v1.0.10`: https://github.com/martitc/diktafon-pro/releases/tag/v1.0.10. Incluye APK ARM64 y `SHA256SUMS`; tag verificado contra HEAD `4d76741045989d0c475cbd091d562d0d5154e611`. La APK se compiló con firma de depuración para sideload y no es una build de Google Play. La integración de resumen Gemini se probó con HTTP simulado; queda una prueba real en el X7 Pro.
