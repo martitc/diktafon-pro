@@ -39,4 +39,4 @@
 - [Importar audio local](ftd/importar-audio-local.md)
 - [Nombres de notas](ftd/nombres-de-notas.md)
 - [Identidad Diktafon Pro](ftd/identidad-diktafon-pro.md)
-- [Candidatos de issues originales](backlog/mejoras-upstream.md)
+- [Candidatos de issues originales y mejoras futuras](backlog/mejoras-upstream.md) — incluye Google Drive, sincronización con escritorio y copias de seguridad.
