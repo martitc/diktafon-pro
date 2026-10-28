@@ -60,6 +60,7 @@ class WhisperBindings {
               Pointer<Utf8>,
               Int32,
               Pointer<Int32>,
+              Pointer<Int32>,
             ),
             int Function(
               Pointer<Void>,
@@ -68,8 +69,14 @@ class WhisperBindings {
               Pointer<Utf8>,
               int,
               Pointer<Int32>,
+              Pointer<Int32>,
             )
           >('dk_whisper_transcribe'),
+      readProgress = lib
+          .lookupFunction<
+            Int32 Function(Pointer<Int32>),
+            int Function(Pointer<Int32>)
+          >('dk_whisper_progress_read'),
       lang = lib
           .lookupFunction<
             Pointer<Utf8> Function(Pointer<Void>),
@@ -151,8 +158,10 @@ class WhisperBindings {
     Pointer<Utf8> lang,
     int nThreads,
     Pointer<Int32> cancel,
+    Pointer<Int32> progress,
   )
   transcribe;
+  final int Function(Pointer<Int32>) readProgress;
   final Pointer<Utf8> Function(Pointer<Void>) lang;
   final int Function(Pointer<Void>) nSegments;
   final int Function(Pointer<Void>, int) segmentT0Ms;

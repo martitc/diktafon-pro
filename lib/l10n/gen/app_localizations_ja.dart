@@ -704,4 +704,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'ダウンロード $size · 推定最小 RAM：$ram GB';
   }
+
+  @override
+  String get notificationCenterTitle => '通知';
+
+  @override
+  String get notificationsEmpty => '通知はまだありません';
+
+  @override
+  String get activityInProgress => '処理中';
+
+  @override
+  String get activityCompleted => '完了';
+
+  @override
+  String get activityPaused => '一時停止';
+
+  @override
+  String get activityFailed => '失敗';
+
+  @override
+  String get progressUploadGemini => 'Gemini に音声をアップロード中';
+
+  @override
+  String get progressProcessingGemini => 'Gemini で処理中';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total 件完了';
+  }
 }

@@ -39,6 +39,14 @@ class WhisperWorker {
   final Map<int, Completer<Map<dynamic, dynamic>>> _inFlight = {};
   int _nextRequestId = 0;
   Future<void>? _spawning;
+  WhisperBindings? _mainBindings;
+
+  /// Reads the native atomic callback value while inference runs in the
+  /// worker isolate. The pointer remains owned by the calling provider.
+  int readProgress(int address) {
+    _mainBindings ??= WhisperBindings.open(_libraryPath);
+    return _mainBindings!.readProgress(Pointer<Int32>.fromAddress(address));
+  }
 
   /// Per-segment decoder confidence of the last [transcribe] result,
   /// parallel to its `Transcript.segments` — input for
@@ -75,6 +83,7 @@ class WhisperWorker {
     required String pcmPath,
     String? languageCode,
     required int cancelFlagAddress,
+    required int progressAddress,
     required int threads,
     int beamSize = 0,
     String? vadModelPath,
@@ -89,6 +98,7 @@ class WhisperWorker {
       'pcm': pcmPath,
       'lang': languageCode,
       'cancel': cancelFlagAddress,
+      'progress': progressAddress,
       'threads': threads,
       'beam': beamSize,
       'vad': vadModelPath,
@@ -132,6 +142,7 @@ class WhisperWorker {
 
   Future<void> dispose() async {
     _spawning = null;
+    _mainBindings = null;
     _commands?.send(const {'id': -1, 'close': true});
     _isolate?.kill(priority: Isolate.beforeNextEvent);
     _isolate = null;
@@ -199,6 +210,7 @@ void _workerMain(List<Object> args) {
         pcmPath: request['pcm'] as String,
         languageCode: request['lang'] as String?,
         cancelFlagAddress: request['cancel'] as int,
+        progressAddress: request['progress'] as int,
         threads: request['threads'] as int,
         confidenceOut: confidence,
       );
@@ -277,6 +289,7 @@ Transcript _transcribeFile(
   required String pcmPath,
   required String? languageCode,
   required int cancelFlagAddress,
+  required int progressAddress,
   required int threads,
   List<SegmentConfidence>? confidenceOut,
 }) {
@@ -298,6 +311,7 @@ Transcript _transcribeFile(
       langC,
       threads,
       Pointer<Int32>.fromAddress(cancelFlagAddress),
+      Pointer<Int32>.fromAddress(progressAddress),
     );
     if (ret != 0) {
       // Also the abort path — the provider maps it back to "cancelled" by

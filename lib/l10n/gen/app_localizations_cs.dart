@@ -758,4 +758,33 @@ class AppLocalizationsCs extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'stažení $size · odhadovaná minimální RAM: $ram GB';
   }
+
+  @override
+  String get notificationCenterTitle => 'Oznámení';
+
+  @override
+  String get notificationsEmpty => 'Zatím žádná oznámení';
+
+  @override
+  String get activityInProgress => 'Probíhá';
+
+  @override
+  String get activityCompleted => 'Dokončeno';
+
+  @override
+  String get activityPaused => 'Pozastaveno';
+
+  @override
+  String get activityFailed => 'Selhalo';
+
+  @override
+  String get progressUploadGemini => 'Nahrávání audia do Gemini';
+
+  @override
+  String get progressProcessingGemini => 'Gemini zpracovává audio';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total hotovo';
+  }
 }

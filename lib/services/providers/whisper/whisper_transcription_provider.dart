@@ -12,12 +12,13 @@ library;
 
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:isolate';
+import 'dart:async';
 import 'dart:math';
 
 import 'package:ffi/ffi.dart';
 
 import '../../../domain/models.dart';
+import '../../../domain/processing_progress.dart';
 import '../../../domain/script.dart';
 import '../../audio/pcm_decoder.dart';
 import '../../audio/pcm_highpass.dart';
@@ -92,6 +93,7 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
     AudioRef audio, {
     String? languageCode,
     CancelToken? cancel,
+    TranscriptionProgressSink? onProgress,
   }) async {
     _requireSupportedRam();
     // Whisper knows bare codes only — the script-qualified zh-Hans/zh-Hant
@@ -105,6 +107,8 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
 
     final tmpDir = await Directory.systemTemp.createTemp('dk_pcm_');
     final cancelFlag = calloc<Int32>();
+    final progressFlag = calloc<Int32>()..value = 0;
+    Timer? progressTimer;
     // The token may fire long after this job (memo deleted later) — never
     // touch the flag once freed. Single event loop ⇒ no data race.
     var flagFreed = false;
@@ -118,7 +122,7 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
         // Whole-file read + a ~57 M-sample loop per hour of audio — never
         // in the UI isolate (it froze frames for seconds on phones).
         final cutoffHz = _highPassHz;
-        await Isolate.run(() => highPassPcmFile(pcmPath, cutoffHz: cutoffHz));
+        await highPassPcmFileInIsolate(pcmPath, cutoffHz: cutoffHz);
       }
       if (cancel?.isCancelled ?? false) throw const TranscriptionCancelled();
 
@@ -144,12 +148,20 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
       }
       if (cancel?.isCancelled ?? false) throw const TranscriptionCancelled();
 
+      onProgress?.call(ProcessingStage.transcribing, 0);
+      progressTimer = Timer.periodic(const Duration(milliseconds: 250), (_) {
+        final fraction =
+            _worker.readProgress(progressFlag.address).clamp(0, 100) / 100;
+        onProgress?.call(ProcessingStage.transcribing, fraction);
+      });
+
       try {
         return await _worker.transcribe(
           modelPath: _models.fileOf(_model).path,
           pcmPath: pcmPath,
           languageCode: languageCode,
           cancelFlagAddress: cancelFlag.address,
+          progressAddress: progressFlag.address,
           threads: _threads,
           vadModelPath: _isLarge ? null : _vadModelPath,
         );
@@ -159,8 +171,10 @@ class WhisperCppTranscriptionProvider implements TranscriptionProvider {
         rethrow;
       }
     } finally {
+      progressTimer?.cancel();
       flagFreed = true;
       calloc.free(cancelFlag);
+      calloc.free(progressFlag);
       await tmpDir.delete(recursive: true);
     }
   }

@@ -5,6 +5,7 @@ import 'package:diktafon/data/repositories/cassette_repository.dart';
 import 'package:diktafon/data/repositories/memo_repository.dart';
 import 'package:diktafon/data/repositories/settings_repository.dart';
 import 'package:diktafon/domain/models.dart';
+import 'package:diktafon/domain/processing_progress.dart';
 import 'package:diktafon/services/processing/job_queue.dart';
 import 'package:diktafon/services/providers/summarization_provider.dart';
 import 'package:diktafon/services/providers/transcription_provider.dart';
@@ -82,6 +83,7 @@ class FakeTranscriptionProvider implements TranscriptionProvider {
     AudioRef audio, {
     String? languageCode,
     CancelToken? cancel,
+    TranscriptionProgressSink? onProgress,
   }) async {
     calls++;
     lastLanguageCode = languageCode;
@@ -93,6 +95,7 @@ class FakeTranscriptionProvider implements TranscriptionProvider {
       failuresBeforeSuccess--;
       throw StateError('flaky engine');
     }
+    onProgress?.call(ProcessingStage.transcribing, 0.5);
     // Long by default: most tests exercise the full gist pipeline; the
     // §6.7-gate group overrides [result] with short transcripts.
     return result ?? longTranscript('cs', const ['ahoj', 'světe']);
@@ -251,6 +254,26 @@ void main() {
   }
 
   group('M2 pipeline (transcription)', () {
+    test(
+      'publishes measured transcription progress and clears it at completion',
+      () async {
+        await seedMemo('m1');
+        final updates = <ProcessingProgress>[];
+        final subscription = queue.progressUpdates.listen(updates.add);
+        await queue.enqueueTranscription('m1');
+        await queue.drain();
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          updates.any(
+            (p) => p.stage == ProcessingStage.transcribing && p.fraction == 0.5,
+          ),
+          isTrue,
+        );
+        expect(updates.any((p) => p.stage == ProcessingStage.finished), isTrue);
+        await subscription.cancel();
+      },
+    );
+
     test(
       'jobs wait while the model is missing; drain resumes them (§14)',
       () async {
@@ -918,11 +941,10 @@ void main() {
           isNull,
           reason: 'rebuilt from scratch — no rolling summary to fold into',
         );
-        expect(
-          llm.lastDigests!.map((d) => d.memoSummary),
-          ['gist', 'gist2'],
-          reason: 'every memo\'s gist contributes, in tape order',
-        );
+        expect(llm.lastDigests!.map((d) => d.memoSummary), [
+          'gist',
+          'gist2',
+        ], reason: 'every memo\'s gist contributes, in tape order');
         expect((await cassetteRow()).summary, 'overview[gist | gist2]');
       },
     );
@@ -1053,11 +1075,9 @@ void main() {
               'the rebuild starts from scratch — the deleted memo\'s '
               'content simply is not among the inputs',
         );
-        expect(
-          llm.lastDigests!.map((d) => d.memoSummary),
-          ['gist'],
-          reason: 'only the surviving memo contributes',
-        );
+        expect(llm.lastDigests!.map((d) => d.memoSummary), [
+          'gist',
+        ], reason: 'only the surviving memo contributes');
       },
     );
 
@@ -1432,11 +1452,9 @@ void main() {
         await queue.onMemoDeleted(deleted);
         await queue.drain();
 
-        expect(
-          llm.lastDigests!.map((d) => d.memoSummary),
-          ['druhá poznámka'],
-          reason: 'the deleted memo\'s transcript left the overview',
-        );
+        expect(llm.lastDigests!.map((d) => d.memoSummary), [
+          'druhá poznámka',
+        ], reason: 'the deleted memo\'s transcript left the overview');
       },
     );
 

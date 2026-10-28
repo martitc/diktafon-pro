@@ -11,6 +11,7 @@ import 'dart:async';
 
 import '../providers/model_manager.dart';
 import '../providers/transcription_provider.dart' show ModelStatus;
+import 'activity_center.dart';
 
 /// Where the notifications land; implemented over flutter_local_notifications
 /// in main(), by a recording fake in tests.
@@ -37,16 +38,18 @@ class DownloadNotificationTexts {
 }
 
 class ModelDownloadNotifier {
-  ModelDownloadNotifier(this._sink, this._texts);
+  ModelDownloadNotifier(this._sink, this._texts, {this._history});
 
   final DownloadNotificationSink _sink;
   final DownloadNotificationTexts _texts;
+  final ActivityCenter? _history;
   final List<StreamSubscription<void>> _subs = [];
 
   /// tier → last shown percent; an entry exists only while the tier's
   /// progress notification is up. Gates the chunk-level [ModelManager]
   /// events down to at most one notification update per percent.
   final Map<String, int> _shownPercent = {};
+  final Map<String, int> _lastPercent = {};
 
   /// Sink calls are chained so updates can't overtake each other; a broken
   /// notification daemon must never take the download down with it.
@@ -66,9 +69,52 @@ class ModelDownloadNotifier {
     // stranded in the shade (it can't even be swiped away) — clear every
     // tier that isn't actually on the wire right now.
     for (var i = 0; i < initial.length; i++) {
-      if (initial[i].status != ModelStatus.downloading) {
-        final id = idBase + i;
+      final state = initial[i];
+      final id = idBase + i;
+      final percent = (state.progress * 100).floor().clamp(0, 100);
+      if (state.status == ModelStatus.downloading) {
+        _lastPercent[state.model.tier] = percent;
+        _shownPercent[state.model.tier] = percent;
+        unawaited(
+          _history?.put(
+            ActivityEntry(
+              id: 'model:${state.model.tier}',
+              kind: ActivityKind.modelDownload,
+              title: state.model.label,
+              state: ActivityState.active,
+              updatedAt: DateTime.now(),
+              percent: percent,
+            ),
+          ),
+        );
+        _enqueue(
+          () => _sink.showProgress(
+            id,
+            _texts.downloading(state.model.label),
+            percent,
+          ),
+        );
+      } else {
         _enqueue(() => _sink.cancel(id));
+        final hasHistory =
+            _history?.entries.any(
+              (entry) => entry.id == 'model:${state.model.tier}',
+            ) ??
+            false;
+        if (hasHistory && state.status == ModelStatus.paused) {
+          unawaited(
+            _history?.put(
+              ActivityEntry(
+                id: 'model:${state.model.tier}',
+                kind: ActivityKind.modelDownload,
+                title: state.model.label,
+                state: ActivityState.paused,
+                updatedAt: DateTime.now(),
+                percent: percent,
+              ),
+            ),
+          );
+        }
       }
     }
     _subs.add(
@@ -81,6 +127,19 @@ class ModelDownloadNotifier {
           switch (state.status) {
             case ModelStatus.downloading:
               final percent = (state.progress * 100).floor().clamp(0, 100);
+              _lastPercent[tier] = percent;
+              unawaited(
+                _history?.put(
+                  ActivityEntry(
+                    id: 'model:${state.model.tier}',
+                    kind: ActivityKind.modelDownload,
+                    title: state.model.label,
+                    state: ActivityState.active,
+                    updatedAt: DateTime.now(),
+                    percent: percent,
+                  ),
+                ),
+              );
               if (_shownPercent[tier] != percent) {
                 _shownPercent[tier] = percent;
                 _enqueue(
@@ -94,6 +153,19 @@ class ModelDownloadNotifier {
             case ModelStatus.ready:
               if (last[tier] == ModelStatus.downloading) {
                 _shownPercent.remove(tier);
+                _lastPercent.remove(tier);
+                unawaited(
+                  _history?.put(
+                    ActivityEntry(
+                      id: 'model:$tier',
+                      kind: ActivityKind.modelDownload,
+                      title: state.model.label,
+                      state: ActivityState.complete,
+                      updatedAt: DateTime.now(),
+                      percent: 100,
+                    ),
+                  ),
+                );
                 _enqueue(
                   () => _sink.showDone(id, _texts.installed(state.model.label)),
                 );
@@ -103,6 +175,34 @@ class ModelDownloadNotifier {
             case ModelStatus.notInstalled || ModelStatus.paused:
               if (last[tier] == ModelStatus.downloading) {
                 _shownPercent.remove(tier);
+                if (state.status == ModelStatus.paused) {
+                  unawaited(
+                    _history?.put(
+                      ActivityEntry(
+                        id: 'model:$tier',
+                        kind: ActivityKind.modelDownload,
+                        title: state.model.label,
+                        state: ActivityState.paused,
+                        updatedAt: DateTime.now(),
+                        percent: _lastPercent[tier],
+                      ),
+                    ),
+                  );
+                } else {
+                  unawaited(
+                    _history?.put(
+                      ActivityEntry(
+                        id: 'model:$tier',
+                        kind: ActivityKind.modelDownload,
+                        title: state.model.label,
+                        state: ActivityState.failed,
+                        updatedAt: DateTime.now(),
+                        percent: _lastPercent[tier],
+                      ),
+                    ),
+                  );
+                }
+                _lastPercent.remove(tier);
                 _enqueue(() => _sink.cancel(id));
               }
           }

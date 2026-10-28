@@ -1212,6 +1212,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'download {size} · estimated minimum RAM: {ram} GB'**
   String llmModelNeedsRam(String size, int ram);
+
+  /// No description provided for @notificationCenterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationCenterTitle;
+
+  /// No description provided for @notificationsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notificationsEmpty;
+
+  /// No description provided for @activityInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get activityInProgress;
+
+  /// No description provided for @activityCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get activityCompleted;
+
+  /// No description provided for @activityPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get activityPaused;
+
+  /// No description provided for @activityFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get activityFailed;
+
+  /// No description provided for @progressUploadGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading audio to Gemini'**
+  String get progressUploadGemini;
+
+  /// No description provided for @progressProcessingGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing with Gemini'**
+  String get progressProcessingGemini;
+
+  /// Number of ready memos out of all memos in a cassette
+  ///
+  /// In en, this message translates to:
+  /// **'{ready}/{total} ready'**
+  String cassetteReadyCount(int ready, int total);
 }
 
 class _AppLocalizationsDelegate

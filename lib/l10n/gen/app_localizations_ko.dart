@@ -688,4 +688,33 @@ class AppLocalizationsKo extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return '다운로드 $size · 예상 최소 RAM: ${ram}GB';
   }
+
+  @override
+  String get notificationCenterTitle => '알림';
+
+  @override
+  String get notificationsEmpty => '아직 알림이 없습니다';
+
+  @override
+  String get activityInProgress => '진행 중';
+
+  @override
+  String get activityCompleted => '완료';
+
+  @override
+  String get activityPaused => '일시 중지됨';
+
+  @override
+  String get activityFailed => '실패';
+
+  @override
+  String get progressUploadGemini => 'Gemini에 오디오 업로드 중';
+
+  @override
+  String get progressProcessingGemini => 'Gemini에서 처리 중';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total 완료';
+  }
 }

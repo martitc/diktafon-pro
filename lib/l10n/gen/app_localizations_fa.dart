@@ -739,4 +739,33 @@ class AppLocalizationsFa extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'بارگیری $size · حداقل حافظهٔ تخمینی: $ram گیگابایت';
   }
+
+  @override
+  String get notificationCenterTitle => 'اعلان‌ها';
+
+  @override
+  String get notificationsEmpty => 'هنوز اعلانی نیست';
+
+  @override
+  String get activityInProgress => 'در حال انجام';
+
+  @override
+  String get activityCompleted => 'تکمیل شد';
+
+  @override
+  String get activityPaused => 'مکث‌شده';
+
+  @override
+  String get activityFailed => 'ناموفق';
+
+  @override
+  String get progressUploadGemini => 'در حال بارگذاری صدا در Gemini';
+
+  @override
+  String get progressProcessingGemini => 'در حال پردازش با Gemini';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total تکمیل';
+  }
 }

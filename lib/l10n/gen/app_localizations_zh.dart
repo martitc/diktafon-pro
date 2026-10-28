@@ -697,6 +697,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return '下载 $size · 预计最低内存：$ram GB';
   }
+
+  @override
+  String get notificationCenterTitle => '通知';
+
+  @override
+  String get notificationsEmpty => '暂无通知';
+
+  @override
+  String get activityInProgress => '进行中';
+
+  @override
+  String get activityCompleted => '已完成';
+
+  @override
+  String get activityPaused => '已暂停';
+
+  @override
+  String get activityFailed => '失败';
+
+  @override
+  String get progressUploadGemini => '正在上传音频到 Gemini';
+
+  @override
+  String get progressProcessingGemini => '正在由 Gemini 处理';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total 已完成';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1391,5 +1420,34 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String llmModelNeedsRam(String size, int ram) {
     return '下載 $size · 預估最低記憶體：$ram GB';
+  }
+
+  @override
+  String get notificationCenterTitle => '通知';
+
+  @override
+  String get notificationsEmpty => '目前沒有通知';
+
+  @override
+  String get activityInProgress => '進行中';
+
+  @override
+  String get activityCompleted => '已完成';
+
+  @override
+  String get activityPaused => '已暫停';
+
+  @override
+  String get activityFailed => '失敗';
+
+  @override
+  String get progressUploadGemini => '正在上傳音訊至 Gemini';
+
+  @override
+  String get progressProcessingGemini => '正在由 Gemini 處理';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total 已完成';
   }
 }

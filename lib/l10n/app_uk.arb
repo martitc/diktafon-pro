@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Сповіщення",
+  "notificationsEmpty": "Сповіщень поки немає",
+  "activityInProgress": "Виконується",
+  "activityCompleted": "Завершено",
+  "activityPaused": "Призупинено",
+  "activityFailed": "Помилка",
+  "progressUploadGemini": "Завантаження аудіо до Gemini",
+  "progressProcessingGemini": "Обробка в Gemini",
+  "cassetteReadyCount": "{ready}/{total} готово"
 }

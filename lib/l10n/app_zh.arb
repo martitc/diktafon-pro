@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "通知",
+  "notificationsEmpty": "暂无通知",
+  "activityInProgress": "进行中",
+  "activityCompleted": "已完成",
+  "activityPaused": "已暂停",
+  "activityFailed": "失败",
+  "progressUploadGemini": "正在上传音频到 Gemini",
+  "progressProcessingGemini": "正在由 Gemini 处理",
+  "cassetteReadyCount": "{ready}/{total} 已完成"
 }

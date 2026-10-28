@@ -13,6 +13,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'model_download_storage.dart';
 import 'transcription_provider.dart' show ModelStatus, ProgressSink;
 
 /// One downloadable model file, pinned by byte size + sha256.
@@ -319,7 +320,43 @@ class ModelManager<M extends ModelSpec> {
               })
               .catchError((_) {}),
     ]);
+    await _cleanupAbandonedNativeTempFiles();
     return landed;
+  }
+
+  /// The native downloader keeps large temporary files in app support. If
+  /// Android kills a task before its resume metadata is committed, its record
+  /// can be terminal while a large `com.bbflight.background_downloader*` file
+  /// remains. Preserve every file still referenced by resumable task data and
+  /// remove only unreferenced files when no catalog task is actively running.
+  Future<void> _cleanupAbandonedNativeTempFiles() async {
+    if (!Platform.isAndroid) return;
+    var hasProtectedTask = false;
+    for (final model in catalog) {
+      final taskId = 'model-${model.tier}';
+      final record = await FileDownloader().database.recordForId(taskId);
+      if (record != null &&
+          (record.status == TaskStatus.enqueued ||
+              record.status == TaskStatus.running ||
+              record.status == TaskStatus.waitingToRetry ||
+              record.status == TaskStatus.paused)) {
+        // Keep temporary files while a task could still own resumable bytes.
+        // A failed resume removes its record before cleaning them.
+        hasProtectedTask = true;
+      }
+    }
+    if (hasProtectedTask) return;
+
+    final supportDirectory = await getApplicationSupportDirectory();
+    await for (final entry in supportDirectory.list(followLinks: false)) {
+      if (entry is! File ||
+          !entry.uri.pathSegments.last.startsWith(
+            'com.bbflight.background_downloader',
+          )) {
+        continue;
+      }
+      await entry.delete();
+    }
   }
 
   Future<bool> _finalizeNative(M model) async {
@@ -385,23 +422,26 @@ class ModelManager<M extends ModelSpec> {
           throw const ModelNotificationPermissionDenied();
         }
 
+        await _cleanupAbandonedNativeTempFiles();
         final available = await _availableStorageBytes();
-        var remainingBytes = model.sizeBytes;
-        if (await part.exists()) {
-          remainingBytes = (model.sizeBytes - await part.length()).clamp(
-            0,
-            model.sizeBytes,
-          );
-        }
+        int? resumableNativeOffset;
         final existingTask = await FileDownloader().database.recordForId(
           'model-${model.tier}',
         );
-        if (existingTask != null && existingTask.progress > 0) {
-          remainingBytes = (model.sizeBytes * (1 - existingTask.progress))
-              .ceil()
-              .clamp(0, model.sizeBytes);
+        if (existingTask != null &&
+            existingTask.status == TaskStatus.paused &&
+            existingTask.progress > 0) {
+          // A paused task is the plugin state that owns a resumable partial.
+          // Terminal records are not a disk-space discount even if their
+          // last progress was nonzero.
+          resumableNativeOffset = (model.sizeBytes * existingTask.progress)
+              .floor();
         }
-        final required = remainingBytes + 128 * 1024 * 1024;
+        final required = requiredModelDownloadStorageBytes(
+          modelSizeBytes: model.sizeBytes,
+          appPartialBytes: await part.exists() ? await part.length() : null,
+          nativeResumeOffsetBytes: resumableNativeOffset,
+        );
         if (available != null && available < required) {
           throw InsufficientModelStorage(
             requiredBytes: required,
@@ -606,12 +646,25 @@ class ModelManager<M extends ModelSpec> {
       _nativeCompletions[model.tier] = completion;
       if (!await FileDownloader().resume(existing.task as DownloadTask)) {
         _nativeCompletions.remove(model.tier);
-        throw const HttpException(
-          'Could not resume background model download.',
+        // The task record outlived its temporary file. Drop the stale
+        // terminal state, clean its orphaned native temp, and check storage
+        // for a fresh full download before starting over.
+        await FileDownloader().database.deleteRecordWithId(task.taskId);
+        await _cleanupAbandonedNativeTempFiles();
+        final available = await _availableStorageBytes();
+        final required = requiredModelDownloadStorageBytes(
+          modelSizeBytes: model.sizeBytes,
         );
+        if (available != null && available < required) {
+          throw InsufficientModelStorage(
+            requiredBytes: required,
+            availableBytes: available,
+          );
+        }
+      } else {
+        await completion.future;
+        return;
       }
-      await completion.future;
-      return;
     }
     if (existing != null && existing.status == TaskStatus.complete) {
       if (await _finalizeNative(model)) return;

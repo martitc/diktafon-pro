@@ -10,6 +10,7 @@ import '../../application/providers.dart';
 import '../../application/recording_controller.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../domain/models.dart';
+import '../../domain/processing_progress.dart' as progress;
 import '../../domain/tape.dart';
 import '../../domain/transcript_edit.dart';
 import '../../l10n/l10n.dart';
@@ -135,6 +136,7 @@ class _CassetteScreenState extends ConsumerState<CassetteScreen>
     final playback =
         ref.watch(playbackProvider).value ?? ref.read(tapePlayerProvider).state;
     final recording = ref.watch(recordingControllerProvider);
+    final processing = ref.watch(processingProgressProvider).value ?? const {};
     final isRecordingHere = recording.isRecordingIn(widget.cassetteId);
     final player = ref.read(tapePlayerProvider);
 
@@ -208,6 +210,9 @@ class _CassetteScreenState extends ConsumerState<CassetteScreen>
             if (!isRecordingHere)
               _summaryLine(
                 cassette,
+                isProcessing:
+                    processing[cassette.id]?.stage ==
+                    progress.ProcessingStage.summarizing,
                 // The overview is written in the tape's language (D8: the
                 // first contributing memo's), not the UI locale.
                 languageCode: tape.memos
@@ -266,6 +271,7 @@ class _CassetteScreenState extends ConsumerState<CassetteScreen>
                         playing: playback.playing,
                         seekCount: playback.seekCount,
                         modelReady: _modelReady(),
+                        processing: processing,
                         onSeekGlobalMs: (ms) => player.seekGlobal(ms),
                         onRetryMemo: (memoId) =>
                             ref.read(jobQueueProvider).retryEnrichment(memoId),
@@ -366,7 +372,11 @@ class _CassetteScreenState extends ConsumerState<CassetteScreen>
         false;
   }
 
-  Widget _summaryLine(Cassette cassette, {String? languageCode}) {
+  Widget _summaryLine(
+    Cassette cassette, {
+    String? languageCode,
+    bool isProcessing = false,
+  }) {
     final tapeColors = context.tape;
     final summary = cassette.summary ?? context.l10n.summaryPlaceholder;
     return Semantics(
@@ -376,36 +386,52 @@ class _CassetteScreenState extends ConsumerState<CassetteScreen>
         onTap: () => setState(() => _summaryExpanded = !_summaryExpanded),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(18, 2, 18, 0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: Text(
-                  summary,
-                  maxLines: _summaryExpanded ? null : 2,
-                  overflow: _summaryExpanded ? null : TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    height: 1.5,
-                    color: tapeColors.ink2,
-                    fontStyle: cassette.summary == null
-                        ? FontStyle.italic
-                        : null,
-                    // Content text (Han unification); the placeholder is
-                    // UI chrome and inherits the app locale.
-                    locale: cassette.summary == null
-                        ? null
-                        : contentLocale(languageCode),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      summary,
+                      maxLines: _summaryExpanded ? null : 2,
+                      overflow: _summaryExpanded ? null : TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        height: 1.5,
+                        color: tapeColors.ink2,
+                        fontStyle: cassette.summary == null
+                            ? FontStyle.italic
+                            : null,
+                        locale: cassette.summary == null
+                            ? null
+                            : contentLocale(languageCode),
+                      ),
+                    ),
                   ),
+                  Icon(
+                    _summaryExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    size: 16,
+                    color: tapeColors.ink2,
+                  ),
+                ],
+              ),
+              if (isProcessing) ...[
+                const SizedBox(height: 5),
+                Text(
+                  context.l10n.summarizing,
+                  style: TextStyle(fontSize: 10, color: tapeColors.ink2),
                 ),
-              ),
-              Icon(
-                _summaryExpanded
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
-                size: 16,
-                color: tapeColors.ink2,
-              ),
+                const SizedBox(height: 3),
+                LinearProgressIndicator(
+                  minHeight: 2,
+                  backgroundColor: tapeColors.line,
+                  color: tapeColors.ink2,
+                ),
+              ],
             ],
           ),
         ),

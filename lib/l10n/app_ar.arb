@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "الإشعارات",
+  "notificationsEmpty": "لا توجد إشعارات بعد",
+  "activityInProgress": "قيد التنفيذ",
+  "activityCompleted": "اكتمل",
+  "activityPaused": "متوقف مؤقتًا",
+  "activityFailed": "فشل",
+  "progressUploadGemini": "جارٍ رفع الصوت إلى Gemini",
+  "progressProcessingGemini": "جارٍ المعالجة باستخدام Gemini",
+  "cassetteReadyCount": "{ready}/{total} مكتملة"
 }

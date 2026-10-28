@@ -85,6 +85,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Keep local test builds side-by-side with the Play-signed app;
+            // adb updates must never replace or downgrade the user's install.
+            applicationIdSuffix = ".debug"
+        }
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")

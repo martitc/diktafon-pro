@@ -10,13 +10,16 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app.dart';
+import 'application/navigation.dart';
 import 'application/providers.dart';
 import 'data/files/audio_file_store.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'l10n/locale_resolution.dart';
 import 'services/notifications/download_notifier.dart';
+import 'services/notifications/activity_center.dart';
 import 'services/notifications/local_notifications_sink.dart';
 import 'services/notifications/processing_completion_notifier.dart';
+import 'presentation/screens/activity_center_screen.dart';
 import 'services/processing/job_queue.dart';
 import 'services/providers/llm/llm_model_manager.dart';
 import 'services/providers/model_manager.dart';
@@ -27,18 +30,21 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final downloader = FileDownloader();
   downloader.configureNotification(
-    running: const TaskNotification('Diktafon Pro', 'Descargando {filename}'),
+    running: const TaskNotification(
+      'Diktafon Pro',
+      'Descargando modelo de IA…',
+    ),
     complete: const TaskNotification(
       'Diktafon Pro',
-      'Modelo descargado: {filename}',
+      'Descarga de modelo completada',
     ),
     error: const TaskNotification(
       'Diktafon Pro',
-      'Error al descargar {filename}',
+      'Error al descargar el modelo',
     ),
     paused: const TaskNotification(
       'Diktafon Pro',
-      'Descarga pausada: {filename}',
+      'Descarga de modelo pausada',
     ),
     progressBar: true,
   );
@@ -55,6 +61,10 @@ Future<void> main() async {
   final fileStore = await AudioFileStore.open();
   // Models are regenerable → app-support, excluded from backup (§7.1).
   final supportDir = await getApplicationSupportDirectory();
+  final activityCenter = ActivityCenter(
+    File('${supportDir.path}/activity-history.json'),
+  );
+  await activityCenter.load();
   final modelsDir = Directory('${supportDir.path}/models')
     ..createSync(recursive: true);
   unawaited(excludeFromIosBackup(modelsDir.path));
@@ -69,6 +79,7 @@ Future<void> main() async {
   final container = ProviderContainer(
     overrides: [
       audioFileStoreProvider.overrideWithValue(fileStore),
+      activityCenterProvider.overrideWithValue(activityCenter),
       whisperModelManagerProvider.overrideWithValue(whisperModels),
       llmModelManagerProvider.overrideWithValue(llmModels),
       chimeFileProvider.overrideWithValue(
@@ -128,6 +139,7 @@ Future<void> main() async {
     whisperModels,
     llmModels,
     container.read(jobQueueProvider),
+    activityCenter,
   );
 
   // Resume any jobs persisted before the last shutdown (§6.5 durability) —
@@ -165,8 +177,25 @@ Future<void> _attachDownloadNotifications(
   WhisperModelManager whisperModels,
   LlmModelManager llmModels,
   JobQueue jobQueue,
+  ActivityCenter history,
 ) async {
-  final sink = await LocalNotificationsSink.init();
+  final sink = await LocalNotificationsSink.init(
+    onNotificationTap: () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final navigator = appNavigatorKey.currentState;
+        if (navigator == null) return;
+        unawaited(
+          navigator
+              .push<ActivityEntry>(
+                MaterialPageRoute<ActivityEntry>(
+                  builder: (_) => const ActivityCenterScreen(),
+                ),
+              )
+              .then((_) => history.markAllRead()),
+        );
+      });
+    },
+  );
   if (sink == null) return;
   AppLocalizations l10n;
   try {
@@ -182,6 +211,7 @@ Future<void> _attachDownloadNotifications(
         downloading: l10n.notifDownloading,
         installed: l10n.notifModelInstalled,
       ),
+      history: history,
     )
     ..attach(whisperModels, idBase: 100)
     ..attach(llmModels, idBase: 200);
@@ -193,6 +223,7 @@ Future<void> _attachDownloadNotifications(
       summaryTitle: l10n.notifSummaryCompleted,
       summaryBody: l10n.notifSummaryCompletedBody,
     ),
+    history: history,
   ).attach(jobQueue.completions);
 }
 

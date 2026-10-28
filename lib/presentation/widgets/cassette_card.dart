@@ -19,11 +19,17 @@ class CassetteCard extends StatelessWidget {
   const CassetteCard({
     super.key,
     required this.overview,
+    this.readyCount = 0,
+    this.isProcessing = false,
+    this.hasFailure = false,
     this.onTap,
     this.onLongPress,
   });
 
   final CassetteOverview overview;
+  final int readyCount;
+  final bool isProcessing;
+  final bool hasFailure;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
@@ -40,84 +46,159 @@ class CassetteCard extends StatelessWidget {
       button: true,
       label: l10n.cardSemantics(
         label ?? l10n.untitledCassette,
-        l10n.memoCount(overview.memoCount),
+        '${l10n.memoCount(overview.memoCount)}, ${l10n.cassetteReadyCount(readyCount.clamp(0, overview.memoCount), overview.memoCount)}',
       ),
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: AspectRatio(
-          aspectRatio: tapeSpriteWidth / tapeSpriteHeight,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final w = constraints.maxWidth;
-              final h = constraints.maxHeight;
-              // The mockup's type scale: 14 px Jersey 10 name / 7 px mono meta
-              // on a 157 px tile (the 2-up portrait-phone width).
-              final scale = w / 157.0;
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  _TapeSprite(
-                    hue: hue,
-                    windingWidth: tapeWindingWidth(_fullness()),
-                    dark: Theme.of(context).brightness == Brightness.dark,
-                  ),
-                  _print(
-                    tapeNameBand,
-                    w,
-                    h,
-                    label != null
-                        ? Text(
-                            label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textScaler: TextScaler.noScaling,
-                            style: TextStyle(
-                              fontFamily: displayFont,
-                              fontFamilyFallback: fontFallback,
-                              fontSize: 14 * scale,
-                              height: 1,
-                              color: tapeNameInk,
-                            ),
-                          )
-                        : Text(
-                            l10n.untitledCassette,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textScaler: TextScaler.noScaling,
-                            style: TextStyle(
-                              fontFamily: bodyFont,
-                              fontFamilyFallback: fontFallback,
-                              fontSize: 8 * scale,
-                              height: 1,
-                              fontStyle: FontStyle.italic,
-                              color: tapePlaceholderInk,
-                            ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final w = constraints.maxWidth;
+            final spriteHeight = w * tapeSpriteHeight / tapeSpriteWidth;
+            final h = spriteHeight;
+            // The mockup's type scale: 14 px Jersey 10 name / 7 px mono meta
+            // on a 157 px tile (the 2-up portrait-phone width).
+            final scale = w / 157.0;
+            final allReady =
+                overview.memoCount > 0 && readyCount >= overview.memoCount;
+            return Column(
+              children: [
+                SizedBox(
+                  width: w,
+                  height: spriteHeight,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _TapeSprite(
+                        hue: hue,
+                        windingWidth: tapeWindingWidth(_fullness()),
+                        dark: Theme.of(context).brightness == Brightness.dark,
+                      ),
+                      if (isProcessing)
+                        const Positioned.fill(child: _SpinningReels()),
+                      _print(
+                        tapeNameBand,
+                        w,
+                        h,
+                        label != null
+                            ? Text(
+                                label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textScaler: TextScaler.noScaling,
+                                style: TextStyle(
+                                  fontFamily: displayFont,
+                                  fontFamilyFallback: fontFallback,
+                                  fontSize: 14 * scale,
+                                  height: 1,
+                                  color: tapeNameInk,
+                                ),
+                              )
+                            : Text(
+                                l10n.untitledCassette,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textScaler: TextScaler.noScaling,
+                                style: TextStyle(
+                                  fontFamily: bodyFont,
+                                  fontFamilyFallback: fontFallback,
+                                  fontSize: 8 * scale,
+                                  height: 1,
+                                  fontStyle: FontStyle.italic,
+                                  color: tapePlaceholderInk,
+                                ),
+                              ),
+                      ),
+                      _print(
+                        tapeMetaStrip,
+                        w,
+                        h,
+                        Text(
+                          _metaLine(context),
+                          maxLines: 1,
+                          overflow: TextOverflow.clip,
+                          softWrap: false,
+                          textScaler: TextScaler.noScaling,
+                          style: TextStyle(
+                            fontFamily: bodyFont,
+                            fontFamilyFallback: fontFallback,
+                            fontSize: 7 * scale,
+                            height: 1,
+                            color: tapeNameInk,
                           ),
+                        ),
+                      ),
+                    ],
                   ),
-                  _print(
-                    tapeMetaStrip,
-                    w,
-                    h,
-                    Text(
-                      _metaLine(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.clip,
-                      softWrap: false,
-                      textScaler: TextScaler.noScaling,
-                      style: TextStyle(
-                        fontFamily: bodyFont,
-                        fontFamilyFallback: fontFallback,
-                        fontSize: 7 * scale,
-                        height: 1,
-                        color: tapeNameInk,
+                ),
+                if (overview.memoCount > 0) ...[
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          context.l10n.cassetteReadyCount(
+                            readyCount.clamp(0, overview.memoCount),
+                            overview.memoCount,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: bodyFont,
+                            fontFamilyFallback: fontFallback,
+                            fontSize: 9 * scale,
+                            color: allReady
+                                ? const Color(0xFF287B51)
+                                : hasFailure
+                                ? const Color(0xFFB34D40)
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      if (allReady)
+                        const Icon(
+                          Icons.check_circle,
+                          size: 13,
+                          color: Color(0xFF287B51),
+                        )
+                      else if (hasFailure)
+                        const Icon(
+                          Icons.error_outline,
+                          size: 13,
+                          color: Color(0xFFB34D40),
+                        )
+                      else if (isProcessing)
+                        Icon(
+                          Icons.sync,
+                          size: 13,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: LinearProgressIndicator(
+                      minHeight: 3,
+                      value: allReady ? 1 : (isProcessing ? null : 0),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        allReady
+                            ? const Color(0xFF3A9868)
+                            : hasFailure
+                            ? const Color(0xFFB34D40)
+                            : Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
                 ],
-              );
-            },
-          ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -150,6 +231,60 @@ class CassetteCard extends StatelessWidget {
   /// Saturates at one hour of tape.
   double _fullness() =>
       (overview.totalDurationMs / Duration.millisecondsPerHour).clamp(0.0, 1.0);
+}
+
+/// Small reel hubs rotate only while work is active. The underlying cassette
+/// remains pixel art; three light perforations make motion visible at tile size.
+class _SpinningReels extends StatefulWidget {
+  const _SpinningReels();
+
+  @override
+  State<_SpinningReels> createState() => _SpinningReelsState();
+}
+
+class _SpinningReelsState extends State<_SpinningReels>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _controller,
+    builder: (context, _) => CustomPaint(
+      painter: _ReelPainter(_controller.value * 2 * 3.141592653589793),
+    ),
+  );
+}
+
+class _ReelPainter extends CustomPainter {
+  const _ReelPainter(this.rotation);
+
+  final double rotation;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = const Color(0xFFE2D8C5);
+    for (final x in [0.298, 0.702]) {
+      final center = Offset(size.width * x, size.height * 0.475);
+      for (var i = 0; i < 3; i++) {
+        final angle = rotation + i * 2 * 3.141592653589793 / 3;
+        final dot = center + Offset.fromDirection(angle, size.width * 0.047);
+        canvas.drawCircle(dot, size.width * 0.018, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ReelPainter oldDelegate) =>
+      oldDelegate.rotation != rotation;
 }
 
 /// "today 14:02" / "yesterday" / "28 Jun" — the grid meta format (mockup 02).

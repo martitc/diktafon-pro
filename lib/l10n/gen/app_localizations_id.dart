@@ -722,4 +722,33 @@ class AppLocalizationsId extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'unduhan $size · perkiraan RAM minimum: $ram GB';
   }
+
+  @override
+  String get notificationCenterTitle => 'Notifikasi';
+
+  @override
+  String get notificationsEmpty => 'Belum ada notifikasi';
+
+  @override
+  String get activityInProgress => 'Sedang berlangsung';
+
+  @override
+  String get activityCompleted => 'Selesai';
+
+  @override
+  String get activityPaused => 'Dijeda';
+
+  @override
+  String get activityFailed => 'Gagal';
+
+  @override
+  String get progressUploadGemini => 'Mengunggah audio ke Gemini';
+
+  @override
+  String get progressProcessingGemini => 'Memproses dengan Gemini';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total selesai';
+  }
 }

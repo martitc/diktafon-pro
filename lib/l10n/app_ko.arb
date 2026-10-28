@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "알림",
+  "notificationsEmpty": "아직 알림이 없습니다",
+  "activityInProgress": "진행 중",
+  "activityCompleted": "완료",
+  "activityPaused": "일시 중지됨",
+  "activityFailed": "실패",
+  "progressUploadGemini": "Gemini에 오디오 업로드 중",
+  "progressProcessingGemini": "Gemini에서 처리 중",
+  "cassetteReadyCount": "{ready}/{total} 완료"
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../../domain/models.dart';
+import '../../../domain/processing_progress.dart';
 import '../../audio/recorder_service.dart' show probeAudioDurationMs;
 import '../credential_vault.dart';
 import '../transcription_provider.dart';
@@ -42,6 +43,7 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
     AudioRef audio, {
     String? languageCode,
     CancelToken? cancel,
+    TranscriptionProgressSink? onProgress,
   }) async {
     cancel ??= CancelToken();
     if (cancel.isCancelled) throw const TranscriptionCancelled();
@@ -61,6 +63,7 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
         key,
         languageCode,
         cancel,
+        onProgress,
       );
     }
     final file = File(audio.filePath);
@@ -68,8 +71,9 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
     cancel.addListener(() => client.close(force: true));
     String? remoteFile;
     try {
-      remoteFile = await _upload(file, key, client, cancel);
+      remoteFile = await _upload(file, key, client, cancel, onProgress);
       if (cancel.isCancelled) throw const TranscriptionCancelled();
+      onProgress?.call(ProcessingStage.processingCloud, null);
       final transcript = await GeminiConnectionProbe().transcribe(
         audioBytes: const [],
         audioFileUri: remoteFile,
@@ -81,6 +85,7 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
       if (transcript.isEmpty) {
         throw const GeminiProviderException('emptyTranscript');
       }
+      onProgress?.call(ProcessingStage.finished, 1);
       return transcript;
     } catch (_) {
       if (cancel.isCancelled) throw const TranscriptionCancelled();
@@ -105,13 +110,15 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
     String key,
     String? languageCode,
     CancelToken cancel,
+    TranscriptionProgressSink? onProgress,
   ) async {
     final client = _httpClientFactory();
     cancel.addListener(() => client.close(force: true));
     String? remoteFile;
     try {
-      final uri = await _upload(file, key, client, cancel);
+      final uri = await _upload(file, key, client, cancel, onProgress);
       remoteFile = uri;
+      onProgress?.call(ProcessingStage.processingCloud, null);
       final response = await _jsonRequest(
         client,
         Uri.https('generativelanguage.googleapis.com', '/v1beta/interactions'),
@@ -136,7 +143,9 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
       if (response['status'] != 'completed') {
         throw const GeminiProviderException('incompleteResponse');
       }
-      return _parseInteraction(response, languageCode);
+      final transcript = _parseInteraction(response, languageCode);
+      onProgress?.call(ProcessingStage.finished, 1);
+      return transcript;
     } on GeminiProviderException {
       rethrow;
     } catch (_) {
@@ -162,6 +171,7 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
     String key,
     HttpClient client,
     CancelToken cancel,
+    TranscriptionProgressSink? onProgress,
   ) async {
     if (cancel.isCancelled) throw const TranscriptionCancelled();
     final length = await file.length();
@@ -202,7 +212,18 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
       ..set('X-Goog-Upload-Offset', '0')
       ..set('X-Goog-Upload-Command', 'upload, finalize')
       ..contentType = ContentType(mime.split('/').first, mime.split('/').last);
-    await upload.addStream(file.openRead());
+    onProgress?.call(ProcessingStage.uploadingAudio, 0);
+    var uploaded = 0;
+    await upload.addStream(
+      file.openRead().map((chunk) {
+        uploaded += chunk.length;
+        onProgress?.call(
+          ProcessingStage.uploadingAudio,
+          length == 0 ? 1 : uploaded / length,
+        );
+        return chunk;
+      }),
+    );
     final response = await upload.close().timeout(const Duration(minutes: 10));
     if (cancel.isCancelled) throw const TranscriptionCancelled();
     final data = await _readJson(response);

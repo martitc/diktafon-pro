@@ -32,6 +32,12 @@ bool dk_abort_cb(void * user_data) {
     return cancel != nullptr && *cancel != 0;
 }
 
+void dk_progress_cb(whisper_context *, whisper_state *, int progress,
+                    void * user_data) {
+    auto * value = static_cast<int32_t *>(user_data);
+    if (value != nullptr) __atomic_store_n(value, progress, __ATOMIC_RELAXED);
+}
+
 // Production VAD tuning (design.md §6.3a): upstream defaults (0.5 threshold,
 // 30 ms pad, 100 ms min silence) clip quiet speech onsets — the phase-0
 // bench lost whole words to them. These values were tuned on the verified
@@ -127,7 +133,8 @@ int32_t dk_whisper_transcribe(dk_whisper * dw,
                               int32_t n_samples,
                               const char * lang,
                               int32_t n_threads,
-                              const int32_t * cancel) {
+                              const int32_t * cancel,
+                              int32_t * progress) {
     dk_ensure_threadpool(n_threads);
     DkThreadBackgroundScope bg;
     const bool beam = dw->beam_size > 1;
@@ -163,6 +170,8 @@ int32_t dk_whisper_transcribe(dk_whisper * dw,
     wparams.abort_callback   = dk_abort_cb;
     wparams.abort_callback_user_data =
         const_cast<void *>(static_cast<const void *>(cancel));
+    wparams.progress_callback = dk_progress_cb;
+    wparams.progress_callback_user_data = progress;
 
     const int ret = whisper_full(dw->ctx, wparams, pcm, n_samples);
     if (ret != 0) {
@@ -174,6 +183,11 @@ int32_t dk_whisper_transcribe(dk_whisper * dw,
         : whisper_lang_str(whisper_full_lang_id(dw->ctx));
     dw->lang = used != nullptr ? used : "";
     return 0;
+}
+
+int32_t dk_whisper_progress_read(const int32_t * progress) {
+    if (progress == nullptr) return 0;
+    return __atomic_load_n(progress, __ATOMIC_RELAXED);
 }
 
 const char * dk_whisper_lang(dk_whisper * dw) {

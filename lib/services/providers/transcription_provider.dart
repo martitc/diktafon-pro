@@ -5,6 +5,7 @@ library;
 import 'dart:async';
 
 import '../../domain/models.dart';
+import '../../domain/processing_progress.dart';
 
 /// [paused] covers every partial-on-disk, not-on-the-wire state: an explicit
 /// pause from the picker as well as an interrupted attempt that hasn't been
@@ -13,6 +14,8 @@ enum ModelStatus { notInstalled, downloading, paused, ready }
 
 /// Reports download/preparation progress in [0..1].
 typedef ProgressSink = void Function(double fraction);
+typedef TranscriptionProgressSink =
+    void Function(ProcessingStage stage, double? fraction);
 
 class CancelToken {
   bool _cancelled = false;
@@ -65,5 +68,6 @@ abstract interface class TranscriptionProvider {
     AudioRef audio, {
     String? languageCode,
     CancelToken? cancel,
+    TranscriptionProgressSink? onProgress,
   });
 }

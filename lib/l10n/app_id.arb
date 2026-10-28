@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Notifikasi",
+  "notificationsEmpty": "Belum ada notifikasi",
+  "activityInProgress": "Sedang berlangsung",
+  "activityCompleted": "Selesai",
+  "activityPaused": "Dijeda",
+  "activityFailed": "Gagal",
+  "progressUploadGemini": "Mengunggah audio ke Gemini",
+  "progressProcessingGemini": "Memproses dengan Gemini",
+  "cassetteReadyCount": "{ready}/{total} selesai"
 }

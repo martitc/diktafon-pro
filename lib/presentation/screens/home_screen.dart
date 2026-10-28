@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers.dart';
 import '../../data/repositories/cassette_repository.dart';
 import '../../domain/palette.dart';
+import '../../domain/models.dart';
 import '../../l10n/l10n.dart';
 import '../theme/tape_colors.dart';
 import '../widgets/cassette_card.dart';
 import '../widgets/deck.dart';
 import 'cassette_screen.dart';
 import 'settings_screen.dart';
+import 'activity_center_screen.dart';
+import '../../services/notifications/activity_center.dart';
 
 /// Home — the cassette grid (§5.2, mockup 02): two per row in portrait,
 /// recency-sorted, square ink FAB. Long-press a tape → Rename / Delete.
@@ -21,11 +24,30 @@ class HomeScreen extends ConsumerWidget {
     final overviews = ref.watch(cassetteOverviewsProvider);
     final tape = context.tape;
     final l10n = context.l10n;
+    final activityCenter = ref.watch(activityCenterProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('DIKTAFON PRO'),
         actions: [
+          AnimatedBuilder(
+            animation: activityCenter,
+            builder: (context, _) => IconButton(
+              tooltip: Localizations.localeOf(context).languageCode == 'es'
+                  ? 'Notificaciones'
+                  : 'Notifications',
+              onPressed: () => _openActivityCenter(context, ref),
+              icon: Badge(
+                isLabelVisible: activityCenter.unreadCount > 0,
+                label: Text(
+                  activityCenter.unreadCount > 99
+                      ? '99+'
+                      : '${activityCenter.unreadCount}',
+                ),
+                child: const Icon(Icons.notifications_outlined, size: 22),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: l10n.settingsTooltip,
             icon: const Icon(Icons.settings_outlined, size: 22),
@@ -61,15 +83,52 @@ class HomeScreen extends ConsumerWidget {
                   // cards instead of many small ones (§5.7).
                   maxCrossAxisExtent: 260,
                   // The pixel-art sprite's own proportions (§5.2, r10).
-                  childAspectRatio: 94 / 59,
+                  // Leave room for the readiness label and status bar under
+                  // the 94×59 cassette art, including on dense phone grids.
+                  childAspectRatio: 94 / 72,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
                 itemCount: items.length,
-                itemBuilder: (context, i) => CassetteCard(
-                  overview: items[i],
-                  onTap: () => _open(context, items[i].cassette.id),
-                  onLongPress: () => _contextMenu(context, ref, items[i]),
+                itemBuilder: (context, i) => Consumer(
+                  builder: (context, itemRef, _) {
+                    final overview = items[i];
+                    final memos =
+                        itemRef
+                            .watch(memosProvider(overview.cassette.id))
+                            .value ??
+                        const [];
+                    final memoIds = memos.map((memo) => memo.id).toSet();
+                    final progress =
+                        itemRef.watch(processingProgressProvider).value ??
+                        const {};
+                    final cassetteWork = progress.entries
+                        .where(
+                          (entry) =>
+                              entry.key == overview.cassette.id ||
+                              memoIds.contains(entry.key),
+                        )
+                        .isNotEmpty;
+                    final isProcessing =
+                        cassetteWork ||
+                        memos.any(
+                          (memo) =>
+                              memo.status == MemoStatus.transcribing ||
+                              memo.status == MemoStatus.summarizing,
+                        );
+                    return CassetteCard(
+                      overview: overview,
+                      readyCount: memos
+                          .where((memo) => memo.status == MemoStatus.ready)
+                          .length,
+                      isProcessing: isProcessing,
+                      hasFailure: memos.any(
+                        (memo) => memo.status == MemoStatus.failed,
+                      ),
+                      onTap: () => _open(context, overview.cassette.id),
+                      onLongPress: () => _contextMenu(context, ref, overview),
+                    );
+                  },
                 ),
               ),
       ),
@@ -93,6 +152,39 @@ class HomeScreen extends ConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => CassetteScreen(cassetteId: cassetteId)),
     );
+  }
+
+  Future<void> _openActivityCenter(BuildContext context, WidgetRef ref) async {
+    final entry = await Navigator.of(context).push<ActivityEntry>(
+      MaterialPageRoute(builder: (_) => const ActivityCenterScreen()),
+    );
+    await ref.read(activityCenterProvider).markAllRead();
+    if (!context.mounted || entry == null) return;
+    if (entry.kind == ActivityKind.modelDownload) {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+      return;
+    }
+    final memoId = entry.targetId;
+    if (memoId == null) return;
+    final overviews = await ref
+        .read(cassetteRepositoryProvider)
+        .watchOverviews()
+        .first;
+    for (final overview in overviews) {
+      final memos = await ref
+          .read(memoRepositoryProvider)
+          .memosOf(overview.cassette.id);
+      if (memos.any((memo) => memo.id == memoId)) {
+        if (context.mounted) _open(context, overview.cassette.id);
+        return;
+      }
+      if (overview.cassette.id == memoId) {
+        if (context.mounted) _open(context, memoId);
+        return;
+      }
+    }
   }
 
   Future<void> _contextMenu(

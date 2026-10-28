@@ -50,7 +50,9 @@ DK_EXPORT int32_t dk_whisper_transcribe(dk_whisper * dw,
                                         int32_t n_samples,
                                         const char * lang,
                                         int32_t n_threads,
-                                        const int32_t * cancel);
+                              const int32_t * cancel,
+                              int32_t * progress);
+DK_EXPORT int32_t dk_whisper_progress_read(const int32_t * progress);
 
 /* Result accessors — valid after a successful transcribe, until the next
  * transcribe/free. Token text is raw UTF-8 bytes and may be a *partial*

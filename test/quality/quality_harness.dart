@@ -207,15 +207,18 @@ Future<void> runVariant(QualityConfig config) async {
       entry['decodeMs'] = decodeWatch.elapsedMilliseconds;
 
       final watch = Stopwatch()..start();
+      final progressFlag = calloc<Int32>();
       final raw = await whisper.transcribe(
         modelPath: config.whisperModel!,
         pcmPath: pcmPath,
         languageCode: config.forceLanguage ? clip.language : null,
         cancelFlagAddress: cancelFlag.address,
+        progressAddress: progressFlag.address,
         threads: benchThreads,
         beamSize: config.beamSize,
         vadModelPath: config.vadModelPath,
       );
+      calloc.free(progressFlag);
       entry['transcribeMs'] = watch.elapsedMilliseconds;
       entry['detectedLanguage'] = raw.languageCode;
       // Decoder confidence per kept segment: recorded for post-hoc

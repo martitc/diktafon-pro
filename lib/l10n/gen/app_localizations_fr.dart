@@ -743,4 +743,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'téléchargement $size · RAM minimale estimée : $ram Go';
   }
+
+  @override
+  String get notificationCenterTitle => 'Notifications';
+
+  @override
+  String get notificationsEmpty => 'Aucune notification pour le moment';
+
+  @override
+  String get activityInProgress => 'En cours';
+
+  @override
+  String get activityCompleted => 'Terminé';
+
+  @override
+  String get activityPaused => 'En pause';
+
+  @override
+  String get activityFailed => 'Échec';
+
+  @override
+  String get progressUploadGemini => 'Envoi de l’audio vers Gemini';
+
+  @override
+  String get progressProcessingGemini => 'Traitement par Gemini';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total terminées';
+  }
 }

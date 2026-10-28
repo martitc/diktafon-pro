@@ -722,4 +722,33 @@ class AppLocalizationsVi extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'tải xuống $size · RAM tối thiểu ước tính: $ram GB';
   }
+
+  @override
+  String get notificationCenterTitle => 'Thông báo';
+
+  @override
+  String get notificationsEmpty => 'Chưa có thông báo';
+
+  @override
+  String get activityInProgress => 'Đang thực hiện';
+
+  @override
+  String get activityCompleted => 'Hoàn tất';
+
+  @override
+  String get activityPaused => 'Đã tạm dừng';
+
+  @override
+  String get activityFailed => 'Thất bại';
+
+  @override
+  String get progressUploadGemini => 'Đang tải âm thanh lên Gemini';
+
+  @override
+  String get progressProcessingGemini => 'Đang xử lý bằng Gemini';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total hoàn tất';
+  }
 }

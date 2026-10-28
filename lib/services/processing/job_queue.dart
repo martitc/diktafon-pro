@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../data/db/database.dart';
@@ -10,6 +11,7 @@ import '../../data/repositories/cassette_repository.dart';
 import '../../data/repositories/memo_repository.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../domain/models.dart';
+import '../../domain/processing_progress.dart' as progress;
 import '../providers/llm/summary_prompts.dart' show estimateTokens;
 import '../audio/audio_transcoder.dart';
 import '../providers/summarization_provider.dart';
@@ -38,13 +40,13 @@ enum JobType {
       this == transcribe || this == cleanupTranscript || this == summarizeMemo;
 }
 
-enum ProcessingStage { transcription, memoSummary }
+enum CompletionStage { transcription, memoSummary }
 
 class ProcessingCompletion {
   const ProcessingCompletion({required this.memoId, required this.stage});
 
   final String memoId;
-  final ProcessingStage stage;
+  final CompletionStage stage;
 }
 
 /// §6.7 (revised 2026-07-28): only transcripts estimated *longer* than this
@@ -98,9 +100,14 @@ class JobQueue {
   /// In-flight cancellation handles, by memo id (§14 delete-during-processing).
   final Map<String, CancelToken> _active = {};
   final _completions = StreamController<ProcessingCompletion>.broadcast();
+  final _progress = StreamController<progress.ProcessingProgress>.broadcast();
 
   /// Successful per-memo processing stages, used for best-effort OS notices.
   Stream<ProcessingCompletion> get completions => _completions.stream;
+
+  /// Real stage updates for active memo work. Null fraction means the engine
+  /// cannot measure the remaining work and the UI should show indeterminate.
+  Stream<progress.ProcessingProgress> get progressUpdates => _progress.stream;
 
   Future<void>? _draining;
   bool _recoveredOrphans = false;
@@ -296,9 +303,23 @@ class JobQueue {
       // every drain query (the jobs table has no index on status).
       await (_db.delete(_db.jobs)..where((j) => j.id.equals(job.id))).go();
     } on TranscriptionCancelled {
+      _finishProgress(job.targetId);
       // Memo deleted while transcribing — the job is moot, not failed.
       await (_db.delete(_db.jobs)..where((j) => j.id.equals(job.id))).go();
-    } catch (_) {
+    } catch (error, stackTrace) {
+      // Keep the durable queue resilient, but leave a local-only breadcrumb
+      // in debug builds so device failures can be diagnosed. Avoid logging
+      // paths, transcript text, or other exception payloads that may contain
+      // user data.
+      if (kDebugMode) {
+        final safeError = error.toString().replaceAll(
+          RegExp(r'/(?:data|storage|Users|private|tmp)/[^\s,;)}]+'),
+          '<local-path>',
+        );
+        debugPrint('Job ${type.name} failed: $safeError');
+        debugPrint(stackTrace.toString().split('\n').take(8).join('\n'));
+      }
+      _finishProgress(job.targetId);
       final attempts = job.attempts + 1;
       final permanent = attempts >= _maxAttempts;
       await _setJob(
@@ -324,6 +345,13 @@ class JobQueue {
       }
     }
   }
+
+  void _finishProgress(String targetId) => _progress.add(
+    progress.ProcessingProgress(
+      targetId: targetId,
+      stage: progress.ProcessingStage.finished,
+    ),
+  );
 
   /// Puts a memo back to the waiting status its enrichment stage starts
   /// from — `stored` before a transcript exists, `transcribed` after.
@@ -464,6 +492,13 @@ class JobQueue {
         AudioRef(row.filePath),
         languageCode: settings.appLanguage,
         cancel: cancel,
+        onProgress: (stage, fraction) => _progress.add(
+          progress.ProcessingProgress(
+            targetId: memoId,
+            stage: stage,
+            fraction: fraction,
+          ),
+        ),
       );
       // D8 amendment: Chinese transcripts are stored script-converted under
       // a script-qualified code (forced zh-Hans/zh-Hant, or the system
@@ -494,7 +529,13 @@ class JobQueue {
       _completions.add(
         ProcessingCompletion(
           memoId: memoId,
-          stage: ProcessingStage.transcription,
+          stage: CompletionStage.transcription,
+        ),
+      );
+      _progress.add(
+        progress.ProcessingProgress(
+          targetId: memoId,
+          stage: progress.ProcessingStage.finished,
         ),
       );
     } finally {
@@ -535,6 +576,12 @@ class JobQueue {
       return;
     }
     await _memos.updateStatus(memoId, MemoStatus.summarizing);
+    _progress.add(
+      progress.ProcessingProgress(
+        targetId: memoId,
+        stage: progress.ProcessingStage.summarizing,
+      ),
+    );
 
     final language = await _languageFor(row.detectedLang);
     // matchChineseScript is belt-and-braces (D8): the prompt pins
@@ -556,12 +603,18 @@ class JobQueue {
       summary.isEmpty ? null : summary,
       MemoStatus.ready,
     );
+    _progress.add(
+      progress.ProcessingProgress(
+        targetId: memoId,
+        stage: progress.ProcessingStage.finished,
+      ),
+    );
     await _enqueueCassetteUpdate(row.cassetteId);
     if (summary.isNotEmpty) _notifySummaryCompletion(memoId);
   }
 
   void _notifySummaryCompletion(String memoId) => _completions.add(
-    ProcessingCompletion(memoId: memoId, stage: ProcessingStage.memoSummary),
+    ProcessingCompletion(memoId: memoId, stage: CompletionStage.memoSummary),
   );
 
   /// §6.7: short transcripts are their own summary — no gist.
@@ -574,10 +627,19 @@ class JobQueue {
   /// additions and deletions alike — at the cost of re-reading every
   /// digest (bounded by the prompt's char budget).
   Future<void> _updateCassetteSummary(String cassetteId) async {
+    _progress.add(
+      progress.ProcessingProgress(
+        targetId: cassetteId,
+        stage: progress.ProcessingStage.summarizing,
+      ),
+    );
     final cassette = await (_db.select(
       _db.cassettes,
     )..where((c) => c.id.equals(cassetteId))).getSingleOrNull();
-    if (cassette == null) return; // deleted meanwhile (§14)
+    if (cassette == null) {
+      _finishProgress(cassetteId);
+      return; // deleted meanwhile (§14)
+    }
 
     final rows =
         await (_db.select(_db.memos)
@@ -600,6 +662,12 @@ class JobQueue {
       // The last contributing memo was deleted — the overview no longer
       // describes anything; the (possibly user-set) label stays.
       await _cassettes.setSummary(cassetteId, null);
+      _progress.add(
+        progress.ProcessingProgress(
+          targetId: cassetteId,
+          stage: progress.ProcessingStage.finished,
+        ),
+      );
       return;
     }
 
@@ -621,6 +689,15 @@ class JobQueue {
     if (summary.isEmpty) return;
 
     await _cassettes.setSummary(cassetteId, summary);
+    if (summary.isNotEmpty) {
+      _notifySummaryCompletion(cassetteId);
+    }
+    _progress.add(
+      progress.ProcessingProgress(
+        targetId: cassetteId,
+        stage: progress.ProcessingStage.finished,
+      ),
+    );
 
     // D10 (revised): a title is suggested only while the label is blank —
     // effectively once, with the first overview; after that the name stays

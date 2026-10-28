@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "सूचनाएँ",
+  "notificationsEmpty": "अभी कोई सूचना नहीं",
+  "activityInProgress": "प्रगति पर",
+  "activityCompleted": "पूरा हुआ",
+  "activityPaused": "रुका हुआ",
+  "activityFailed": "विफल",
+  "progressUploadGemini": "Gemini पर ऑडियो अपलोड हो रहा है",
+  "progressProcessingGemini": "Gemini में प्रोसेस हो रहा है",
+  "cassetteReadyCount": "{ready}/{total} तैयार"
 }

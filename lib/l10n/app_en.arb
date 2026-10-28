@@ -550,5 +550,25 @@
         "type": "int"
       }
     }
+  },
+  "notificationCenterTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "activityInProgress": "In progress",
+  "activityCompleted": "Completed",
+  "activityPaused": "Paused",
+  "activityFailed": "Failed",
+  "progressUploadGemini": "Uploading audio to Gemini",
+  "progressProcessingGemini": "Processing with Gemini",
+  "cassetteReadyCount": "{ready}/{total} ready",
+  "@cassetteReadyCount": {
+    "description": "Number of ready memos out of all memos in a cassette",
+    "placeholders": {
+      "ready": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

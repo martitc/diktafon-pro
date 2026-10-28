@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Oznámení",
+  "notificationsEmpty": "Zatím žádná oznámení",
+  "activityInProgress": "Probíhá",
+  "activityCompleted": "Dokončeno",
+  "activityPaused": "Pozastaveno",
+  "activityFailed": "Selhalo",
+  "progressUploadGemini": "Nahrávání audia do Gemini",
+  "progressProcessingGemini": "Gemini zpracovává audio",
+  "cassetteReadyCount": "{ready}/{total} hotovo"
 }

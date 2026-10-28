@@ -8,6 +8,7 @@
 library;
 
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -23,6 +24,12 @@ Future<void> highPassPcmFile(
   highPassInPlace(samples, cutoffHz: cutoffHz, sampleRate: sampleRate);
   await file.writeAsBytes(bytes, flush: true);
 }
+
+/// Applies [highPassPcmFile] off the caller's isolate. This top-level wrapper
+/// keeps the spawned closure's capture set to the serializable path and
+/// cutoff values, rather than an enclosing provider or job queue.
+Future<void> highPassPcmFileInIsolate(String path, {double cutoffHz = 80}) =>
+    Isolate.run(() => highPassPcmFile(path, cutoffHz: cutoffHz));
 
 /// Second-order Butterworth high-pass (RBJ audio-EQ biquad, Q = 1/√2),
 /// causal single pass — the same shape a live capture path would use.

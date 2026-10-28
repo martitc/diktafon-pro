@@ -3,6 +3,23 @@
 All notable changes to Diktafon are documented in this file. Versions
 correspond to git tags (`v*`); dates are tag dates.
 
+## [1.0.11] — 2026-10-28
+
+### Added
+- Per-note processing progress and cassette-level status, with an activity
+  indicator while work is running and a green completion mark when all notes
+  are ready.
+- An in-app notification center for transcription, summary, and model-download
+  events, with links back to the related note or settings.
+- Background model download status that distinguishes resumable work from
+  abandoned partial files and checks available storage before retrying.
+
+### Fixed
+- Whisper Small transcription on Android: the audio filter no longer captures
+  the job queue when it starts its worker isolate.
+- Cancelled model downloads without resume data no longer count as reusable
+  downloaded bytes in the storage preflight check.
+
 ## [1.0.10] — 2026-10-28
 
 ### Added

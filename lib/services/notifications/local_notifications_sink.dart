@@ -7,6 +7,7 @@ library;
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'download_notifier.dart';
@@ -21,7 +22,9 @@ class LocalNotificationsSink
 
   /// Null on platforms without a wired-up notification backend (or when the
   /// plugin fails to initialize) — callers then skip the notifier entirely.
-  static Future<LocalNotificationsSink?> init() async {
+  static Future<LocalNotificationsSink?> init({
+    VoidCallback? onNotificationTap,
+  }) async {
     if (!Platform.isAndroid && !Platform.isLinux) return null;
     final plugin = FlutterLocalNotificationsPlugin();
     try {
@@ -30,12 +33,18 @@ class LocalNotificationsSink
           android: AndroidInitializationSettings('@mipmap/ic_launcher'),
           linux: LinuxInitializationSettings(defaultActionName: 'Open'),
         ),
+        onDidReceiveNotificationResponse: (_) => onNotificationTap?.call(),
       );
       if (ok == false) return null;
     } catch (_) {
       return null;
     }
-    return LocalNotificationsSink._(plugin);
+    final sink = LocalNotificationsSink._(plugin);
+    try {
+      final launch = await plugin.getNotificationAppLaunchDetails();
+      if (launch?.didNotificationLaunchApp ?? false) onNotificationTap?.call();
+    } catch (_) {}
+    return sink;
   }
 
   /// Android 13+ gates notifications behind a runtime permission; asked

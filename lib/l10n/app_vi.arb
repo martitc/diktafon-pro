@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Thông báo",
+  "notificationsEmpty": "Chưa có thông báo",
+  "activityInProgress": "Đang thực hiện",
+  "activityCompleted": "Hoàn tất",
+  "activityPaused": "Đã tạm dừng",
+  "activityFailed": "Thất bại",
+  "progressUploadGemini": "Đang tải âm thanh lên Gemini",
+  "progressProcessingGemini": "Đang xử lý bằng Gemini",
+  "cassetteReadyCount": "{ready}/{total} hoàn tất"
 }

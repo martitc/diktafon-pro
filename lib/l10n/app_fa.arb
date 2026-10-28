@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "اعلان‌ها",
+  "notificationsEmpty": "هنوز اعلانی نیست",
+  "activityInProgress": "در حال انجام",
+  "activityCompleted": "تکمیل شد",
+  "activityPaused": "مکث‌شده",
+  "activityFailed": "ناموفق",
+  "progressUploadGemini": "در حال بارگذاری صدا در Gemini",
+  "progressProcessingGemini": "در حال پردازش با Gemini",
+  "cassetteReadyCount": "{ready}/{total} تکمیل"
 }

@@ -7,7 +7,7 @@
 #
 # Verify a download:
 #   sha256sum -c SHA256SUMS --ignore-missing
-#   gh attestation verify <file> --repo jaromiru/diktafon
+#   gh attestation verify <file> --repo martitc/diktafon-pro
 #
 # Android signing: if the ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD /
 # ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD repo secrets are set, release APKs
@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: 3.44.5  # keep in sync with docs/tools.md
+  FLUTTER_VERSION: 3.47.8  # keep in sync with pubspec.yaml and docs/tools.md
 
 permissions:
   contents: read

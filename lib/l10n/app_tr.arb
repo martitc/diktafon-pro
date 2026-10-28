@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Bildirimler",
+  "notificationsEmpty": "Henüz bildirim yok",
+  "activityInProgress": "Devam ediyor",
+  "activityCompleted": "Tamamlandı",
+  "activityPaused": "Duraklatıldı",
+  "activityFailed": "Başarısız",
+  "progressUploadGemini": "Ses Gemini’ye yükleniyor",
+  "progressProcessingGemini": "Gemini ile işleniyor",
+  "cassetteReadyCount": "{ready}/{total} hazır"
 }

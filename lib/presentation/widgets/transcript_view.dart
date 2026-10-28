@@ -8,6 +8,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:intl/intl.dart';
 
 import '../../domain/models.dart';
+import '../../domain/processing_progress.dart';
 import '../../domain/palette.dart';
 import '../../domain/script.dart';
 import '../../domain/tape.dart';
@@ -29,6 +30,7 @@ class TranscriptView extends StatefulWidget {
     required this.playing,
     this.seekCount = 0,
     this.modelReady = false,
+    this.processing = const {},
     this.onSeekGlobalMs,
     this.onRetryMemo,
     this.onEditMemo,
@@ -50,6 +52,7 @@ class TranscriptView extends StatefulWidget {
   /// Whether the transcription model is provisioned — decides what a
   /// still-untranscribed memo says while it waits (§14).
   final bool modelReady;
+  final Map<String, ProcessingProgress> processing;
   final ValueChanged<int>? onSeekGlobalMs;
 
   /// Failed memo tapped → re-enqueue (§14 retry affordance).
@@ -263,7 +266,7 @@ class _TranscriptViewState extends State<TranscriptView> {
       if (transcript.isEmpty) {
         return _caption(context, context.l10n.noSpeech);
       }
-      return _MemoParagraph(
+      final paragraph = _MemoParagraph(
         key: _paragraphKeys.putIfAbsent(
           memo.id,
           GlobalKey<_MemoParagraphState>.new,
@@ -275,9 +278,25 @@ class _TranscriptViewState extends State<TranscriptView> {
         onSeekGlobalMs: widget.onSeekGlobalMs,
         onCopy: () => _copyTranscript(memo),
       );
+      if (memo.status != MemoStatus.summarizing) return paragraph;
+      final progress = widget.processing[memo.id];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          paragraph,
+          if (progress != null) _ProcessingProgressStrip(progress: progress),
+        ],
+      );
     }
     return switch (memo.status) {
-      MemoStatus.transcribing => const _ShimmerRows(),
+      MemoStatus.transcribing => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _ShimmerRows(),
+          if (widget.processing[memo.id] case final progress?)
+            _ProcessingProgressStrip(progress: progress),
+        ],
+      ),
       MemoStatus.failed => _caption(
         context,
         context.l10n.transcriptionFailedRetry,
@@ -313,6 +332,47 @@ class _TranscriptViewState extends State<TranscriptView> {
           ),
         ),
       );
+}
+
+class _ProcessingProgressStrip extends StatelessWidget {
+  const _ProcessingProgressStrip({required this.progress});
+
+  final ProcessingProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = switch (progress.stage) {
+      ProcessingStage.transcribing => context.l10n.transcribing,
+      ProcessingStage.uploadingAudio => context.l10n.progressUploadGemini,
+      ProcessingStage.processingCloud => context.l10n.progressProcessingGemini,
+      ProcessingStage.summarizing => context.l10n.summarizing,
+      ProcessingStage.finished => '',
+    };
+    return Padding(
+      padding: const EdgeInsets.only(top: 5, bottom: 11),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontSize: 11, color: context.tape.ink2)),
+          const SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: progress.fraction,
+            minHeight: 3,
+            color: context.tape.ink2,
+            backgroundColor: context.tape.line,
+          ),
+          if (progress.fraction != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '${(progress.fraction! * 100).round()}%',
+                style: TextStyle(fontSize: 10, color: context.tape.ink2),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _MemoDivider extends StatelessWidget {

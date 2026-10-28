@@ -12,6 +12,7 @@ import '../data/repositories/cassette_repository.dart';
 import '../data/repositories/memo_repository.dart';
 import '../data/repositories/settings_repository.dart';
 import '../domain/models.dart';
+import '../domain/processing_progress.dart' as processing;
 import '../domain/script.dart';
 import '../domain/tape.dart';
 import '../services/audio/audio_transcoder.dart';
@@ -22,6 +23,7 @@ import '../services/audio/tape_player_service.dart';
 import '../services/import/cassette_importer.dart';
 import '../services/import/local_audio_importer.dart';
 import '../services/processing/job_queue.dart';
+import '../services/notifications/activity_center.dart';
 import '../services/providers/llm/llama_bindings.dart';
 import '../services/providers/llm/llama_worker.dart';
 import '../services/providers/llm/llm_model_manager.dart';
@@ -43,6 +45,11 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   ref.onDispose(db.close);
   return db;
 });
+
+final activityCenterProvider = Provider<ActivityCenter>(
+  (ref) =>
+      throw UnimplementedError('activity center must be initialized in main'),
+);
 
 /// Overridden in main() with the opened store (needs async I/O).
 final audioFileStoreProvider = Provider<AudioFileStore>(
@@ -153,6 +160,22 @@ final jobQueueProvider = Provider<JobQueue>(
     systemZhScript: systemZhScript,
   ),
 );
+
+/// Current real processing signals. Finished events remove the item, so a
+/// rebuild or retry cannot leave a stale progress bar on a memo.
+final processingProgressProvider =
+    StreamProvider<Map<String, processing.ProcessingProgress>>((ref) async* {
+      final active = <String, processing.ProcessingProgress>{};
+      yield Map.unmodifiable(active);
+      await for (final update in ref.watch(jobQueueProvider).progressUpdates) {
+        if (update.stage == processing.ProcessingStage.finished) {
+          active.remove(update.targetId);
+        } else {
+          active[update.targetId] = update;
+        }
+        yield Map.unmodifiable(active);
+      }
+    });
 
 /// §6.4: WAV capture → archival AAC (MediaCodec/AVAssetWriter on mobile,
 /// ffmpeg CLI on desktop).

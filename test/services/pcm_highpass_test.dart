@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:diktafon/services/audio/pcm_highpass.dart';
@@ -45,5 +46,24 @@ void main() {
       lessThan(before * 0.15),
       reason: '30 Hz should drop by ≳17 dB',
     );
+  });
+
+  test('file filter can run in a worker isolate', () async {
+    final directory = await Directory.systemTemp.createTemp('highpass_test_');
+    addTearDown(() => directory.delete(recursive: true));
+    final file = File('${directory.path}/audio.f32');
+    final rumble = _tone(30);
+    final before = _rms(rumble);
+    await file.writeAsBytes(rumble.buffer.asUint8List());
+
+    await highPassPcmFileInIsolate(file.path);
+
+    final bytes = await file.readAsBytes();
+    final filtered = Float32List.view(
+      bytes.buffer,
+      bytes.offsetInBytes,
+      bytes.lengthInBytes ~/ 4,
+    );
+    expect(_rms(filtered), lessThan(before * 0.15));
   });
 }

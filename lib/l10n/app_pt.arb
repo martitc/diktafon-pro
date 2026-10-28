@@ -223,5 +223,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "notificationCenterTitle": "Notificações",
+  "notificationsEmpty": "Ainda não há notificações",
+  "activityInProgress": "Em andamento",
+  "activityCompleted": "Concluído",
+  "activityPaused": "Pausado",
+  "activityFailed": "Falhou",
+  "progressUploadGemini": "Enviando áudio para o Gemini",
+  "progressProcessingGemini": "Processando com o Gemini",
+  "cassetteReadyCount": "{ready}/{total} prontas"
 }

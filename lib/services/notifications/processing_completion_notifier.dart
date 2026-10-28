@@ -4,6 +4,7 @@ library;
 import 'dart:async';
 import 'dart:convert';
 
+import 'activity_center.dart';
 import '../processing/job_queue.dart';
 
 abstract interface class ProcessingNotificationSink {
@@ -25,28 +26,43 @@ class ProcessingNotificationTexts {
 }
 
 class ProcessingCompletionNotifier {
-  ProcessingCompletionNotifier(this._sink, this._texts);
+  ProcessingCompletionNotifier(this._sink, this._texts, {this._history});
 
   final ProcessingNotificationSink _sink;
   final ProcessingNotificationTexts _texts;
+  final ActivityCenter? _history;
   StreamSubscription<ProcessingCompletion>? _subscription;
   Future<void> _chain = Future<void>.value();
 
   void attach(Stream<ProcessingCompletion> completions) {
     _subscription = completions.listen((completion) {
-      final (title, body) = switch (completion.stage) {
-        ProcessingStage.transcription => (
+      final (title, body, kind) = switch (completion.stage) {
+        CompletionStage.transcription => (
           _texts.transcriptionTitle,
           _texts.transcriptionBody,
+          ActivityKind.transcription,
         ),
-        ProcessingStage.memoSummary => (
+        CompletionStage.memoSummary => (
           _texts.summaryTitle,
           _texts.summaryBody,
+          ActivityKind.summary,
         ),
       };
       final id = _notificationId(completion);
       _chain = _chain
-          .then((_) => _sink.showProcessingComplete(id, title, body))
+          .then((_) async {
+            await _history?.put(
+              ActivityEntry(
+                id: 'processing:${completion.stage.name}:${completion.memoId}',
+                kind: kind,
+                title: title,
+                state: ActivityState.complete,
+                updatedAt: DateTime.now(),
+                targetId: completion.memoId,
+              ),
+            );
+            await _sink.showProcessingComplete(id, title, body);
+          })
           .catchError((Object _) {});
     });
   }

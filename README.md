@@ -85,6 +85,12 @@ recordings.
 - **Choose a transcriber** — run Whisper locally or send audio to Gemini with
   your own API key. Models are selected in Settings; local model weights are
   downloaded to the device.
+- **Track long jobs** — see honest progress on a note and whether each cassette
+  is still working or ready. The notification center records completed work
+  and model-download status, with links back to the related note or settings.
+- **Downloads that explain themselves** — local model downloads run in the
+  background, show their status in the app, and check free storage before a
+  fresh attempt after an interrupted download.
 
 ## Install
 

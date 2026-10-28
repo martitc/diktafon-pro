@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'application/providers.dart';
+import 'application/navigation.dart';
 import 'l10n/l10n.dart';
 import 'l10n/locale_resolution.dart';
 import 'presentation/screens/first_run_screen.dart';
@@ -23,6 +24,7 @@ class DiktafonApp extends ConsumerWidget {
       settingsProvider.select((s) => s.value?.firstRunDone),
     );
     return MaterialApp(
+      navigatorKey: appNavigatorKey,
       title: 'Diktafon Pro',
       debugShowCheckedModeBanner: false,
       // UI language follows the system locale (§13), independent of the

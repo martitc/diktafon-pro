@@ -785,4 +785,33 @@ class AppLocalizationsRu extends AppLocalizations {
   String llmModelNeedsRam(String size, int ram) {
     return 'загрузка $size · примерный минимум ОЗУ: $ram ГБ';
   }
+
+  @override
+  String get notificationCenterTitle => 'Уведомления';
+
+  @override
+  String get notificationsEmpty => 'Пока нет уведомлений';
+
+  @override
+  String get activityInProgress => 'Выполняется';
+
+  @override
+  String get activityCompleted => 'Завершено';
+
+  @override
+  String get activityPaused => 'Приостановлено';
+
+  @override
+  String get activityFailed => 'Ошибка';
+
+  @override
+  String get progressUploadGemini => 'Загрузка аудио в Gemini';
+
+  @override
+  String get progressProcessingGemini => 'Обработка в Gemini';
+
+  @override
+  String cassetteReadyCount(int ready, int total) {
+    return '$ready/$total готово';
+  }
 }
