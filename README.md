@@ -107,6 +107,10 @@ To sideload, download `diktafon-<version>-android-arm64-v8a.apk`
 it — you may need to allow "install unknown apps" for your browser or file
 manager.
 
+These releases provide APKs for direct installation. Google Play distribution
+will be configured separately after the Play Console credentials and signing
+key are ready; it requires a signed Android App Bundle (AAB).
+
 Alternatively, install from a computer with
 [adb](https://developer.android.com/tools/adb) (USB debugging enabled on the
 device):
@@ -115,12 +119,13 @@ device):
 adb install diktafon-<version>-android-arm64-v8a.apk
 ```
 
-### iOS
+### iOS and desktop plans
 
-Get it on the
-[App Store](https://apps.apple.com/app/diktafon-voice-memos-on-tape/id6790008802).
-Requires iOS 13.0 or newer; a recent device is recommended for the default
-models.
+This fork's release pipeline does not build or distribute an iOS app. The
+current supported mobile release is Android. A future Mac and Windows desktop
+companion is planned, with Google Drive sync for cassettes, recordings,
+transcripts, summaries, and settings, plus access to stronger desktop models.
+That cross-device sync and desktop app are not available yet.
 
 ### Linux
 
