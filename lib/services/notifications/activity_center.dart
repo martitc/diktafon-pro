@@ -23,6 +23,7 @@ class ActivityEntry {
     required this.updatedAt,
     this.targetId,
     this.percent,
+    this.detail,
     this.read = false,
   });
 
@@ -33,6 +34,9 @@ class ActivityEntry {
   final DateTime updatedAt;
   final String? targetId;
   final int? percent;
+
+  /// Safe diagnostic code only, never a provider body or filesystem path.
+  final String? detail;
   final bool read;
 
   Map<String, Object?> toJson() => {
@@ -43,6 +47,7 @@ class ActivityEntry {
     'updatedAt': updatedAt.toIso8601String(),
     'targetId': targetId,
     'percent': percent,
+    'detail': detail,
     'read': read,
   };
 
@@ -54,6 +59,7 @@ class ActivityEntry {
     updatedAt: DateTime.parse(json['updatedAt']! as String),
     targetId: json['targetId'] as String?,
     percent: json['percent'] as int?,
+    detail: json['detail'] as String?,
     read: json['read'] as bool? ?? false,
   );
 }
@@ -119,6 +125,7 @@ class ActivityCenter extends ChangeNotifier {
         updatedAt: e.updatedAt,
         targetId: e.targetId,
         percent: e.percent,
+        detail: e.detail,
         read: true,
       );
     }

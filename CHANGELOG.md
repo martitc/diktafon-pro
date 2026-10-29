@@ -3,6 +3,14 @@
 All notable changes to Diktafon are documented in this file. Versions
 correspond to git tags (`v*`); dates are tag dates.
 
+## [1.0.13] — 2026-10-29
+
+### Fixed
+- Preserve valid partial downloads across exhausted retries and app restarts.
+- Prevent one model catalog from deleting another active download's temporary file.
+- Keep download progress while retrying and show a safe failure code in Settings and notifications.
+- Split long Gemini transcriptions into resumable audio parts.
+
 ## [1.0.12] — 2026-10-29
 
 ### Fixed

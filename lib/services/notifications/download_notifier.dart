@@ -185,6 +185,7 @@ class ModelDownloadNotifier {
                         state: ActivityState.paused,
                         updatedAt: DateTime.now(),
                         percent: _lastPercent[tier],
+                        detail: state.failureCode,
                       ),
                     ),
                   );
@@ -198,6 +199,7 @@ class ModelDownloadNotifier {
                         state: ActivityState.failed,
                         updatedAt: DateTime.now(),
                         percent: _lastPercent[tier],
+                        detail: state.failureCode,
                       ),
                     ),
                   );

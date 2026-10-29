@@ -1,4 +1,4 @@
-/// T001 feasibility probe only: no settings, persistence or production wiring.
+/// Bounded Gemini transcription request, also used by the connection probe.
 /// Protocol: https://ai.google.dev/gemini-api/docs/generate-content/audio
 library;
 
@@ -31,17 +31,20 @@ class GeminiProbeException implements Exception {
 }
 
 class GeminiConnectionProbe {
-  GeminiConnectionProbe({this.client, Uri? apiBase})
-    : _apiBase =
-          apiBase ??
-          Uri.parse('https://generativelanguage.googleapis.com/v1beta/');
+  GeminiConnectionProbe({
+    this.client,
+    Uri? apiBase,
+    this.requestTimeout = const Duration(seconds: 90),
+  }) : _apiBase =
+           apiBase ??
+           Uri.parse('https://generativelanguage.googleapis.com/v1beta/');
 
   /// Optional caller-owned transport; the caller is responsible for closing it.
   final HttpClient? client;
   final Uri _apiBase;
   static const _maxRequestBytes = 20000000;
   static const _maxResponseBytes = 4000000;
-  static const _timeout = Duration(seconds: 90);
+  final Duration requestTimeout;
 
   /// Uses inline audio for a short sample. Larger requests need Files API,
   /// which is deliberately outside this probe. Model availability and actual
@@ -126,12 +129,12 @@ class GeminiConnectionProbe {
       final uri = _apiBase.replace(
         path: '${basePath}models/$model:generateContent',
       );
-      final request = await transport.postUrl(uri).timeout(_timeout);
+      final request = await transport.postUrl(uri).timeout(requestTimeout);
       request.followRedirects = false;
       request.headers.contentType = ContentType.json;
       request.headers.set('x-goog-api-key', apiKey);
       request.add(payload);
-      final response = await request.close().timeout(_timeout);
+      final response = await request.close().timeout(requestTimeout);
       if (response.statusCode != HttpStatus.ok) {
         // Cancel without draining an unbounded body, including caller-owned clients.
         await response.listen((_) {}).cancel();
@@ -142,7 +145,7 @@ class GeminiConnectionProbe {
         );
       }
       final bytes = <int>[];
-      await for (final chunk in response.timeout(_timeout)) {
+      await for (final chunk in response.timeout(requestTimeout)) {
         if (bytes.length + chunk.length > _maxResponseBytes) {
           throw const GeminiProbeException(GeminiProbeFailure.invalidResponse);
         }

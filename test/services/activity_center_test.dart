@@ -39,4 +39,29 @@ void main() {
       expect(restored.unreadCount, 0);
     },
   );
+
+  test(
+    'download error code and retained percentage survive read and restart',
+    () async {
+      final file = File('${directory.path}/history.json');
+      final center = ActivityCenter(file);
+      await center.put(
+        ActivityEntry(
+          id: 'model:test',
+          kind: ActivityKind.modelDownload,
+          title: 'Model',
+          state: ActivityState.paused,
+          updatedAt: DateTime(2026),
+          percent: 63,
+          detail: 'HTTP 503',
+        ),
+      );
+      await center.markAllRead();
+      final restored = ActivityCenter(file);
+      await restored.load();
+      expect(restored.entries.single.detail, 'HTTP 503');
+      expect(restored.entries.single.percent, 63);
+      expect(restored.entries.single.read, isTrue);
+    },
+  );
 }

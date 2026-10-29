@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'model_download_storage.dart';
+import 'model_download_persistence.dart';
 import 'transcription_provider.dart' show ModelStatus, ProgressSink;
 
 /// One downloadable model file, pinned by byte size + sha256.
@@ -38,10 +39,11 @@ abstract interface class ModelSpec {
 
 /// Snapshot of one tier for the Settings picker.
 class ModelState<M extends ModelSpec> {
-  const ModelState(this.model, this.status, this.progress);
+  const ModelState(this.model, this.status, this.progress, {this.failureCode});
 
   final M model;
   final ModelStatus status;
+  final String? failureCode;
 
   /// Download progress in [0..1]; only meaningful while [status] is
   /// [ModelStatus.downloading] or [ModelStatus.paused] (the fraction already
@@ -85,6 +87,30 @@ class ModelNotificationPermissionDenied implements Exception {
   const ModelNotificationPermissionDenied();
 }
 
+/// Safe diagnostic codes: never include a signed download URL or response body.
+class ModelDownloadFailure implements Exception {
+  const ModelDownloadFailure(this.code);
+  final String code;
+
+  factory ModelDownloadFailure.fromUpdate(TaskStatusUpdate update) {
+    final exception = update.exception;
+    final code =
+        update.responseStatusCode ??
+        (exception is TaskHttpException ? exception.httpResponseCode : null);
+    return ModelDownloadFailure(
+      code != null && code > 0
+          ? 'HTTP $code'
+          : switch (exception) {
+              TaskConnectionException() => 'NETWORK',
+              TaskFileSystemException() => 'STORAGE_IO',
+              TaskResumeException() => 'RESUME',
+              TaskUrlException() => 'MODEL_URL',
+              _ => 'DOWNLOAD_FAILED',
+            },
+    );
+  }
+}
+
 class ModelManager<M extends ModelSpec> {
   ModelManager(
     this._dir, {
@@ -106,12 +132,14 @@ class ModelManager<M extends ModelSpec> {
   final _changes = StreamController<void>.broadcast();
   final _installed = StreamController<M>.broadcast();
   final Map<String, double> _progress = {};
+  final Map<String, String> _failures = {};
   final Map<String, Future<void>> _downloads = {};
   final Map<String, HttpClient> _clients = {};
   final Set<String> _cancelRequested = {};
   final Set<String> _pauseRequested = {};
   final Map<String, DownloadTask> _nativeTasks = {};
   final Map<String, TaskStatus> _nativeStatus = {};
+  final Map<String, int> _nativeResumeOffsets = {};
   final Map<String, Completer<void>> _nativeCompletions = {};
   static StreamSubscription<TaskUpdate>? _sharedNativeUpdates;
   static final Set<void Function(TaskUpdate)> _nativeUpdateListeners = {};
@@ -143,19 +171,34 @@ class ModelManager<M extends ModelSpec> {
     if (model == null) return;
     switch (update) {
       case TaskProgressUpdate(:final progress):
+        if (progress < 0) {
+          return; // Plugin status sentinels are not percentages.
+        }
         _progress[model.tier] = progress;
         _changes.add(null);
       case TaskStatusUpdate(:final status):
         _nativeStatus[model.tier] = status;
         if (status == TaskStatus.complete) {
           _nativeCompletions.remove(model.tier)?.complete();
+        } else if (status == TaskStatus.paused) {
+          _nativeCompletions.remove(model.tier)?.completeError(
+            const ModelDownloadPaused(),
+          );
         } else if (status == TaskStatus.failed ||
             status == TaskStatus.canceled) {
+          if (status == TaskStatus.failed) {
+            _failures[model.tier] = ModelDownloadFailure.fromUpdate(
+              update,
+            ).code;
+            unawaited(
+              _refreshNativeCheckpoint(model).then((_) {
+                _changes.add(null);
+              }),
+            );
+          }
           final completion = _nativeCompletions.remove(model.tier);
           if (completion != null) {
-            completion.completeError(
-              const HttpException('Background model download failed.'),
-            );
+            completion.completeError(ModelDownloadFailure.fromUpdate(update));
           }
         }
         if (status == TaskStatus.complete &&
@@ -186,6 +229,7 @@ class ModelManager<M extends ModelSpec> {
     if (_nativeStatus[model.tier] == TaskStatus.paused) {
       return ModelStatus.paused;
     }
+    if ((_nativeResumeOffsets[model.tier] ?? 0) > 0) return ModelStatus.paused;
     if (_partFileOf(model).existsSync() || _pausedFileOf(model).existsSync()) {
       return ModelStatus.paused;
     }
@@ -198,10 +242,14 @@ class ModelManager<M extends ModelSpec> {
       ModelStatus.downloading => _progress[model.tier] ?? 0,
       ModelStatus.paused => _progress[model.tier] ?? _partialFraction(model),
       _ => 0,
-    });
+    }, failureCode: _failures[model.tier]);
   }
 
   double _partialFraction(M model) {
+    final nativeOffset = _nativeResumeOffsets[model.tier];
+    if (nativeOffset != null) {
+      return (nativeOffset / model.sizeBytes).clamp(0.0, 1.0);
+    }
     for (final file in [_partFileOf(model), _pausedFileOf(model)]) {
       if (file.existsSync()) {
         return (file.lengthSync() / model.sizeBytes).clamp(0.0, 1.0);
@@ -232,6 +280,7 @@ class ModelManager<M extends ModelSpec> {
     if (statusOf(model) == ModelStatus.ready) return Future.value();
     final inFlight = _downloads[model.tier];
     if (inFlight != null) return inFlight;
+    _failures.remove(model.tier);
 
     final download =
         _download(
@@ -295,6 +344,7 @@ class ModelManager<M extends ModelSpec> {
           'model-${model.tier}',
         );
         if (record == null || record.task is! DownloadTask) continue;
+        await _refreshNativeCheckpoint(model);
         if (record.status == TaskStatus.complete) {
           landed = await _finalizeNative(model) || landed;
         } else if (record.status == TaskStatus.paused) {
@@ -331,22 +381,23 @@ class ModelManager<M extends ModelSpec> {
   /// remove only unreferenced files when no catalog task is actively running.
   Future<void> _cleanupAbandonedNativeTempFiles() async {
     if (!Platform.isAndroid) return;
-    var hasProtectedTask = false;
-    for (final model in catalog) {
-      final taskId = 'model-${model.tier}';
-      final record = await FileDownloader().database.recordForId(taskId);
-      if (record != null &&
-          (record.status == TaskStatus.enqueued ||
-              record.status == TaskStatus.running ||
-              record.status == TaskStatus.waitingToRetry ||
-              record.status == TaskStatus.paused)) {
-        // Keep temporary files while a task could still own resumable bytes.
-        // A failed resume removes its record before cleaning them.
-        hasProtectedTask = true;
+    // Both catalogs share this directory. A catalog-local check can unlink
+    // the other engine's live file. Check every task and every checkpoint.
+    final records = await FileDownloader().database.allRecords();
+    for (final record in records) {
+      if (record.status == TaskStatus.enqueued ||
+          record.status == TaskStatus.running ||
+          record.status == TaskStatus.waitingToRetry ||
+          record.status == TaskStatus.paused) {
+        return;
       }
     }
-    if (hasProtectedTask) return;
-
+    final protectedPaths = {
+      for (final resume
+          in await modelDownloadPersistence.retrieveAllResumeData())
+        resume.tempFilepath,
+    };
+    final cutoff = DateTime.now().subtract(const Duration(days: 1));
     final supportDirectory = await getApplicationSupportDirectory();
     await for (final entry in supportDirectory.list(followLinks: false)) {
       if (entry is! File ||
@@ -355,7 +406,21 @@ class ModelManager<M extends ModelSpec> {
           )) {
         continue;
       }
-      await entry.delete();
+      if (!protectedPaths.contains(entry.path) &&
+          (await entry.lastModified()).isBefore(cutoff)) {
+        await entry.delete();
+      }
+    }
+  }
+
+  Future<void> _refreshNativeCheckpoint(M model) async {
+    final resume = await modelDownloadPersistence.retrieveResumeData(
+      'model-${model.tier}',
+    );
+    if (await ModelDownloadPersistence.validCheckpoint(resume)) {
+      _nativeResumeOffsets[model.tier] = resume!.requiredStartByte;
+    } else {
+      _nativeResumeOffsets.remove(model.tier);
     }
   }
 
@@ -428,14 +493,13 @@ class ModelManager<M extends ModelSpec> {
         final existingTask = await FileDownloader().database.recordForId(
           'model-${model.tier}',
         );
+        await _refreshNativeCheckpoint(model);
         if (existingTask != null &&
-            existingTask.status == TaskStatus.paused &&
-            existingTask.progress > 0) {
+            (_nativeResumeOffsets[model.tier] ?? 0) > 0) {
           // A paused task is the plugin state that owns a resumable partial.
           // Terminal records are not a disk-space discount even if their
           // last progress was nonzero.
-          resumableNativeOffset = (model.sizeBytes * existingTask.progress)
-              .floor();
+          resumableNativeOffset = _nativeResumeOffsets[model.tier];
         }
         final required = requiredModelDownloadStorageBytes(
           modelSizeBytes: model.sizeBytes,
@@ -566,7 +630,21 @@ class ModelManager<M extends ModelSpec> {
       // resumes. Cancel wins over pause when both raced in (tier switch
       // right after a pause).
       final cancelled = _cancelRequested.contains(model.tier);
-      final pausedNow = !cancelled && _pauseRequested.contains(model.tier);
+      final pausedNow = !cancelled &&
+          (_pauseRequested.contains(model.tier) || e is ModelDownloadPaused);
+      if (!cancelled && !pausedNow) {
+        _failures[model.tier] = e is ModelDownloadFailure
+            ? e.code
+            : e is ModelVerificationException
+            ? 'INTEGRITY'
+            : 'DOWNLOAD_FAILED';
+      }
+      if (Platform.isAndroid && !cancelled) {
+        await _refreshNativeCheckpoint(model);
+      } else if (Platform.isAndroid && cancelled) {
+        _nativeResumeOffsets.remove(model.tier);
+        await modelDownloadPersistence.discard('model-${model.tier}');
+      }
       if ((cancelled || e is ModelVerificationException) &&
           await part.exists()) {
         await part.delete();
@@ -641,15 +719,25 @@ class ModelManager<M extends ModelSpec> {
       metaData: model.tier,
     );
     final existing = await FileDownloader().database.recordForId(task.taskId);
-    if (existing != null && existing.status == TaskStatus.paused) {
+    if (existing != null &&
+        (existing.status == TaskStatus.paused ||
+            existing.status == TaskStatus.failed) &&
+        (_nativeResumeOffsets[model.tier] ?? 0) > 0) {
       final completion = Completer<void>();
       _nativeCompletions[model.tier] = completion;
-      if (!await FileDownloader().resume(existing.task as DownloadTask)) {
+      final resumeTask = (existing.task as DownloadTask).copyWith(
+        retriesRemaining: 3,
+      );
+      _nativeTasks[model.tier] = resumeTask;
+      if (!await FileDownloader().resume(resumeTask)) {
+        _nativeTasks.remove(model.tier);
         _nativeCompletions.remove(model.tier);
         // The task record outlived its temporary file. Drop the stale
         // terminal state, clean its orphaned native temp, and check storage
         // for a fresh full download before starting over.
         await FileDownloader().database.deleteRecordWithId(task.taskId);
+        await modelDownloadPersistence.discard(task.taskId);
+        _nativeResumeOffsets.remove(model.tier);
         await _cleanupAbandonedNativeTempFiles();
         final available = await _availableStorageBytes();
         final required = requiredModelDownloadStorageBytes(
@@ -662,7 +750,11 @@ class ModelManager<M extends ModelSpec> {
           );
         }
       } else {
-        await completion.future;
+        try {
+          await completion.future;
+        } finally {
+          _nativeTasks.remove(model.tier);
+        }
         return;
       }
     }
@@ -680,6 +772,7 @@ class ModelManager<M extends ModelSpec> {
       final update = await FileDownloader().download(
         task,
         onProgress: (fraction) {
+          if (fraction < 0) return;
           _progress[model.tier] = fraction;
           onProgress?.call(fraction);
           _changes.add(null);
@@ -698,7 +791,7 @@ class ModelManager<M extends ModelSpec> {
         throw const ModelDownloadCancelled();
       }
       if (update.status != TaskStatus.complete) {
-        throw const HttpException('Background model download failed.');
+        throw ModelDownloadFailure.fromUpdate(update);
       }
     } finally {
       _nativeTasks.remove(model.tier);
@@ -710,11 +803,14 @@ class ModelManager<M extends ModelSpec> {
   void delete(M model) {
     if (Platform.isAndroid) {
       unawaited(FileDownloader().cancelTaskWithId('model-${model.tier}'));
+      unawaited(modelDownloadPersistence.discard('model-${model.tier}'));
       unawaited(
         FileDownloader().database.deleteRecordWithId('model-${model.tier}'),
       );
     }
     _nativeStatus.remove(model.tier);
+    _failures.remove(model.tier);
+    _nativeResumeOffsets.remove(model.tier);
     _progress.remove(model.tier);
     for (final file in [
       fileOf(model),

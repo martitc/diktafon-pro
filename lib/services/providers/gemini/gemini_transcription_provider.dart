@@ -3,10 +3,12 @@ import 'dart:io';
 
 import '../../../domain/models.dart';
 import '../../../domain/processing_progress.dart';
+import '../../audio/pcm_decoder.dart';
 import '../../audio/recorder_service.dart' show probeAudioDurationMs;
 import '../credential_vault.dart';
 import '../transcription_provider.dart';
 import 'gemini_connection_probe.dart';
+import 'gemini_audio_chunks.dart';
 import 'gemini_model_catalog.dart';
 
 /// Gemini transcription adapter. Gemini is only selected explicitly in
@@ -16,11 +18,18 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
     required this._vault,
     required this.modelId,
     HttpClient Function()? httpClientFactory,
-  }) : _httpClientFactory = httpClientFactory ?? HttpClient.new;
+    PcmDecoder? decoder,
+    GeminiAudioChunks? chunks,
+    this._apiBase,
+  }) : _httpClientFactory = httpClientFactory ?? HttpClient.new,
+       _chunks =
+           chunks ?? GeminiAudioChunks(decoder: decoder ?? defaultPcmDecoder());
 
   final CredentialVault _vault;
   final String modelId;
   final HttpClient Function() _httpClientFactory;
+  final GeminiAudioChunks _chunks;
+  final Uri? _apiBase;
 
   @override
   String get id => 'gemini/$modelId';
@@ -66,21 +75,29 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
         onProgress,
       );
     }
-    final file = File(audio.filePath);
     final client = _httpClientFactory();
     cancel.addListener(() => client.close(force: true));
-    String? remoteFile;
     try {
-      remoteFile = await _upload(file, key, client, cancel, onProgress);
-      if (cancel.isCancelled) throw const TranscriptionCancelled();
-      onProgress?.call(ProcessingStage.processingCloud, null);
-      final transcript = await GeminiConnectionProbe().transcribe(
-        audioBytes: const [],
-        audioFileUri: remoteFile,
-        mimeType: _mime(file.path),
-        apiKey: key,
-        model: model.id,
-        instructions: _instructions(languageCode),
+      final transcript = await _chunks.transcribe(
+        audio.filePath,
+        namespace: '${model.id}:${languageCode ?? 'auto'}',
+        cancel: cancel,
+        onProgress: onProgress,
+        send: (bytes) =>
+            GeminiConnectionProbe(
+              client: client,
+              apiBase: _apiBase,
+              requestTimeout: const Duration(minutes: 5),
+            ).transcribe(
+              audioBytes: bytes,
+              mimeType: 'audio/wav',
+              apiKey: key,
+              model: model.id,
+              instructions:
+                  '${_instructions(languageCode)} '
+                  'This clip lasts ${(bytes.length - 44) * 1000 ~/ 32000} milliseconds. '
+                  'Use times relative to this clip and never beyond its duration.',
+            ),
       );
       if (transcript.isEmpty) {
         throw const GeminiProviderException('emptyTranscript');
@@ -91,16 +108,6 @@ class GeminiTranscriptionProvider implements TranscriptionProvider {
       if (cancel.isCancelled) throw const TranscriptionCancelled();
       rethrow;
     } finally {
-      if (remoteFile != null) {
-        final cleanup = _httpClientFactory();
-        try {
-          final request = await cleanup.deleteUrl(Uri.parse(remoteFile));
-          request.followRedirects = false;
-          request.headers.set('x-goog-api-key', key);
-          await request.close().timeout(const Duration(seconds: 8));
-        } catch (_) {}
-        cleanup.close(force: true);
-      }
       client.close(force: true);
     }
   }

@@ -51,7 +51,17 @@ class ActivityCenterScreen extends ConsumerWidget {
                       : Icons.graphic_eq,
                 ),
                 title: Text(title),
-                subtitle: Text('$subtitle · $time'),
+                subtitle: Text(
+                  [
+                    subtitle,
+                    if (entry.detail != null) entry.detail!,
+                    if (entry.percent != null &&
+                        (entry.state == ActivityState.failed ||
+                            entry.state == ActivityState.paused))
+                      '${entry.percent}%',
+                    time,
+                  ].join(' · '),
+                ),
                 trailing: entry.read ? null : const Icon(Icons.circle, size: 9),
                 onTap: () => Navigator.of(context).pop(entry),
               );

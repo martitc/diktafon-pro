@@ -781,7 +781,10 @@ class _EnginePickerDialog extends ConsumerWidget {
         for (final state in visible)
           _PickerOption(
             label: state.model.label,
-            status: _statusOf(context, state),
+            status: [
+              if (state.failureCode != null) state.failureCode!,
+              _statusOf(context, state),
+            ].join(' · '),
             description: (descriptionOf ?? (m) => m.description)(state.model),
             selected: selectedTier == state.model.tier,
             enabled: enabledOf(state.model),

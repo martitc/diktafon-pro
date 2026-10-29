@@ -111,6 +111,7 @@ final transcriptionProvider = Provider<TranscriptionProvider>((ref) {
     return GeminiTranscriptionProvider(
       vault: ref.watch(credentialVaultProvider),
       modelId: settings.geminiModel,
+      decoder: ref.watch(pcmDecoderProvider),
     );
   }
   return WhisperCppTranscriptionProvider(

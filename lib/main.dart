@@ -23,12 +23,13 @@ import 'presentation/screens/activity_center_screen.dart';
 import 'services/processing/job_queue.dart';
 import 'services/providers/llm/llm_model_manager.dart';
 import 'services/providers/model_manager.dart';
+import 'services/providers/model_download_persistence.dart';
 import 'services/providers/whisper/whisper_model_manager.dart';
 import 'services/system/system_settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final downloader = FileDownloader();
+  final downloader = createModelDownloader();
   downloader.configureNotification(
     running: const TaskNotification(
       'Diktafon Pro',
