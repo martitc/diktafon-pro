@@ -3,7 +3,7 @@
 All notable changes to Diktafon are documented in this file. Versions
 correspond to git tags (`v*`); dates are tag dates.
 
-## Unreleased
+## [1.0.12] — 2026-10-29
 
 ### Fixed
 - Enable Android foreground transfers for large local models, preventing the
