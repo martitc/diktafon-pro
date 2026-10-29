@@ -116,6 +116,9 @@ kotlin {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    // The app manifest configures this service directly. Match the version
+    // already used at runtime by background_downloader 9.5.9.
+    implementation("androidx.work:work-runtime:2.11.0")
 }
 
 flutter {

@@ -109,6 +109,8 @@ class MemoRepository {
   ) => (_db.update(_db.memos)..where((m) => m.id.equals(id))).write(
     MemosCompanion(
       transcript: Value(jsonEncode(transcript.toJson())),
+      rawTranscript: const Value(null),
+      memoSummary: const Value(null),
       detectedLang: Value(transcript.languageCode),
       status: Value(status.name),
     ),

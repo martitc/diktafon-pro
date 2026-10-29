@@ -35,10 +35,12 @@ class RecordingForegroundService : Service() {
         val title = intent?.getStringExtra(EXTRA_TITLE) ?: "Recording"
         val channelName = intent?.getStringExtra(EXTRA_CHANNEL_NAME) ?: "Recording"
 
-        val manager = getSystemService(NotificationManager::class.java)
         // LOW: visible but silent — the user just pressed record themselves.
-        manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_LOW))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(
+                NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_LOW))
+        }
 
         val tapIntent = PendingIntent.getActivity(
             this, 0,
@@ -55,7 +57,7 @@ class RecordingForegroundService : Service() {
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             startForeground(
                 NOTIFICATION_ID, notification,
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
