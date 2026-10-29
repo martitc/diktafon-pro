@@ -3,6 +3,12 @@
 All notable changes to Diktafon are documented in this file. Versions
 correspond to git tags (`v*`); dates are tag dates.
 
+## Unreleased
+
+### Fixed
+- Enable Android foreground transfers for large local models, preventing the
+  downloader's two-minute expedited timeout from interrupting model downloads.
+
 ## [1.0.11] — 2026-10-28
 
 ### Added

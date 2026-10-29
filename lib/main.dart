@@ -48,6 +48,11 @@ Future<void> main() async {
     ),
     progressBar: true,
   );
+  // A running notification alone does not enable long transfers. Without
+  // this flag the Android downloader times out expedited jobs after 2 minutes.
+  await downloader.configure(
+    androidConfig: [(Config.runInForeground, Config.always)],
+  );
   if (Platform.isLinux) {
     // Desktop dev target: just_audio has no Linux backend of its own.
     // LIBMPV_PATH lets dev machines point at a locally extracted libmpv.
