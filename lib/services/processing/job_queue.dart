@@ -131,15 +131,28 @@ class JobQueue {
   /// affordance): no transcript yet → transcribe again, otherwise only the
   /// summarization is redone.
   Future<void> retryEnrichment(String memoId) async {
-    final row = await _memoRow(memoId);
-    if (row == null) return;
-    if (row.transcript == null) {
-      await _memos.updateStatus(memoId, MemoStatus.stored);
-      await _insertJob(JobType.transcribe, memoId);
-    } else {
-      await _memos.updateStatus(memoId, MemoStatus.transcribed);
-      await _insertJob(JobType.summarizeMemo, memoId);
-    }
+    await _db.transaction(() async {
+      final row = await _memoRow(memoId);
+      if (row == null) return;
+      final failedTranscription =
+          await (_db.select(_db.jobs)
+                ..where(
+                  (j) =>
+                      j.targetId.equals(memoId) &
+                      j.type.equals(JobType.transcribe.name) &
+                      j.status.equals('failed'),
+                )
+                ..limit(1))
+              .getSingleOrNull();
+      await _deleteFailedJobs(memoId);
+      if (row.transcript == null || failedTranscription != null) {
+        await _memos.updateStatus(memoId, MemoStatus.stored);
+        await _insertJob(JobType.transcribe, memoId);
+      } else {
+        await _memos.updateStatus(memoId, MemoStatus.transcribed);
+        await _insertJob(JobType.summarizeMemo, memoId);
+      }
+    });
     unawaited(drain());
   }
 
@@ -174,9 +187,9 @@ class JobQueue {
 
   /// Re-runs the whole enrichment pipeline for every memo on the cassette —
   /// the user installed a more capable model and wants the texts refreshed.
-  /// In-flight and queued work is cancelled, transcripts and gists wiped,
-  /// and fresh transcribe jobs queued in tape order. The overview follows
-  /// for free: each new gist schedules the coalesced cassette update, and
+  /// In-flight and queued work is cancelled and fresh transcribe jobs are
+  /// queued in tape order. Existing text survives until replacement succeeds.
+  /// The overview follows for free: each new gist schedules the coalesced cassette update, and
   /// the old overview stays visible until it's replaced.
   Future<void> retranscribeCassette(String cassetteId) async {
     // A queued overview rebuild would see the wiped gists and blank the
@@ -184,10 +197,11 @@ class JobQueue {
     await cancelJobsFor(cassetteId);
     for (final memo in await _memos.memosOf(cassetteId)) {
       await cancelJobsFor(memo.id);
-      // Atomic pair: a kill between the wipe and the enqueue would strand
+      // Atomic pair: a kill between the status change and enqueue would strand
       // the memo at `stored` with no job and no §14 retry affordance.
       await _db.transaction(() async {
-        await _memos.resetEnrichment(memo.id);
+        await _deleteFailedJobs(memo.id);
+        await _memos.updateStatus(memo.id, MemoStatus.stored);
         await _insertJob(JobType.transcribe, memo.id);
       });
     }
@@ -213,6 +227,12 @@ class JobQueue {
         ))
         .go();
   }
+
+  Future<void> _deleteFailedJobs(String targetId) =>
+      (_db.delete(_db.jobs)..where(
+            (j) => j.targetId.equals(targetId) & j.status.equals('failed'),
+          ))
+          .go();
 
   /// Call after a memo's row is gone: if its gist — or, for gistless memos,
   /// its transcript (§6.7) — was part of the cassette summary, schedule the
@@ -339,7 +359,12 @@ class JobQueue {
         // deleted, tier switched to a not-yet-downloaded one) — reset the
         // memo to its honest waiting status so the "transcribing…" shimmer
         // never outlives the stage that showed it; the rerun re-asserts it.
-        if (type.targetsMemo) await _resetToWaiting(job.targetId);
+        if (type.targetsMemo) {
+          await _resetToWaiting(
+            job.targetId,
+            transcription: type == JobType.transcribe,
+          );
+        }
         // Brief backoff so transient failures don't hot-loop (§6.5).
         await Future<void>.delayed(_retryDelayUnit * attempts);
       }
@@ -355,12 +380,17 @@ class JobQueue {
 
   /// Puts a memo back to the waiting status its enrichment stage starts
   /// from — `stored` before a transcript exists, `transcribed` after.
-  Future<void> _resetToWaiting(String memoId) async {
+  Future<void> _resetToWaiting(
+    String memoId, {
+    bool transcription = false,
+  }) async {
     final row = await _memoRow(memoId);
     if (row == null) return; // deleted meanwhile (§14)
     await _memos.updateStatus(
       memoId,
-      row.transcript == null ? MemoStatus.stored : MemoStatus.transcribed,
+      transcription || row.transcript == null
+          ? MemoStatus.stored
+          : MemoStatus.transcribed,
     );
   }
 
@@ -387,7 +417,10 @@ class JobQueue {
       if (permanent) {
         await _memos.updateStatus(job.targetId, MemoStatus.failed);
       } else {
-        await _resetToWaiting(job.targetId);
+        await _resetToWaiting(
+          job.targetId,
+          transcription: job.type == JobType.transcribe.name,
+        );
       }
     }
   }
@@ -500,6 +533,7 @@ class JobQueue {
           ),
         ),
       );
+      if (cancel.isCancelled) throw const TranscriptionCancelled();
       // D8 amendment: Chinese transcripts are stored script-converted under
       // a script-qualified code (forced zh-Hans/zh-Hant, or the system
       // locale's script for an auto-detected zh); everything else is
@@ -510,22 +544,30 @@ class JobQueue {
         systemZhScript: _systemZhScript,
       );
 
-      if (transcript.isEmpty) {
-        // Empty/near-silent memo: kept playable, summary skipped (§14, §6.7)
-        // — nothing left to enrich.
-        await _memos.setTranscript(memoId, transcript, MemoStatus.ready);
-      } else if (!_wantsGist(transcript)) {
-        // Short transcript (§6.7): it is its own summary — the memo is done
-        // without ever touching the LLM; only the overview job (which reads
-        // the transcript directly) waits on the summarization gate.
-        await _memos.setTranscript(memoId, transcript, MemoStatus.ready);
-        await _enqueueCassetteUpdate(row.cassetteId);
-      } else {
-        await _memos.setTranscript(memoId, transcript, MemoStatus.transcribed);
-        // The gist job waits in the queue while its model is missing or
-        // summaries are disabled — the drain gate holds it, never the memo.
-        await _insertJob(JobType.summarizeMemo, memoId);
-      }
+      await _db.transaction(() async {
+        if (cancel.isCancelled) throw const TranscriptionCancelled();
+        if (transcript.isEmpty) {
+          // Empty/near-silent memo: kept playable, summary skipped (§14, §6.7)
+          // — nothing left to enrich.
+          await _memos.setTranscript(memoId, transcript, MemoStatus.ready);
+          await _enqueueCassetteUpdate(row.cassetteId);
+        } else if (!_wantsGist(transcript)) {
+          // Short transcript (§6.7): it is its own summary — the memo is done
+          // without ever touching the LLM; only the overview job (which reads
+          // the transcript directly) waits on the summarization gate.
+          await _memos.setTranscript(memoId, transcript, MemoStatus.ready);
+          await _enqueueCassetteUpdate(row.cassetteId);
+        } else {
+          await _memos.setTranscript(
+            memoId,
+            transcript,
+            MemoStatus.transcribed,
+          );
+          // The gist job waits in the queue while its model is missing or
+          // summaries are disabled — the drain gate holds it, never the memo.
+          await _insertJob(JobType.summarizeMemo, memoId);
+        }
+      });
       _completions.add(
         ProcessingCompletion(
           memoId: memoId,
@@ -538,6 +580,9 @@ class JobQueue {
           stage: progress.ProcessingStage.finished,
         ),
       );
+    } catch (_) {
+      if (cancel.isCancelled) throw const TranscriptionCancelled();
+      rethrow;
     } finally {
       _active.remove(memoId);
     }
@@ -553,6 +598,22 @@ class JobQueue {
   }
 
   Future<void> _summarizeMemo(String memoId) async {
+    final cancel = CancelToken();
+    _active[memoId] = cancel;
+    try {
+      await _summarizeMemoWithCancel(memoId, cancel);
+    } catch (_) {
+      if (cancel.isCancelled) throw const TranscriptionCancelled();
+      rethrow;
+    } finally {
+      _active.remove(memoId);
+    }
+  }
+
+  Future<void> _summarizeMemoWithCancel(
+    String memoId,
+    CancelToken cancel,
+  ) async {
     final row = await _memoRow(memoId);
     if (row == null) return; // deleted meanwhile (§14)
     final transcriptJson = row.transcript;
@@ -564,15 +625,14 @@ class JobQueue {
     if (transcript.isEmpty) {
       // Nothing to summarize (§6.7) — reachable via retryEnrichment on a
       // silent memo; complete the enrichment instead of prompting the LLM.
-      await _memos.setMemoSummary(memoId, null, MemoStatus.ready);
+      await _storeMemoSummary(row, cancel, null, updateCassette: false);
       return;
     }
     if (!_wantsGist(transcript)) {
       // Short transcript (§6.7) — reachable via retryEnrichment or a job
       // persisted by an older build: complete without the LLM; the overview
       // reads the transcript directly.
-      await _memos.setMemoSummary(memoId, null, MemoStatus.ready);
-      await _enqueueCassetteUpdate(row.cassetteId);
+      await _storeMemoSummary(row, cancel, null);
       return;
     }
     await _memos.updateStatus(memoId, MemoStatus.summarizing);
@@ -598,20 +658,31 @@ class JobQueue {
     // summary", not a failure — the memo is still fully enriched (§6.7).
     // The overview updates either way: gistless memos contribute their
     // transcript.
-    await _memos.setMemoSummary(
-      memoId,
-      summary.isEmpty ? null : summary,
-      MemoStatus.ready,
-    );
+    await _storeMemoSummary(row, cancel, summary.isEmpty ? null : summary);
     _progress.add(
       progress.ProcessingProgress(
         targetId: memoId,
         stage: progress.ProcessingStage.finished,
       ),
     );
-    await _enqueueCassetteUpdate(row.cassetteId);
     if (summary.isNotEmpty) _notifySummaryCompletion(memoId);
   }
+
+  Future<void> _storeMemoSummary(
+    MemoRow source,
+    CancelToken cancel,
+    String? summary, {
+    bool updateCassette = true,
+  }) => _db.transaction(() async {
+    final current = await _memoRow(source.id);
+    if (cancel.isCancelled ||
+        current == null ||
+        current.transcript != source.transcript) {
+      throw const TranscriptionCancelled();
+    }
+    await _memos.setMemoSummary(source.id, summary, MemoStatus.ready);
+    if (updateCassette) await _enqueueCassetteUpdate(source.cassetteId);
+  });
 
   void _notifySummaryCompletion(String memoId) => _completions.add(
     ProcessingCompletion(memoId: memoId, stage: CompletionStage.memoSummary),

@@ -78,8 +78,7 @@ class CassetteImporter {
   final _uuid = const Uuid();
 
   /// Extracts [zip] to a temp folder and imports every cassette found.
-  /// Extraction is zip-slip-safe (`extractFileToDisk` skips entries that
-  /// would land outside the target).
+  /// Links and unsafe paths are rejected before any entry is extracted.
   Future<ImportResult> importArchive(File zip) async {
     final staging = await Directory.systemTemp.createTemp('diktafon_import_');
     try {
@@ -87,10 +86,50 @@ class CassetteImporter {
       // isolate, or the import dialog freezes for its duration.
       final zipPath = zip.path;
       final stagingPath = staging.path;
-      await Isolate.run(() => extractFileToDisk(zipPath, stagingPath));
+      await Isolate.run(() => _extractArchive(zipPath, stagingPath));
       return await importDirectory(staging);
     } finally {
       await staging.delete(recursive: true);
+    }
+  }
+
+  static void _extractArchive(String zipPath, String stagingPath) {
+    final input = InputFileStream(zipPath);
+    Archive? archive;
+    try {
+      archive = ZipDecoder().decodeStream(input);
+      // A lexical path check alone cannot contain chained symbolic links.
+      // Exported cassettes contain only regular files and directories.
+      for (final entry in archive) {
+        final name = entry.name;
+        final type = entry.mode & 0xf000;
+        if (entry.isSymbolicLink ||
+            (type != 0 && type != 0x8000 && type != 0x4000) ||
+            name.isEmpty ||
+            name.startsWith('/') ||
+            name.contains('\\') ||
+            name.contains('\u0000') ||
+            RegExp(r'^[A-Za-z]:').hasMatch(name) ||
+            name.split('/').any((part) => part == '..' || part == '.')) {
+          throw const FormatException('Unsafe entry in cassette archive');
+        }
+      }
+      for (final entry in archive) {
+        final path = '$stagingPath/${entry.name}';
+        if (entry.isDirectory) {
+          Directory(path).createSync(recursive: true);
+        } else {
+          final output = OutputFileStream(path);
+          try {
+            entry.writeContent(output);
+          } finally {
+            output.closeSync();
+          }
+        }
+      }
+    } finally {
+      archive?.clearSync();
+      input.closeSync();
     }
   }
 
